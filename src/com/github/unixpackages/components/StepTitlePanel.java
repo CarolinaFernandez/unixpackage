@@ -39,7 +39,7 @@ public class StepTitlePanel extends JPanel {
 		this.setMinimumSize(Constants.STEPTITLE_DIMENSION);
 		this.setPreferredSize(Constants.STEPTITLE_DIMENSION);
 
-		JLabel title_label = new JLabel(Constants.STEPS_DESCRIPTIONS.get(step));
+		JLabel title_label = new JLabel(Constants.STEPS_DESCRIPTIONS.get(step) + " ");
 		title_label.setFont(Constants.STEPTITLE_FONT);
 		title_label.setForeground(Constants.STEPTITLE_FOREGROUND);
 		this.add(title_label, BorderLayout.WEST);
