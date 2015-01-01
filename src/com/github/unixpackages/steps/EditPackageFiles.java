@@ -50,7 +50,7 @@ public class EditPackageFiles extends CommonStep {
 				fileList.add(file.getName());
 			}
 		} catch (Exception e) {
-			System.out.println("Could not find UNIX package files...? More info: " + e);
+			System.out.println("E: Could not find UNIX package files. Exception: " + e);
 		}
 		JList fileChooser = new JList(fileList.toArray());
 		// Changes orientation

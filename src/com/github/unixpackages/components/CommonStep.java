@@ -43,7 +43,7 @@ public class CommonStep extends CommonPanel {
         this.stepPanel = panel;
         this.contentPanel.add(this.stepPanel);
         // Compute proper height for content panel, leaving space for the rest of menus
-        this.contentPanel.setPreferredSize(new Dimension(Constants.FRAME_WIDTH, (int) (Constants.FRAME_HEIGHT - 1.2*((int) Constants.NAVIGATION_HEIGHT + Constants.TITLE_HEIGHT + Constants.STEPTITLE_HEIGHT))));
+        this.contentPanel.setPreferredSize(new Dimension(Constants.FRAME_WIDTH, (int) (Constants.FRAME_HEIGHT - 1.4*((int) Constants.NAVIGATION_HEIGHT + Constants.TITLE_HEIGHT + Constants.STEPTITLE_HEIGHT))));
 		this.add(this.navigationPanel, BorderLayout.PAGE_END);
 	}
 

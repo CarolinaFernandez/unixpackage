@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.commons.io.FileUtils;
-
 import com.github.unixpackages.data.Constants;
 
 import sun.net.www.protocol.file.FileURLConnection;
@@ -82,8 +80,7 @@ public class Files {
 		}
 	}
 	
-	public boolean copyFolderIntoTempFolder(String localResource, String source,
-			String destination) {
+	public boolean copyFolderIntoTempFolder(String source, String destination) {
 
 		boolean result = false;
 		
@@ -92,9 +89,9 @@ public class Files {
 		File sourceDir = new File(validatedSource);
 
 		File destDir = new File(destination);
-		if (destDir.exists()) {
-			return true;
-		} else {
+//		if (destDir.exists()) {
+//			return true;
+//		} else {
 			try {
 				// Create first all intermediate directories as needed
 				destDir.mkdirs();
@@ -102,50 +99,53 @@ public class Files {
 			} catch (SecurityException se) {
 				result = false;
 			}
-		}
+//		}
 
-		if (sourceDir.exists()) {
-			// Normal copy: copy files from bundled examples to temporal folder
-			try {
-				FileUtils.copyDirectory(sourceDir, destDir);
-			} catch (IOException e) {
-				result = false;
-				e.printStackTrace();
-			}
-		} else {
-			// Internal copy: files within JAR to temp folder
-			try {
-				System.out.println("Source does not exist. Copying " + super.getClass().getResource("/" + localResource) + " to " + destDir);
-				copyResourcesRecursively(
-						super.getClass().getResource("/" + localResource), destDir);
-			} catch (Exception e) {
-				System.out.println("Could not copy packages recursively! "
-						+ e);
-				e.printStackTrace();
-			}
+		try {
+			copyResourcesRecursively(new URL(sourceDir.toString()), destDir);
+		} catch (IOException e1) {
+			System.out.println("E: Cannot copy into folder!");
+			e1.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return result;
 	}
 	
 	public boolean copyPackageSourcesIntoTempFolder() {
-		return copyFolderIntoTempFolder("package", Constants.ROOT_PACKAGE_FILES_PATH, 
-													Constants.TMP_PACKAGE_FILES_PATH);
+		Locations loc = new Locations();
+		String validatedSource = loc.getAbsolutePath(Constants.ROOT_PACKAGE_FILES_PATH);
+		String validatedDestination = Constants.ROOT_TMP_PACKAGE_FILES_PATH;
+		if (validatedSource.startsWith("jar:")) {
+			validatedDestination = Constants.TMP_PACKAGE_FILES_PATH;
+		}
+		
+		return copyFolderIntoTempFolder(Constants.ROOT_PACKAGE_FILES_PATH, 
+				validatedDestination);
 	}
 	
 	public boolean copyScriptSourcesIntoTempFolder() {
-		return copyFolderIntoTempFolder("script", Constants.ROOT_SCRIPT_FILES_PATH, 
-													Constants.TMP_SCRIPT_FILES_PATH);		
+		Locations loc = new Locations();
+		String validatedSource = loc.getAbsolutePath(Constants.ROOT_SCRIPT_FILES_PATH);
+		String validatedDestination = Constants.ROOT_TMP_PACKAGE_FILES_PATH;
+		if (validatedSource.startsWith("jar:")) {
+			validatedDestination = Constants.TMP_SCRIPT_FILES_PATH;
+		}
+		
+		return copyFolderIntoTempFolder(Constants.ROOT_SCRIPT_FILES_PATH, 
+				validatedDestination);
 	}
 
 	public void copyResourcesRecursively(URL originUrl, File destination)
 			throws Exception {
 		URLConnection urlConnection = originUrl.openConnection();
+
 		if (urlConnection instanceof JarURLConnection) {
 			copyJarResourcesRecursively(destination,
 					(JarURLConnection) urlConnection);
 		} else if (urlConnection instanceof FileURLConnection) {
 			copyFilesRecursively(new File(originUrl.getPath()), destination);
-		} else {
+		} else{
 			throw new Exception("URLConnection["
 					+ urlConnection.getClass().getSimpleName()
 					+ "] is not a recognized/implemented connection type.");
@@ -204,7 +204,6 @@ public class Files {
 		try {
 			is.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

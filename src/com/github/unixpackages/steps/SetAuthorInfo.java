@@ -14,7 +14,7 @@ import com.github.unixpackages.utils.SpringUtilities;
 public class SetAuthorInfo extends CommonStep {
 
 	protected String[] labels = {"Username: ", "E-mail: "};
-	protected String[] tooltips = {"UNIX user", "When encrypting package this must be the same as in GPG keyring"};
+	protected String[] tooltips = {"UNIX user", "When signing package this must be the same as in GPG keyring"};
 	protected String[] variables = {"MAINTAINER_NAME", "MAINTAINER_EMAIL"};
 
 	/**

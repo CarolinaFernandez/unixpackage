@@ -15,13 +15,15 @@ public final class Constants {
      */
 
 	// Media files
-	public static final String APP_ICON = "cat-in-a-box.ico";
-	public static final String APP_IMAGE = "cat-in-a-box.png";
+	public static final String ROOT_MEDIA = "media";
+	public static final String APP_ICON = ROOT_MEDIA + "/cat-in-a-box.ico";
+	public static final String APP_IMAGE = ROOT_MEDIA + "/cat-in-a-box.png";
 	
 	public static final String ROOT_FILES_PATH = ".";
 	
 	// Package files
-	public static final String ROOT_PACKAGE_FILES_PATH = ROOT_FILES_PATH + "/package";
+//	public static final String ROOT_PACKAGE_FILES_PATH = ROOT_FILES_PATH + "/package";
+	public static final String ROOT_PACKAGE_FILES_PATH = "packages";
 	public static final String DEBIAN_FILES_PATH = ROOT_PACKAGE_FILES_PATH + "/deb";
 	public static final String REDHAT_FILES_PATH = ROOT_PACKAGE_FILES_PATH + "/rpm";
 	
@@ -30,17 +32,18 @@ public final class Constants {
 			+ "/unix_package_" + (new Random().nextInt(1000 - 1 + 1) + 1);
 	// Random number used to name folder used under /tmp
 	public static final String TMP_PACKAGE_FILES_PATH = ROOT_TMP_PACKAGE_FILES_PATH
-			+ "/package";
+			+ "/" + ROOT_PACKAGE_FILES_PATH;
 	public static final String TMP_PACKAGE_DEBIAN_FILES_PATH = TMP_PACKAGE_FILES_PATH + "/deb";
 	public static final String TMP_PACKAGE_REDHAT_FILES_PATH = TMP_PACKAGE_FILES_PATH + "/rpm";
 	
 	// Script files
-	public static final String ROOT_SCRIPT_FILES_PATH = ROOT_FILES_PATH + "/script";
+//	public static final String ROOT_SCRIPT_FILES_PATH = ROOT_FILES_PATH + "/script";
+	public static final String ROOT_SCRIPT_FILES_PATH = "script";
 	public static final String DEBIAN_SCRIPT_PATH = ROOT_SCRIPT_FILES_PATH + "/deb/create_package.sh";
 	public static final String REDHAT_SCRIPT_PATH = ROOT_SCRIPT_FILES_PATH + "/rpm/create_package.sh";
 
 	public static final String TMP_SCRIPT_FILES_PATH = ROOT_TMP_PACKAGE_FILES_PATH
-			+ "/script";
+			+ "/" + ROOT_SCRIPT_FILES_PATH;
 	public static final String TMP_SCRIPT_DEBIAN_PATH = TMP_SCRIPT_FILES_PATH + "/deb/create_package.sh";
 	public static final String TMP_SCRIPT_REDHAT_PATH = TMP_SCRIPT_FILES_PATH + "/rpm/create_package.sh";
 
