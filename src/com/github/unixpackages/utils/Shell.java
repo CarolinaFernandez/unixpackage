@@ -13,33 +13,6 @@ import com.github.unixpackages.data.Constants;
 public class Shell {
 
 	protected static Process proc;
-
-	// XXX REMOVE THIS: OLD, UNUSED
-	public static void execute(String command, String arguments) {
-		String s = null;
-		try {
-			
-			proc = Runtime.getRuntime().exec(command + " " + arguments);
-			//proc.waitFor();
-            BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            BufferedReader error = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-            
-            // Read the output from the command
-            System.out.println("Here is the standard output of the command:\n");
-            while ((s = input.readLine()) != null) {
-                System.out.println(s);
-            }
-             
-            // Read any errors from the attempted command
-            System.out.println("Here is the standard error of the command (if any):\n");
-            while ((s = error.readLine()) != null) {
-                System.out.println(s);
-            }
-            //System.exit(0);
-		} catch (Exception e) {
-			//System.exit(-1);
-		}
-	}
 	
 	public static void execute(List<String> commandList) {
 		String s = null;

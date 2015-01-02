@@ -1,24 +1,21 @@
 package com.github.unixpackages.steps;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
 import com.github.unixpackages.components.CommonStep;
 import com.github.unixpackages.components.TablePanel;
 import com.github.unixpackages.data.Variables;
+import com.github.unixpackages.utils.Files;
 
 @SuppressWarnings("serial")
 public class SetPackageSources extends CommonStep {
@@ -44,13 +41,10 @@ public class SetPackageSources extends CommonStep {
 		sourceInstallPair = null;//new ArrayList<String>(2);
 				
 		// Source path
-		// FIXME Use class variable to insert tuples of paths
 		addSourcePath = new JButton("Add source path");
 		addSourcePath.addActionListener (new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				// Show one or other subfolder in the dialogs, depending on package type
-				String subfolder = "/";
-				String sourcePath = choosePath(subfolder);
+				String sourcePath = Files.choosePath();
 				if (sourcePath != null && !sourcePath.isEmpty()) {
 					try {
 						sourceInstallPair.add(sourcePath);
@@ -69,10 +63,7 @@ public class SetPackageSources extends CommonStep {
 		addInstallationPath = new JButton("Add installation path");
 		addInstallationPath.addActionListener (new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				System.out.println("------------------------------------------!!!!.....>>>> " + sourceInstallPair);
-				// Show one or other subfolder in the dialogs, depending on package type
-				String subfolder = "/";
-				String installPath = choosePath(subfolder);
+				String installPath = Files.choosePath();
 				if (installPath != null && !installPath.isEmpty()) {
 					try {
 						sourceInstallPair.add(installPath);
@@ -92,7 +83,6 @@ public class SetPackageSources extends CommonStep {
 			public void actionPerformed (ActionEvent e) {
 				int[] chosenPaths = gregsPanel.getTable().getSelectedRows();
 				if (chosenPaths.length > 0) {
-					System.out.println("Selected row at...");
 					// "Thou shall not access array components bigger than the size of the modified array"
 					int i = chosenPaths.length-1;
 					while (i >= 0) {
@@ -228,6 +218,7 @@ public class SetPackageSources extends CommonStep {
 		}
 	}
 
+	/*
 	private void errorMessage(String message) {
 		JDialog dialog = new JDialog();
 		JLabel errorLabel = new JLabel(message); 
@@ -240,17 +231,5 @@ public class SetPackageSources extends CommonStep {
 		dialog.setSize(300, 300);
 		dialog.setVisible(true);
 	}
-
-	private String choosePath(String subfolder) {
-		String chosenPath = "";
-		JFileChooser pathChooser = new JFileChooser(subfolder);
-		pathChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-		int returnValue = pathChooser.showOpenDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = pathChooser.getSelectedFile();
-			chosenPath = subfolder + selectedFile.getName();
-		}
-		return chosenPath;
-	}
+	*/
 }

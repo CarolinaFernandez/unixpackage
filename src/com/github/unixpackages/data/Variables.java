@@ -21,10 +21,16 @@ public class Variables {
     public static String PACKAGE_SIGN;
     public static ArrayList<ArrayList<String>> PACKAGE_SOURCE_INSTALL_PAIRS;
     public static String PACKAGE_SOURCE_PATH;
-    // Can be 'DEB' or 'RPM'
+    // Can be "DEB" or "RPM"
     public static String PACKAGE_TYPE;
     public static String DEB_PACKAGE;
     public static String RPM_PACKAGE;
+    // Can be "Simple", "Manual" or "Advanced"
+    public static String BUNDLE_MODE;
+    public static String BUNDLE_MODE_SIMPLE;
+    public static String BUNDLE_MODE_MANUAL;
+    public static String BUNDLE_MODE_ADVANCED;
+    public static String BUNDLE_MODE_ADVANCED_PATH;
 
     public static Object get(String key) {
     	Object value = null;

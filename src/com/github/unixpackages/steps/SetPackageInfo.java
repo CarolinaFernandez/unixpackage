@@ -51,7 +51,6 @@ public class SetPackageInfo extends CommonStep {
         choicePackages.add(choiceRPM);
         
         // Set name of variable where the field should be saved in
-        // TODO Fill in CommonStep
         if (Variables.isNull("PACKAGE_TYPE")) {
         	// DEB package by default
         	choicePackages.setSelected(choiceDEB.getModel(), true);	
@@ -69,7 +68,6 @@ public class SetPackageInfo extends CommonStep {
             JTextField textField = new JTextField(10);
             // Set name of variable where the field should be saved in
         	textField.setName(variables[i]);
-        	// TODO Fill in CommonStep
             if (!Variables.isNull(this.variables[i])) {
             	textField.setText(Variables.get(this.variables[i]).toString());
             }

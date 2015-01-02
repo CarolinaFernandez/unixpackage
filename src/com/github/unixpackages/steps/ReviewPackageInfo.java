@@ -14,7 +14,7 @@ public class ReviewPackageInfo extends CommonStep {
 	public ReviewPackageInfo() {
         // Clear screen first
         this.removeAll();
-        this.setLayout(new GridLayout(9,2));
+        this.setLayout(new GridLayout(10,2));
 
     	JLabel l;
 
@@ -83,6 +83,12 @@ public class ReviewPackageInfo extends CommonStep {
         	signWithGPG = "no";
         }
         l = new JLabel(signWithGPG);
+        l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
+        this.add(l);
+        
+        l = new JLabel("Bundle mode: ", JLabel.TRAILING);
+        this.add(l);
+        l = new JLabel(Variables.BUNDLE_MODE);
         l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
         this.add(l);
 	}

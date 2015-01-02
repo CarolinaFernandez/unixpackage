@@ -48,7 +48,7 @@ public class CommonStep extends CommonPanel {
 	}
 
     public JPanel generateNavigationPanel() {
-    	computeLinkedSteps();
+    	this.computeLinkedSteps();
     	// Clear if possible
 		if (this.navigationPanel != null) {
 			this.navigationPanel.removeAll();
@@ -58,7 +58,7 @@ public class CommonStep extends CommonPanel {
         JButton buttonPrevious = new JButton("Previous");
         buttonPrevious.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //Execute when button is pressed
+                // Execute when button is pressed
                 previousStep(e);
             }
         });
@@ -69,7 +69,7 @@ public class CommonStep extends CommonPanel {
         JButton buttonNext = new JButton(textNext);
         buttonNext.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //Execute when button is pressed
+                // Execute when button is pressed
                 nextStep(e);
             }
         });
@@ -93,18 +93,27 @@ public class CommonStep extends CommonPanel {
         return this.navigationPanel;
     }
 
-    private void nextStep(ActionEvent e) {    	
+    private void getStep(ActionEvent e) {
     	// Execute when button is pressed. Override per step
     	this.saveDataIntoVariables();
-        // Calls to the navigation panel method with 'next' flag
-    	this.addNavigationPanel(NEXT_STEP);
+    	this.computeLinkedSteps();
+    	// Depending on the type of event, identify previous/next steps
+    	Class<CommonStep> step;
+    	if (e.getActionCommand() == "Previous") {
+    		step = PREVIOUS_STEP;
+    	} else {
+    		step = NEXT_STEP;
+    	}
+        // Calls to the navigation panel method with the given step
+    	this.addNavigationPanel(step);
+    }
+    
+    private void nextStep(ActionEvent e) {
+    	this.getStep(e);
     }
     
     private void previousStep(ActionEvent e) {
-    	// Execute when button is pressed
-    	this.saveDataIntoVariables();
-        // Calls to the navigation panel method with 'previous' flag
-    	this.addNavigationPanel(PREVIOUS_STEP);
+    	this.getStep(e);
     }
     
     private void setDefaultButton() {

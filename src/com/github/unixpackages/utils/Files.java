@@ -15,12 +15,28 @@ import java.util.Collections;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.swing.JFileChooser;
+
 import com.github.unixpackages.data.Constants;
 
 import sun.net.www.protocol.file.FileURLConnection;
 
 public class Files {
 
+	public static String choosePath() {
+		String chosenPath = "";
+		// Can be initialized with a given directory
+		JFileChooser pathChooser = new JFileChooser();
+		pathChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+		int returnValue = pathChooser.showOpenDialog(null);
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = pathChooser.getSelectedFile();
+			chosenPath = selectedFile.getAbsolutePath();
+		}
+		return chosenPath;
+	}
+	
 	public boolean copyFile(final File toCopy, final File destFile) {
 		try {
 			return copyStream(new FileInputStream(toCopy),

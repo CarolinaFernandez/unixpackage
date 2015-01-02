@@ -22,7 +22,6 @@ public final class Constants {
 	public static final String ROOT_FILES_PATH = ".";
 	
 	// Package files
-//	public static final String ROOT_PACKAGE_FILES_PATH = ROOT_FILES_PATH + "/package";
 	public static final String ROOT_PACKAGE_FILES_PATH = "packages";
 	public static final String DEBIAN_FILES_PATH = ROOT_PACKAGE_FILES_PATH + "/deb";
 	public static final String REDHAT_FILES_PATH = ROOT_PACKAGE_FILES_PATH + "/rpm";
@@ -37,7 +36,6 @@ public final class Constants {
 	public static final String TMP_PACKAGE_REDHAT_FILES_PATH = TMP_PACKAGE_FILES_PATH + "/rpm";
 	
 	// Script files
-//	public static final String ROOT_SCRIPT_FILES_PATH = ROOT_FILES_PATH + "/script";
 	public static final String ROOT_SCRIPT_FILES_PATH = "script";
 	public static final String DEBIAN_SCRIPT_PATH = ROOT_SCRIPT_FILES_PATH + "/deb/create_package.sh";
 	public static final String REDHAT_SCRIPT_PATH = ROOT_SCRIPT_FILES_PATH + "/rpm/create_package.sh";
@@ -78,13 +76,19 @@ public final class Constants {
 	public static final Dimension STEPTITLE_DIMENSION = new Dimension(FRAME_WIDTH, STEPTITLE_HEIGHT);
 	public static final Dimension TITLE_DIMENSION = new Dimension(FRAME_WIDTH, TITLE_HEIGHT);
     public static final Dimension TEXTFIELD_DIMENSION = new Dimension(350, 30);
-
 	public static final Dimension FILECHOOSER_DIMENSION = new Dimension(CONTENT_DIMENSION.width, (int) (CONTENT_DIMENSION.height - 2*STEPTITLE_DIMENSION.height));
 
+	// Constants for the steps
+	public static final String BUNDLE_MODE_SIMPLE = "Simple";
+	public static final String BUNDLE_MODE_MANUAL = "Manual";
+	public static final String BUNDLE_MODE_ADVANCED = "Advanced";
+
+	// Mappings
 	public static final Map<Integer, String> STEPS_METHODS;
 	public static final Map<Integer, String> STEPS_DESCRIPTIONS;
 	public static final Map<String, String> PACKAGE_LICENSES;
 	public static final Map<String, String> PACKAGE_CLASSES;
+	public static final Map<String, String> BUNDLE_MODE_DESCRIPTIONS;
 
     // Static initializer
     static {
@@ -92,19 +96,21 @@ public final class Constants {
     	STEPS_METHODS.put(1, "Splash");
     	STEPS_METHODS.put(2, "SetAuthorInfo");
     	STEPS_METHODS.put(3, "SetPackageInfo");
-    	STEPS_METHODS.put(4, "SetPackageSources");
-    	STEPS_METHODS.put(5, "EditPackageFiles");
-    	STEPS_METHODS.put(6, "ReviewPackageInfo");
-    	STEPS_METHODS.put(7, "GeneratePackage");
+    	STEPS_METHODS.put(4, "SetBundleMode");
+    	STEPS_METHODS.put(5, "SetPackageSources");
+    	STEPS_METHODS.put(6, "EditPackageFiles");
+    	STEPS_METHODS.put(7, "ReviewPackageInfo");
+    	STEPS_METHODS.put(8, "GeneratePackage");
 
     	STEPS_DESCRIPTIONS = new HashMap<Integer, String>();
     	STEPS_DESCRIPTIONS.put(1, "");
     	STEPS_DESCRIPTIONS.put(2, "Edit the author information");
     	STEPS_DESCRIPTIONS.put(3, "Set the package information");
-    	STEPS_DESCRIPTIONS.put(4, "Choose the package sources");
-    	STEPS_DESCRIPTIONS.put(5, "Modify the package files");
-    	STEPS_DESCRIPTIONS.put(6, "Review the package information");
-    	STEPS_DESCRIPTIONS.put(7, "Generate the final package");
+    	STEPS_DESCRIPTIONS.put(4, "Define how to bundle the sources");
+    	STEPS_DESCRIPTIONS.put(5, "Choose the package sources");
+    	STEPS_DESCRIPTIONS.put(6, "Modify the package files");
+    	STEPS_DESCRIPTIONS.put(7, "Review the package information");
+    	STEPS_DESCRIPTIONS.put(8, "Generate the final package");
 
     	PACKAGE_LICENSES = new HashMap<String, String>();
     	PACKAGE_LICENSES.put("Apache", "apache");
@@ -124,6 +130,11 @@ public final class Constants {
     	PACKAGE_CLASSES.put("Kernel module", "k");
     	PACKAGE_CLASSES.put("Multiple binary", "m");
     	PACKAGE_CLASSES.put("Library", "l");
+    	
+    	BUNDLE_MODE_DESCRIPTIONS = new HashMap<String, String>();
+    	BUNDLE_MODE_DESCRIPTIONS.put(BUNDLE_MODE_SIMPLE, "Automated, but must define location of sources");
+    	BUNDLE_MODE_DESCRIPTIONS.put(BUNDLE_MODE_MANUAL, "Control every file used for bundling the package");
+    	BUNDLE_MODE_DESCRIPTIONS.put(BUNDLE_MODE_ADVANCED, "Copy bundle files from location");
     }
     
     public static final int STEPS_METHODS_LENGTH = STEPS_METHODS.size();

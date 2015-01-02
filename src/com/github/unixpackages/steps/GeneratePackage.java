@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 //import java.util.logging.Logger;
 
 import javax.swing.JButton;
@@ -43,37 +45,10 @@ public class GeneratePackage extends CommonStep {
                 if (Variables.PACKAGE_TYPE.equals("RPM")) {
                 	scriptLocation = Constants.TMP_SCRIPT_REDHAT_PATH;
                 }
-                
-	            List<String> commandList = new ArrayList<String>();
-	            commandList.add(command);
-	            commandList.add(scriptLocation);
-	            
-	            // Non-interactive mode
-	            commandList.add("-y");
-
-	            commandList.add("-s");
-	            commandList.add(Variables.PACKAGE_NAME);
-	            
-	            commandList.add("-v");
-	            commandList.add(Variables.PACKAGE_VERSION);
-	            
-	            commandList.add("-n");
-	            commandList.add(Variables.MAINTAINER_NAME);
-	            
-	            commandList.add("-e");
-	            commandList.add(Variables.MAINTAINER_EMAIL);
-	            
-	            commandList.add("-l");
-	            // Translate to something understandable by the script
-	            commandList.add(Constants.PACKAGE_LICENSES.get(Variables.PACKAGE_LICENSE));
-	            
-	            commandList.add("-C");
-	            // Translate to something understandable by the script
-	            commandList.add(Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
-	            
-	            commandList.add("-p");
-	            commandList.add(Variables.PACKAGE_NAME);
-	            
+	            List<String> commandList = generateCommandForDebianPackages();
+	            commandList.add(0, command);
+	            commandList.add(1, scriptLocation);
+	            // Run script in non-interactive mode by passing all required arguments
 				Shell.execute(commandList);
             }
         });
@@ -84,5 +59,39 @@ public class GeneratePackage extends CommonStep {
                                         3, 1, //rows, cols
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
+	}
+	
+	public List<String> generateCommandForDebianPackages() {
+        List<String> commandList = new ArrayList<String>();
+        List<String> commandListValidated = new ArrayList<String>();
+        HashMap<String, String> argumentList = new HashMap<String, String>();
+        
+        argumentList.put("-y", null);
+        argumentList.put("-s", Variables.PACKAGE_NAME);
+        argumentList.put("-v", Variables.PACKAGE_VERSION);
+        argumentList.put("-n", Variables.MAINTAINER_NAME);
+        argumentList.put("-e", Variables.MAINTAINER_EMAIL);
+        // Translate to something understandable by the script
+        argumentList.put("-l", Constants.PACKAGE_LICENSES.get(Variables.PACKAGE_LICENSE));
+        // Translate to something understandable by the script
+        argumentList.put("-C", Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
+        argumentList.put("-p", Variables.PACKAGE_NAME);
+        
+        boolean checkArgumentsExist = true;
+        for (Entry<String, String> entry : argumentList.entrySet()) {
+        	if (entry.getKey() != "-y" && entry.getValue() == null) {
+        		checkArgumentsExist = false;
+        		break;
+        	}
+        	commandListValidated.add(entry.getKey());
+        	commandListValidated.add(entry.getValue());
+        }
+        
+        // If all arguments required exist, return list with parameters
+        if (checkArgumentsExist) {
+        	commandList = commandListValidated;
+        }
+        
+        return commandList;
 	}
 }

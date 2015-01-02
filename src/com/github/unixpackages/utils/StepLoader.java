@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.github.unixpackages.components.CommonStep;
 import com.github.unixpackages.data.Constants;
+import com.github.unixpackages.data.Variables;
 
 public class StepLoader {
 
@@ -35,6 +36,7 @@ public class StepLoader {
 			}
 			StepLoader.currentStep++;
 		}
+		
 		StepLoader.performOperationByStepNumber(StepLoader.currentStep);
 		return StepLoader.currentStep;
 	}
@@ -44,15 +46,41 @@ public class StepLoader {
 	}
 
 	public static Class<CommonStep> getNextStep() {
+		/**
+		 * Simple mode: when on 5 (sources choice screen), move to 7 (detail screen)
+		 * Advanced mode: when on 4 (bundle choice screen), move to 7 (detail screen)
+		 */
 		if (StepLoader.currentStep < Constants.STEPS_METHODS.size()) {
+			switch (StepLoader.currentStep) {
+				case 4: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Advanced")) {
+							return getStep((Constants.STEPS_METHODS.get(7)));
+						}
+						break;
+				case 5: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Simple")) {
+							return getStep((Constants.STEPS_METHODS.get(7)));
+						}
+						break;
+			}
 			return getStep((Constants.STEPS_METHODS.get(StepLoader.currentStep+1)));
 		} else {
 			return null;
 		}
 	}
-
+	
 	public static Class<CommonStep> getPreviousStep() {
+		/**
+		 * Simple mode: when on 7 (detail screen), move to 5 (sources choice screen)
+		 * Advanced mode: when on 7 (detail screen), move to 4 (bundle choice screen)
+		 */
 		if (StepLoader.currentStep > 1) {
+			switch (StepLoader.currentStep) {
+				case 7: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Simple")) {
+							return getStep((Constants.STEPS_METHODS.get(5)));
+						} else if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Advanced")) {
+							return getStep((Constants.STEPS_METHODS.get(4)));
+						}
+						break;
+			}
 			return getStep((Constants.STEPS_METHODS.get(StepLoader.currentStep-1)));
 		} else {
 			return null;
