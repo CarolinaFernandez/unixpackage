@@ -57,7 +57,7 @@ native_package=""
 ## Obtains root folder
 #path=${PWD##/*/}
 root_script=${PWD}
-root_package=$root_script/../../package/deb
+root_package=$root_script/../../packages/deb
 path_to_script="."
 output_path=$root_script/../../../unix_package_output__$(date +"%Y-%m-%d_%H-%M-%S")
 # Helps installing dependencies
@@ -293,16 +293,18 @@ breakline 2
 echo "> Generating $path.tar.gz..."
 tar --ignore-failed-read -pczf ${source_path}_${package_version}.tar.gz ${source_path}_${package_version} --exclude='create_deb' || echo "Could not create ${source_path}_${package_version}.tar.gz"
 
-echo "> Performing dh_make -$package_class -e $email -c $license -p ${source_path}_${package_version} -f ${source_path}_${package_version}.tar.gz..."
 # Export DEBFULLNAME environment variable to set the Maintainer name
 export DEBFULLNAME=$name
 # Use "yes" to run non-interactively
 cd ${source_path}_${package_version}
 # Use native (-n) to avoid having a revision appended to the version
-if [[ $package_version == *"-"* ]]; then
+if [[ $package_version != *"-"* ]]; then
   native_package="-n"
 fi
-/usr/bin/dh_make --yes $native_package -$package_class -e $email -c $license -p ${source_path}_${package_version} -f $root_script/${source_path}_${package_version}.tar.gz || error "Could not dh_make in $source_path with ${source_path}_${package_version}.tar.gz"
+dh_make_params="--yes $native_package -$package_class -c $license -e $email -p ${source_path}_${package_version} -f $root_script/${source_path}_${package_version}.tar.gz"
+
+echo "> Performing dh_make $dh_make_params..."
+/usr/bin/dh_make --yes $dh_make_params || error "Could not dh_make in $source_path with ${source_path}_${package_version}.tar.gz"
 rm $root_script/${source_path}_${package_version}.tar.gz || error "Could not delete ${source_path}_${package_version}.tar.gz"
 
 breakline 2
@@ -384,7 +386,6 @@ clean_debianized
 breakline 1
 echo "> Ending package generation..."
 move_to_output
-#echo "Check the generated DEB package at $root_script/$source_path_$package_version.deb"
 
 breakline 1
 echo "  ********** DEBIAN GENERATOR: END **********"
