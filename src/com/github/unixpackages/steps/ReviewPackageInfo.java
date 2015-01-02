@@ -14,7 +14,7 @@ public class ReviewPackageInfo extends CommonStep {
 	public ReviewPackageInfo() {
         // Clear screen first
         this.removeAll();
-        this.setLayout(new GridLayout(8,2));
+        this.setLayout(new GridLayout(9,2));
 
     	JLabel l;
 
@@ -56,6 +56,12 @@ public class ReviewPackageInfo extends CommonStep {
         l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
         this.add(l);
 
+        l = new JLabel("Version[-Revision]: ", JLabel.TRAILING);
+        this.add(l);
+        l = new JLabel(Variables.PACKAGE_VERSION);
+        l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
+        this.add(l);
+        
         l = new JLabel("License: ", JLabel.TRAILING);
         this.add(l);
         l = new JLabel(Variables.PACKAGE_LICENSE);
