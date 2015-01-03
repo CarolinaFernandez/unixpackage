@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
 import com.github.unixpackages.components.CommonFrame;
+import com.github.unixpackages.data.UnixPreferences;
 
 @SuppressWarnings("serial")
 public class Listeners {
@@ -40,8 +41,20 @@ public class Listeners {
         component.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
     
+	public static void onLoad() {
+		// Load preferences from file
+		UnixPreferences preferences = new UnixPreferences();
+		preferences.loadFromFile();
+	}
+	
 	private static void onExit() {
-		// Perform any needed post-processing operation
+		/** 
+		 * Performs any needed post-processing operation
+		 */
+		// Save preferences into file
+		UnixPreferences preferences = new UnixPreferences();
+		preferences.saveToFile();
+		// Perform post-processing
 		Shell.postProcess();
 	}
 	

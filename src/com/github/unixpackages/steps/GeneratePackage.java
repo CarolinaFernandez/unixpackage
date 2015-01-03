@@ -76,15 +76,21 @@ public class GeneratePackage extends CommonStep {
         // Translate to something understandable by the script
         argumentList.put("-C", Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
         argumentList.put("-p", Variables.PACKAGE_NAME);
+        // In advanced mode, a path is passed to copy the user's scripts from
+        if (!Variables.isNull("BUNDLE_MODE") && Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+        	argumentList.put("-d", Variables.BUNDLE_MODE_ADVANCED_PATH);
+        }
         
         boolean checkArgumentsExist = true;
         for (Entry<String, String> entry : argumentList.entrySet()) {
-        	if (entry.getKey() != "-y" && entry.getValue() == null) {
-        		checkArgumentsExist = false;
-        		break;
-        	}
         	commandListValidated.add(entry.getKey());
-        	commandListValidated.add(entry.getValue());
+        	if (entry.getKey() != "-y") {
+            	commandListValidated.add(entry.getValue());
+        		if (entry.getValue() == null) {
+        			checkArgumentsExist = false;
+        			break;
+        		}
+        	}
         }
         
         // If all arguments required exist, return list with parameters

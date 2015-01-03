@@ -8,28 +8,28 @@ public class Variables {
 	/**
 	 * Information set by user
 	 */
-	public static boolean GPG_KEY_EXISTS = false;
+	public static Boolean _GPG_KEY_EXISTS = false;
 	public static String MAINTAINER_EMAIL;
     public static String MAINTAINER_NAME;
     public static String PACKAGE_NAME;
     public static String PACKAGE_SHORT_DESCRIPTION;
     public static String PACKAGE_DESCRIPTION;
     public static String PACKAGE_VERSION;
-    public static String PACKAGE_INSTALL_PATH;
+    public static String _PACKAGE_INSTALL_PATH;
     public static String PACKAGE_LICENSE;
     public static String PACKAGE_CLASS;
     public static String PACKAGE_SIGN;
     public static ArrayList<ArrayList<String>> PACKAGE_SOURCE_INSTALL_PAIRS;
-    public static String PACKAGE_SOURCE_PATH;
+    public static String _PACKAGE_SOURCE_PATH;
     // Can be "DEB" or "RPM"
     public static String PACKAGE_TYPE;
-    public static String DEB_PACKAGE;
-    public static String RPM_PACKAGE;
+    public static String _DEB_PACKAGE;
+    public static String _RPM_PACKAGE;
     // Can be "Simple", "Manual" or "Advanced"
     public static String BUNDLE_MODE;
-    public static String BUNDLE_MODE_SIMPLE;
-    public static String BUNDLE_MODE_MANUAL;
-    public static String BUNDLE_MODE_ADVANCED;
+    public static String _BUNDLE_MODE_SIMPLE;
+    public static String _BUNDLE_MODE_MANUAL;
+    public static String _BUNDLE_MODE_ADVANCED;
     public static String BUNDLE_MODE_ADVANCED_PATH;
 
     public static Object get(String key) {
@@ -58,7 +58,39 @@ public class Variables {
 		Object e;
 		try {
 			e = Variables.get(key);
-			Variables.class.getField(key).set(e, value);
+			String variableType = Variables.class.getField(key).getType().getCanonicalName();
+			if (ArrayList.class.getCanonicalName().equals(variableType)) {
+				ArrayList<ArrayList<String>> valueModified = new ArrayList<ArrayList<String>>();
+				// Remove enclosing brackets first
+				value = value.substring(1, value.length()-1);
+				ArrayList<String> pairValue = new ArrayList<String>();
+				// Split pairs
+				if (value.indexOf("],") >= 0) {
+					for (String splittedValue : value.split("],")) {
+						// Then clean and add to array
+						splittedValue = splittedValue.replace("[","").replace("]","");
+						String[] splittedValuePair = splittedValue.split(",");
+						pairValue = new ArrayList<String>();
+						pairValue.add(splittedValuePair[0].trim());
+						pairValue.add(splittedValuePair[1].trim());
+						valueModified.add(pairValue);
+					}
+				} else {
+					value = value.substring(1, value.length()-1);
+					value = value.replace("[","").replace("]","");
+					String[] splittedValuePair = value.split(",");
+					pairValue = new ArrayList<String>();
+					pairValue.add(splittedValuePair[0].trim());
+					pairValue.add(splittedValuePair[1].trim());
+					valueModified.add(pairValue);
+				}
+				Variables.class.getField(key).set(e, valueModified);
+			} else if (Boolean.class.isInstance(variableType)) {
+				Variables.class.getField(key).set(e, new Boolean(value));
+			} else {
+				// Should be a String here
+				Variables.class.getField(key).set(e, value);
+			}
 		} catch (IllegalArgumentException e1) {
 			e1.printStackTrace();
 		} catch (SecurityException e1) {

@@ -27,7 +27,7 @@ public class CommonStep extends CommonPanel {
 
 	private static Class<CommonStep> PREVIOUS_STEP;
 	private static Class<CommonStep> NEXT_STEP;
-
+	
 	public CommonStep() {
 		// Retrieve step number from current step
 		StepLoader.getStepNumber(this);
@@ -121,9 +121,9 @@ public class CommonStep extends CommonPanel {
     	if (this.parentFrame != null) {
     		int numberComponents = 1+1;
         	if (this.navigationPanel.getComponent(numberComponents-1) != null) {
-        	if (this.navigationPanel.getComponent(numberComponents-1).getClass().toString().contains("JButton")) {
-        		this.parentFrame.getRootPane().setDefaultButton((JButton) this.navigationPanel.getComponent(numberComponents-1));
-        	}
+        		if (this.navigationPanel.getComponent(numberComponents-1).getClass().toString().contains("JButton")) {
+        			this.parentFrame.getRootPane().setDefaultButton((JButton) this.navigationPanel.getComponent(numberComponents-1));
+        		}
         	}
         }
     }
@@ -132,7 +132,7 @@ public class CommonStep extends CommonPanel {
         this.contentPanel.removeAll();
         // Get corresponding title
         this.titlePanel.removeAll();
-        // XXX IMPORTANT: recompute current step when navigation panel is generated
+        // Important: recompute current step when navigation panel is generated
     	StepLoader.currentStep = StepLoader.getStepNumber((CommonStep) StepLoader.getStepInstance(buttonDirection));
 		this.titlePanel.add(new StepTitlePanel(new BorderLayout()));
         // Retrieve step instance for either previous or next button (depending on 'buttonDirection' value)

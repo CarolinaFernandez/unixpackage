@@ -14,6 +14,12 @@ public final class Constants {
      * Information needed for application
      */
 
+	// Application-related
+	public static final String APP_NAME = "upkg";
+	// Could be under /etc; but root permissions would be needed
+	public static final String APP_PREFERENCES_PATH = System.getProperty("user.home") + "/." + APP_NAME;
+	public static final String APP_PREFERENCES_FILE_PATH = APP_PREFERENCES_PATH + "/" + APP_NAME + ".properties";
+
 	// Media files
 	public static final String ROOT_MEDIA = "media";
 	public static final String APP_ICON = ROOT_MEDIA + "/cat-in-a-box.ico";

@@ -19,7 +19,7 @@ public class ReviewPackageInfo extends CommonStep {
     	JLabel l;
 
         // Author info
-        l = new JLabel("Maintainer name:", JLabel.TRAILING);
+        l = new JLabel("Maintainer name: ", JLabel.TRAILING);
         this.add(l);
         l = new JLabel(Variables.MAINTAINER_NAME);
         l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);

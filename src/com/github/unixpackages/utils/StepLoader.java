@@ -136,6 +136,8 @@ public class StepLoader {
 		// Switch case requires constants computable at compilation time. Using if instead
 		boolean result = false;
 		if (stepNumber == 1) {
+			// Load file data into variables upon start
+			Listeners.onLoad();
 			result = Shell.preProcess();
 			// In case of failure, revert program to original state and exit
 			if (!result) {
