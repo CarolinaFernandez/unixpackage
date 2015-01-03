@@ -92,9 +92,17 @@ public class SetBundleMode extends CommonStep {
         }
         // Description for previous choice
         final JLabel choiceDescription = new JLabel(Constants.BUNDLE_MODE_DESCRIPTIONS.get(Variables.BUNDLE_MODE), JLabel.TRAILING);
+        this.add(new JLabel());
         this.add(choiceDescription);
+        
+        this.add(new JLabel());
         this.add(new JLabel());
 
+        // Description of following action
+        final JLabel addSourceFilesPathLabel = new JLabel("Chosen source of files:", JLabel.TRAILING);
+		addSourceFilesPathLabel.setVisible(false);
+        final JLabel addSourceFilesPath = new JLabel((String) Variables.get("BUNDLE_MODE_ADVANCED_PATH"), JLabel.TRAILING);
+        
         addSourceFiles = new JButton("Add path of source files");
         addSourceFiles.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
         addSourceFiles.addActionListener (new ActionListener() {
@@ -103,17 +111,25 @@ public class SetBundleMode extends CommonStep {
 				if (sourcePath != null && !sourcePath.isEmpty()) {
 					try {
 						Variables.set("BUNDLE_MODE_ADVANCED_PATH", sourcePath);
+	        			addSourceFilesPathLabel.setVisible(true);
+	        			addSourceFilesPath.setText(Variables.BUNDLE_MODE_ADVANCED_PATH);
+	        			addSourceFilesPath.setVisible(true);
 					} catch (Exception ex) {
 					}
 				}
 			}
 		});
         if (Variables.isNull("BUNDLE_MODE") || !Variables.get("BUNDLE_MODE").equals(Constants.BUNDLE_MODE_ADVANCED)) {
+        	addSourceFilesPathLabel.setVisible(false);
         	addSourceFiles.setVisible(false);
         }
+        this.add(new JLabel());
 		this.add(addSourceFiles);
-		this.add(new JLabel());
         
+        // Placement of description for previous action
+        this.add(addSourceFilesPathLabel);
+        this.add(addSourceFilesPath);
+
         // One per radio button
         bundleSimple.addChangeListener(new ChangeListener() {
 			@Override
@@ -123,6 +139,8 @@ public class SetBundleMode extends CommonStep {
         			Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_SIMPLE);
         			// Disabling importing package files
         			addSourceFiles.setVisible(false);
+        			addSourceFilesPathLabel.setVisible(false);
+        			addSourceFilesPath.setVisible(false);
         		}
 			}
         });
@@ -134,6 +152,8 @@ public class SetBundleMode extends CommonStep {
         			Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_MANUAL);
         			// Disabling importing package files
         			addSourceFiles.setVisible(false);
+        			addSourceFilesPathLabel.setVisible(false);
+        			addSourceFilesPath.setVisible(false);
         		}
 			}
         });
@@ -145,6 +165,11 @@ public class SetBundleMode extends CommonStep {
         			Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
         			// Allow to input a path to import package files
         			addSourceFiles.setVisible(true);
+        			// Show path information once it was select at least one time
+        			if (! Variables.isNull("BUNDLE_MODE_ADVANCED_PATH")) {
+        				addSourceFilesPathLabel.setVisible(true);
+        				addSourceFilesPath.setVisible(true);
+        			}
         		}
 			}
         });
@@ -152,11 +177,11 @@ public class SetBundleMode extends CommonStep {
         // Lay out the panel
         
         // Not really good...
-//        this.setLayout(new GridLayout(3,2)); // rows, cols
+//        this.setLayout(new GridLayout(5,2)); // rows, cols
         
         // Okay...
         SpringUtilities.makeCompactGrid(this,
-                                        3, 2, //rows, cols
+                                        5, 2, //rows, cols
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
         
