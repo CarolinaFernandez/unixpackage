@@ -15,50 +15,51 @@ public class Shell {
 	protected static Process proc;
 	
 	public static void execute(List<String> commandList) {
-		String s = null;
-		try {
-			// Seems like the proper way to do it
-			/*
+		try {			
+			// Use ProcessBuilder rather than Runtime.exec
             ProcessBuilder pb = new ProcessBuilder(commandList);
-            System.out.println("Sent command: " + commandList);
-            for (String argument : pb.command()) {
-            	System.out.println("> Argument: " + argument.toString());
-            }
-            Map<String, String> env = pb.environment();
-//            env.put("VAR1", "myValue");
-//            env.remove("OTHERVAR");
-//            env.put("VAR2", env.get("VAR1") + "suffix");
-            pb.directory(new File(Constants.DEBIAN_SCRIPT_PATH));
+            pb.directory(new File(Constants.ROOT_TMP_PACKAGE_FILES_PATH));
             proc = pb.start();
-            */
-						
-            // Cheap way to do it
-			System.out.println("Command list.... " + commandList.toString());
-//			proc = Runtime.getRuntime().exec(commandList.toString());
-			// Ugly hack
-			String arguments = "";
-			for (String command : commandList) {
-				arguments += " " + command;
+
+            // Read the output from the command
+            BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+//			StringBuilder builder = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+//			   builder.append(line);
+//			   builder.append(System.getProperty("line.separator"));
+			   System.out.println(line);
 			}
-			proc = Runtime.getRuntime().exec(arguments);
-            
+    
+            // Read the output from the command
+//            System.out.println("Here is the standard output of the command:\n");
+//            while (out != null) {
+//                System.out.println(out);
+//            }
+             
+            // Read any errors from the attempted command
+//            System.out.println("Here is the standard error of the command (if any):\n");
+//            while (error != null) {
+//                System.out.println(error);
+//            }
+
+			/*
+			// Ugly way to run from console...
+			proc = Runtime.getRuntime().exec(commandList.toString());            
             BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             BufferedReader error = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-            
             // Read the output from the command
             System.out.println("Here is the standard output of the command:\n");
             while ((s = input.readLine()) != null) {
                 System.out.println(s);
-            }
-             
+            }             
             // Read any errors from the attempted command
             System.out.println("Here is the standard error of the command (if any):\n");
             while ((s = error.readLine()) != null) {
                 System.out.println(s);
             }
-            //System.exit(0);
+            */
 		} catch (Exception e) {
-			//System.exit(-1);
 		}
 	}
 	

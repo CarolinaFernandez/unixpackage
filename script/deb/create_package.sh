@@ -61,11 +61,9 @@ base_path=${PWD}
 # Get path where the script is running
 root_script=$(cd $(dirname $0); pwd -P; cd $base_path)
 root_package=$(readlink -e $root_script/../../packages/deb)
-echo "root_package: $root_package"
 path_to_script=$root_script
 # Output location does not exist (yet)
 output_path=$(readlink -m $root_script/../../../unix_package_output__$(date +"%Y-%m-%d_%H-%M-%S"))
-echo "output_path: $output_path"
 # Helps installing dependencies
 dpkg_dependencies=('dh-make' 'lintian')
 
@@ -277,7 +275,6 @@ function move_to_output()
   if [[ ! -d $output_path ]]; then
     mkdir -p $output_path
   fi
-  echo ".. moving to $root_script/${source_path}_${package_version}"
   mv $root_script/${source_path}_${package_version}* $output_path/
   echo "> The output is located under $output_path"
 }
@@ -360,7 +357,6 @@ if [[ $interactive == true ]]; then
 #            break;;
   esac
 else
-  # XXX DUPLICATED CODE, MOVE TO FUNCTION
   if [[ $sign_package == true ]]; then
     gpg_key_exists=`/usr/bin/gpg --list-keys | grep "$name" | grep "$email"`
     if [[ $gpg_key_exists == "" ]]; then

@@ -13,7 +13,7 @@ public class Locations {
 			// Execute on normal file system, first
 			pathDir = new File(getClass().getClassLoader().getResource(path).toString());
 		} catch (Exception e) {
-			// Otherwise, look on jar file
+			// Otherwise, look within jar file
 			pathDir = new File("jar:file:CreateUNIXPackage.jar!/" + path);
 		}
 		

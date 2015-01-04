@@ -45,12 +45,6 @@ public class Files {
 			e.printStackTrace();
 		}
 		return false;
-
-		/*
-		 * try { FileUtils.copyFile(toCopy, destFile); return true; } catch
-		 * (IOException e1) { // TODO Auto-generated catch block
-		 * e1.printStackTrace(); }
-		 */
 	}
 
 	private boolean copyFilesRecursively(final File toCopy, final File destDir) {

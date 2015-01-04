@@ -62,7 +62,6 @@ public class SetBundleMode extends CommonStep {
         
         // Group these
         ButtonGroup choiceBundleMode = new ButtonGroup();
-//        choiceBundleMode.setName("BUNDLE_MODE");
         choiceBundleMode.add(bundleSimple);
         choiceBundleMode.add(bundleManual);
         choiceBundleMode.add(bundleAdvanced);
@@ -95,15 +94,14 @@ public class SetBundleMode extends CommonStep {
         this.add(new JLabel());
         this.add(choiceDescription);
         
+        // New row
         this.add(new JLabel());
         this.add(new JLabel());
 
         // Description of following action
         final JLabel addSourceFilesPathLabel = new JLabel("Chosen source of files:", JLabel.TRAILING);
-		addSourceFilesPathLabel.setVisible(false);
         final JLabel addSourceFilesPath = new JLabel((String) Variables.get("BUNDLE_MODE_ADVANCED_PATH"), JLabel.TRAILING);
-		addSourceFilesPath.setVisible(false);
-
+        
         addSourceFiles = new JButton("Add path of source files");
         addSourceFiles.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
         addSourceFiles.addActionListener (new ActionListener() {
@@ -120,10 +118,18 @@ public class SetBundleMode extends CommonStep {
 				}
 			}
 		});
+        
+		// Define visibility for fields related to Advanced mode
         if (Variables.isNull("BUNDLE_MODE") || !Variables.get("BUNDLE_MODE").equals(Constants.BUNDLE_MODE_ADVANCED)) {
         	addSourceFilesPathLabel.setVisible(false);
+        	addSourceFilesPath.setVisible(false);
         	addSourceFiles.setVisible(false);
+        } else {
+        	addSourceFilesPathLabel.setVisible(true);
+        	addSourceFilesPath.setVisible(true);
+        	addSourceFiles.setVisible(true);
         }
+        
         this.add(new JLabel());
 		this.add(addSourceFiles);
         
@@ -167,7 +173,7 @@ public class SetBundleMode extends CommonStep {
         			// Allow to input a path to import package files
         			addSourceFiles.setVisible(true);
         			// Show path information once it was select at least one time
-        			if (! Variables.isNull("BUNDLE_MODE_ADVANCED_PATH")) {
+        			if (!Variables.isNull("BUNDLE_MODE_ADVANCED_PATH")) {
         				addSourceFilesPathLabel.setVisible(true);
         				addSourceFilesPath.setVisible(true);
         			}
@@ -176,15 +182,10 @@ public class SetBundleMode extends CommonStep {
         });
        
         // Lay out the panel
-        
-        // Not really good...
-//        this.setLayout(new GridLayout(5,2)); // rows, cols
-        
-        // Okay...
         SpringUtilities.makeCompactGrid(this,
-                                        5, 2, //rows, cols
-                                        6, 6,        //initX, initY
-                                        6, 6);       //xPad, yPad
+                                        5, 2,		//rows, cols
+                                        6, 6,		//initX, initY
+                                        6, 6);		//xPad, yPad
         
 		/* Layout */
 //		GroupLayout layout = new GroupLayout(this);

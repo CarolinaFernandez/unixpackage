@@ -14,7 +14,7 @@ public class UnixPreferences {
 
 	private Properties props = new Properties();
 
-	public void setPreferences() {
+	private void setPreferences() {
 		Field[] variablesList = Variables.class.getFields();
 		ArrayList<Field> variablesArray = new ArrayList<Field>();
 		
@@ -28,12 +28,23 @@ public class UnixPreferences {
 		for (Field field : variablesArray) {
 			String fieldName = field.getName();
 			Object fieldValue = Variables.get(fieldName);
-			if (!Variables.isNull(fieldName)) {
-				props.setProperty(fieldName, fieldValue.toString());
-			}
+			this.setProperty(fieldName, fieldValue);
 		}
 	}
 
+	private void setProperty(String key, Object value) {		
+		if (!Variables.isNull(key)) {
+			// Extra checks for variables depending on each other
+			if (key.equals("BUNDLE_MODE_ADVANCED_PATH")) {
+				if (Variables.get("BUNDLE_MODE").equals(Constants.BUNDLE_MODE_ADVANCED)) {
+					props.setProperty(key, value.toString());
+				}
+			} else {
+				props.setProperty(key, value.toString());
+			}
+		}
+	}
+	
 	public void loadFromFile() {
 		try {
 			InputStream in = new FileInputStream(Constants.APP_PREFERENCES_FILE_PATH);			
