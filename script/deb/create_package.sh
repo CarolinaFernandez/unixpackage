@@ -49,17 +49,23 @@ sign_package=""
 
 # Default: interactive. May be disabled via parameters
 interactive=true
-required_arguments=($package_name $package_version $package_class $name $email $license $source_path)
+required_arguments=('$package_name' '$package_version' '$package_class' '$name' '$email' '$license' '$source_path')
 native_package=""
+debian_files_location=""
 
 ########################################
 
 ## Obtains root folder
 #path=${PWD##/*/}
-root_script=${PWD}
-root_package=$root_script/../../packages/deb
-path_to_script="."
-output_path=$root_script/../../../unix_package_output__$(date +"%Y-%m-%d_%H-%M-%S")
+base_path=${PWD}
+# Get path where the script is running
+root_script=$(cd $(dirname $0); pwd -P; cd $base_path)
+root_package=$(readlink -e $root_script/../../packages/deb)
+echo "root_package: $root_package"
+path_to_script=$root_script
+# Output location does not exist (yet)
+output_path=$(readlink -m $root_script/../../../unix_package_output__$(date +"%Y-%m-%d_%H-%M-%S"))
+echo "output_path: $output_path"
 # Helps installing dependencies
 dpkg_dependencies=('dh-make' 'lintian')
 
@@ -96,6 +102,11 @@ function parse_arguments()
         ;;
     -s|--source)
         source_path="$1"
+        shift
+        ;;
+    -d|--debian-files)
+        # Only one path allowed
+        debian_files_location="$1"
         shift
         ;;
     -n|--name)
@@ -137,21 +148,18 @@ function parse_arguments()
   done
 }
 
-# Exit on failure
-# XXX FIXME
+
+# Validate input to script
 function validate_parameters()
 {
   for required_argument in ${required_arguments[@]}; do
-    if [[ -z $required_argument ]]; then
-      error "E: \$required_argument is undefined"
+    if [[ -z $(eval echo $required_argument) ]]; then
+      error "E: Argument '$required_argument' is required"
     fi
   done
-
-#  if [[ -z $source_path ]]; then
-#    error "E: source path is undefined"
-#  fi
 }
 
+# Exit on failure
 function error()
 {
     echo $1
@@ -215,12 +223,6 @@ function copy_samples()
 
 function copy_edit_samples()
 {
-  if [[ -f $root_package/install ]]; then
-    cp -p $root_package/install $root_script/create_deb/debian/ || error "Could not copy debian/install file"
-  fi
-  if [[ -f $root_package/rules ]]; then
-    cp -p $root_packages/rules $root_script/create_deb/debian/ || error "Could not copy debian/rules file"
-  fi
   if [[ $interactive == true ]]; then
     while true; do
       read -p "> Do you want to edit the medatada (press 'y') or to use sample files (press 'n')?: " meta
@@ -240,7 +242,11 @@ function copy_edit_samples()
         esac
     done
   else
-    do_copy_samples
+    if [[ ! -z $debian_files_location ]]; then
+      do_copy_user_samples
+    else
+      do_copy_samples
+    fi
   fi
   # Symlink so as to dh_install finds the source at fallback
   ln -s  $root_script/$source_path $root_script/create_deb/debian/$source_path || error "Could not link the $source_path code from debian/"
@@ -254,11 +260,24 @@ function do_copy_samples()
   copy_samples;
 }
 
+function do_copy_user_samples()
+{
+  if [[ -d $debian_files_location ]]; then
+    # Remove pre-generated files under the script folder
+    if [[ -d $root_script/create_deb/debian/ ]]; then
+      rm -r $root_script/create_deb/debian/*
+    fi
+    # And use the user samples for it
+    cp -Rp $debian_files_location/* $root_script/${source_path}_${package_version}/debian/ || error "Could not copy user's sample files into $root_script/${source_path}_${package_version}/debian/";
+  fi
+}
+
 function move_to_output()
 {
   if [[ ! -d $output_path ]]; then
     mkdir -p $output_path
   fi
+  echo ".. moving to $root_script/${source_path}_${package_version}"
   mv $root_script/${source_path}_${package_version}* $output_path/
   echo "> The output is located under $output_path"
 }
@@ -293,7 +312,7 @@ breakline 2
 echo "> Generating $path.tar.gz..."
 tar --ignore-failed-read -pczf ${source_path}_${package_version}.tar.gz ${source_path}_${package_version} --exclude='create_deb' || echo "Could not create ${source_path}_${package_version}.tar.gz"
 
-# Export DEBFULLNAME environment variable to set the Maintainer name
+# Export DEBFULLNAME environment variable to set the maintainer name
 export DEBFULLNAME=$name
 # Use "yes" to run non-interactively
 cd ${source_path}_${package_version}
@@ -303,7 +322,6 @@ if [[ $package_version != *"-"* ]]; then
 fi
 dh_make_params="--yes $native_package -$package_class -c $license -e $email -p ${source_path}_${package_version} -f $root_script/${source_path}_${package_version}.tar.gz"
 
-echo "> Performing dh_make $dh_make_params..."
 /usr/bin/dh_make --yes $dh_make_params || error "Could not dh_make in $source_path with ${source_path}_${package_version}.tar.gz"
 rm $root_script/${source_path}_${package_version}.tar.gz || error "Could not delete ${source_path}_${package_version}.tar.gz"
 
@@ -357,29 +375,26 @@ fi
 breakline 2
 # Move to proper location for dpkg-buildpackage
 cd $root_script/${source_path}_${package_version}
+export DH_COMPAT=5
 if [[ $sign_package == true ]]; then
     echo "> Performing (signed) dpkg-buildpackage -F..."
     /usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $path"
 else
     echo "> Performing (unsigned) dpkg-buildpackage -F..."
-    echo "ls... "
-    ls -la
-    echo "pwd..."
-    pwd
     /usr/bin/dpkg-buildpackage -F -us -uc || error "Could not dpkg-buildpackage (unsigned) on $path"
 fi
 #rm $root_script/$source_path.orig.tar.gz || error "Could not clean after dpkg-buildpackage"
 
+generated_deb_file_location=$(find $root_script/ -name "*.deb" | head -1)
+generated_deb_desc_location=$(find $root_script/ -name "*.dsc" | head -1)
 breakline 1
 echo "> Review final info for package ${source_path}_${package_version}.deb..."
-/usr/bin/dpkg --info $root_script/${source_path}_${package_version}*.deb || error "Could not show info for debian package"
+/usr/bin/dpkg --info $generated_deb_file_location || error "Could not show info for debian package"
 
 breakline 1
 echo "> Please check the correctness of the package..."
-#/usr/bin/lintian  $root_script/${source_path}_${package_version}*.deb || error "Could not show info about the correctness of the .deb file"
-/usr/bin/lintian  $root_script/${source_path}_${package_version}*.deb
-#/usr/bin/lintian  $root_script/${source_path}_${package_version}*.dsc || error "Coult not show info about the correctness of the .dsc file"
-/usr/bin/lintian  $root_script/${source_path}_${package_version}*.dsc
+/usr/bin/lintian $generated_deb_file_location #|| error "Could not show info about the correctness of the .deb file"
+/usr/bin/lintian $generated_deb_desc_location #|| error "Coult not show info about the correctness of the .dsc file"
 
 clean_debianized
 
