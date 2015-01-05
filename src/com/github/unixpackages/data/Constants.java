@@ -101,9 +101,9 @@ public final class Constants {
     static {
     	STEPS_METHODS = new HashMap<Integer, String>();
     	STEPS_METHODS.put(1, "Splash");
-    	STEPS_METHODS.put(2, "SetAuthorInfo");
-    	STEPS_METHODS.put(3, "SetPackageInfo");
-    	STEPS_METHODS.put(4, "SetBundleMode");
+    	STEPS_METHODS.put(2, "SetBundleMode");
+    	STEPS_METHODS.put(3, "SetAuthorInfo");
+    	STEPS_METHODS.put(4, "SetPackageInfo");
     	STEPS_METHODS.put(5, "SetPackageSources");
     	STEPS_METHODS.put(6, "EditPackageFiles");
     	STEPS_METHODS.put(7, "ReviewPackageInfo");

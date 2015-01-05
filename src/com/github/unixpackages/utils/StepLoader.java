@@ -52,7 +52,7 @@ public class StepLoader {
 		 */
 		if (StepLoader.currentStep < Constants.STEPS_METHODS.size()) {
 			switch (StepLoader.currentStep) {
-				case 4: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Advanced")) {
+				case 2: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Advanced")) {
 							return getStep((Constants.STEPS_METHODS.get(7)));
 						}
 						break;
@@ -77,7 +77,7 @@ public class StepLoader {
 				case 7: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Simple")) {
 							return getStep((Constants.STEPS_METHODS.get(5)));
 						} else if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Advanced")) {
-							return getStep((Constants.STEPS_METHODS.get(4)));
+							return getStep((Constants.STEPS_METHODS.get(2)));
 						}
 						break;
 			}
