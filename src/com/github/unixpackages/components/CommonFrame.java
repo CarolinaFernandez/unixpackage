@@ -35,6 +35,8 @@ public class CommonFrame extends JFrame {
      * event-dispatching thread.
      */
     private void show(String textPrevious, String textNext) {
+    	// Set title
+    	this.setTitle(Constants.APP_TITLE);
         // Determine size
         this.setPreferredSize(new Dimension(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT));
         // Center frame
@@ -56,8 +58,8 @@ public class CommonFrame extends JFrame {
     }
 
     private void createIcon() {
-    	// Create icon
-    	this.icon = new ImageIcon(getClass().getClassLoader().getResource(Constants.APP_ICON));
+    	// Assign icon
+    	this.icon = new ImageIcon(getClass().getClassLoader().getResource(Constants.APP_IMAGE));
         if (this.icon != null) {
             this.setIconImage(this.icon.getImage());
         }

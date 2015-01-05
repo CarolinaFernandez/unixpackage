@@ -16,6 +16,7 @@ public final class Constants {
 
 	// Application-related
 	public static final String APP_NAME = "upkg";
+	public static final String APP_TITLE = "Create a UNIX package";
 	// Could be under /etc; but root permissions would be needed
 	public static final String APP_PREFERENCES_PATH = System.getProperty("user.home") + "/." + APP_NAME;
 	public static final String APP_PREFERENCES_FILE_PATH = APP_PREFERENCES_PATH + "/" + APP_NAME + ".properties";
