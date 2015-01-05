@@ -20,7 +20,7 @@ import com.github.unixpackages.utils.SpringUtilities;
 public class SetPackageInfo extends CommonStep {
 	
 	protected String[] labels = {"Name: ", "Description (short): ", "Description (long): "};
-	protected String[] tooltips = {"Name of the package", "Up to 60 characters", "Detailed description"};
+	protected String[] tooltips = {"Name of the package (lower case)", "Up to 60 characters", "Detailed description"};
 	protected String[] variables = {"PACKAGE_NAME", "PACKAGE_SHORT_DESCRIPTION", "PACKAGE_DESCRIPTION"};
 
 	public SetPackageInfo() {

@@ -24,9 +24,13 @@ import sun.net.www.protocol.file.FileURLConnection;
 public class Files {
 
 	public static String choosePath() {
+		return choosePath("/");
+	}
+	
+	public static String choosePath(String path) {
 		String chosenPath = "";
-		// Can be initialized with a given directory
-		JFileChooser pathChooser = new JFileChooser();
+		// Initialized with the current directory. Otherwise use "/"
+		JFileChooser pathChooser = new JFileChooser(new File(path));
 		pathChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
 		int returnValue = pathChooser.showOpenDialog(null);

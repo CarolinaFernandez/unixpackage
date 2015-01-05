@@ -106,7 +106,7 @@ public class SetBundleMode extends CommonStep {
         addSourceFiles.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
         addSourceFiles.addActionListener (new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				String sourcePath = Files.choosePath();
+				String sourcePath = Files.choosePath(Variables.BUNDLE_MODE_ADVANCED_PATH);
 				if (sourcePath != null && !sourcePath.isEmpty()) {
 					try {
 						Variables.set("BUNDLE_MODE_ADVANCED_PATH", sourcePath);
