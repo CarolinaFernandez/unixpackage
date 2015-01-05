@@ -16,7 +16,8 @@ public final class Constants {
 
 	// Application-related
 	public static final String APP_NAME = "upkg";
-	public static final String APP_TITLE = "Create a UNIX package";
+	public static final String APP_DESCRIPTION = "Create a UNIX package";
+	
 	// Could be under /etc; but root permissions would be needed
 	public static final String APP_PREFERENCES_PATH = System.getProperty("user.home") + "/." + APP_NAME;
 	public static final String APP_PREFERENCES_FILE_PATH = APP_PREFERENCES_PATH + "/" + APP_NAME + ".properties";
@@ -52,9 +53,6 @@ public final class Constants {
 	public static final String TMP_SCRIPT_DEBIAN_PATH = TMP_SCRIPT_FILES_PATH + "/deb/create_package.sh";
 	public static final String TMP_SCRIPT_REDHAT_PATH = TMP_SCRIPT_FILES_PATH + "/rpm/create_package.sh";
 
-	// Text
-	public static final String APP_DESCRIPTION = "Create a UNIX package";
-
 	// Fonts
 	public static final Font TITLE_FONT = new Font("Courier", Font.BOLD|Font.ITALIC, 19);
 	public static final Font STEPTITLE_FONT = new Font("Times New Roman", Font.BOLD|Font.ITALIC, 14);
@@ -83,6 +81,7 @@ public final class Constants {
 	public static final Dimension STEPTITLE_DIMENSION = new Dimension(FRAME_WIDTH, STEPTITLE_HEIGHT);
 	public static final Dimension TITLE_DIMENSION = new Dimension(FRAME_WIDTH, TITLE_HEIGHT);
     public static final Dimension TEXTFIELD_DIMENSION = new Dimension(350, 30);
+    public static final int TEXTFIELD_COLUMNS_MAX = 30;
 	public static final Dimension FILECHOOSER_DIMENSION = new Dimension(CONTENT_DIMENSION.width, (int) (CONTENT_DIMENSION.height - 2*STEPTITLE_DIMENSION.height));
 
 	// Constants for the steps
@@ -111,9 +110,9 @@ public final class Constants {
 
     	STEPS_DESCRIPTIONS = new HashMap<Integer, String>();
     	STEPS_DESCRIPTIONS.put(1, "");
-    	STEPS_DESCRIPTIONS.put(2, "Edit the author information");
-    	STEPS_DESCRIPTIONS.put(3, "Set the package information");
-    	STEPS_DESCRIPTIONS.put(4, "Define how to bundle the sources");
+    	STEPS_DESCRIPTIONS.put(2, "Define how to bundle the sources");
+    	STEPS_DESCRIPTIONS.put(3, "Edit the author information");
+    	STEPS_DESCRIPTIONS.put(4, "Set the package information");
     	STEPS_DESCRIPTIONS.put(5, "Choose the package sources");
     	STEPS_DESCRIPTIONS.put(6, "Modify the package files");
     	STEPS_DESCRIPTIONS.put(7, "Review the package information");

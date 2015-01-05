@@ -1,12 +1,9 @@
 package com.github.unixpackages.steps;
 
 
-import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
@@ -29,38 +26,6 @@ public class SetPackageInfo extends CommonStep {
         this.removeAll();
         // Populate the panel
         this.setLayout(new SpringLayout());
-        // Choose DEB or RPM packages
-        JRadioButton choiceDEB = new JRadioButton();
-        choiceDEB.setText("Create DEB package");
-        choiceDEB.setToolTipText("Generate a package for Debian-based distros");
-        choiceDEB.setName("DEB_PACKAGE");
-        this.add(choiceDEB);
-        JRadioButton choiceRPM = new JRadioButton();
-        // Fill the width gap
-        choiceRPM.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
-        choiceRPM.setText("Create RPM package");
-        choiceRPM.setToolTipText("Generate a Red hat-based distros");
-        choiceRPM.setName("RPM_PACKAGE");
-        // XXX Temporarily not available
-        choiceRPM.setFocusable(false);
-        choiceRPM.setEnabled(false);
-        this.add(choiceRPM);
-        // Group these
-        ButtonGroup choicePackages = new ButtonGroup();
-        choicePackages.add(choiceDEB);
-        choicePackages.add(choiceRPM);
-        
-        // Set name of variable where the field should be saved in
-        if (Variables.isNull("PACKAGE_TYPE")) {
-        	// DEB package by default
-        	choicePackages.setSelected(choiceDEB.getModel(), true);	
-        } else {
-        	if (Variables.PACKAGE_TYPE.equals("RPM")) {
-        		choicePackages.setSelected(choiceRPM.getModel(), true);
-        	} else {
-        		choicePackages.setSelected(choiceDEB.getModel(), true);
-        	}
-        }
         
         for (int i = 0; i < numPairs; i++) {
             JLabel l = new JLabel(labels[i], JLabel.TRAILING);
@@ -70,6 +35,7 @@ public class SetPackageInfo extends CommonStep {
         	textField.setName(variables[i]);
             if (!Variables.isNull(this.variables[i])) {
             	textField.setText(Variables.get(this.variables[i]).toString());
+            	textField.setColumns(Constants.TEXTFIELD_COLUMNS_MAX);
             }
             l.setLabelFor(textField);
             textField.setToolTipText(tooltips[i]);
@@ -126,22 +92,10 @@ public class SetPackageInfo extends CommonStep {
 		}
         this.add(classLabel);
         this.add(classesListBox);
-
-        // Sign with GPG
-        JLabel signGPGLabel = new JLabel("Sign package with GPG?");
-        JCheckBox signGPG = new JCheckBox();
-        signGPG.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
-        signGPGLabel.setLabelFor(signGPG);
-        // Set name of variable where the field should be saved in
-        signGPG.setName("PACKAGE_SIGN");
-        // TODO Fill in CommonStep
-    	signGPG.setSelected(Boolean.valueOf((String) Variables.get(signGPG.getName())));
-        this.add(signGPGLabel);
-        this.add(signGPG);
-
+        
         //Lay out the panel
         SpringUtilities.makeCompactGrid(this,
-                                        numPairs+5, 2, //rows, cols
+                                        numPairs+3, 2, //rows, cols
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
 	}

@@ -18,19 +18,25 @@ import java.util.jar.JarFile;
 import javax.swing.JFileChooser;
 
 import com.github.unixpackages.data.Constants;
+import com.github.unixpackages.data.Variables;
 
 import sun.net.www.protocol.file.FileURLConnection;
 
 public class Files {
 
 	public static String choosePath() {
-		return choosePath("/");
+		return choosePath(Variables.BUNDLE_MODE_ADVANCED_PATH);
 	}
 	
 	public static String choosePath(String path) {
 		String chosenPath = "";
-		// Initialized with the current directory. Otherwise use "/"
-		JFileChooser pathChooser = new JFileChooser(new File(path));
+		JFileChooser pathChooser;
+		// Initialized with the current directory. Otherwise use home folder
+		if (path == null) {
+			pathChooser = new JFileChooser();
+		} else {
+			pathChooser = new JFileChooser(new File(path));
+		}
 		pathChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
 		int returnValue = pathChooser.showOpenDialog(null);

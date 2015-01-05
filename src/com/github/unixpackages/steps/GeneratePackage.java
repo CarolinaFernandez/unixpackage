@@ -29,12 +29,16 @@ public class GeneratePackage extends CommonStep {
         // Clear screen first
         this.removeAll();
         this.setLayout(new SpringLayout());
+        
         // Populate the panel
         JLabel splashLabel = new JLabel("Your UNIX package is about to be generated. Check that");
         this.add(splashLabel, BorderLayout.CENTER);
         splashLabel = new JLabel("the information is correct and then press the button");
         this.add(splashLabel, BorderLayout.CENTER);
 
+        // New row
+        this.add(new JLabel());
+        
 		// Add sources
 		JButton addSourcePath = new JButton("Generate");
 		addSourcePath.addActionListener (new ActionListener() {
@@ -56,7 +60,7 @@ public class GeneratePackage extends CommonStep {
 
         //Lay out the panel
         SpringUtilities.makeCompactGrid(this,
-                                        3, 1, //rows, cols
+                                        4, 1, //rows, cols
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
 	}

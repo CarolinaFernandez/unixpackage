@@ -36,7 +36,7 @@ public class CommonFrame extends JFrame {
      */
     private void show(String textPrevious, String textNext) {
     	// Set title
-    	this.setTitle(Constants.APP_TITLE);
+    	this.setTitle(Constants.APP_DESCRIPTION);
         // Determine size
         this.setPreferredSize(new Dimension(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT));
         // Center frame

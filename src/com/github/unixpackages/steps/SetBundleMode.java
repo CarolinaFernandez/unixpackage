@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.SpringLayout;
@@ -36,6 +37,70 @@ public class SetBundleMode extends CommonStep {
     	// Action buttons
     	final JButton addSourceFiles;
     	        
+        // Description
+        JLabel packageTypeDescription = new JLabel("Choose the type of package:", JLabel.TRAILING);
+        this.add(packageTypeDescription);
+        
+        // Choose DEB or RPM packages
+        JRadioButton choiceDEB = new JRadioButton();
+        choiceDEB.setText("Create DEB package");
+        choiceDEB.setToolTipText("Generate a package for Debian-based distros");
+        choiceDEB.setName("DEB_PACKAGE");
+//        this.add(choiceDEB);
+        JRadioButton choiceRPM = new JRadioButton();
+        // Fill the width gap
+        choiceRPM.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
+        choiceRPM.setText("Create RPM package");
+        choiceRPM.setToolTipText("Generate a Red hat-based distros");
+        choiceRPM.setName("RPM_PACKAGE");
+        // XXX Temporarily not available
+        choiceRPM.setFocusable(false);
+        choiceRPM.setEnabled(false);
+//        this.add(choiceRPM);
+        // Group these
+        ButtonGroup choicePackages = new ButtonGroup();
+        choicePackages.add(choiceDEB);
+        choicePackages.add(choiceRPM);
+        
+        // Add choices to vertical box
+        Box choicePackagesBox = Box.createVerticalBox();
+        choicePackagesBox.setName("BUNDLE_MODE");
+        choicePackagesBox.add(choiceDEB);
+        choicePackagesBox.add(choiceRPM);
+        this.add(choicePackagesBox);
+        
+        // Set name of variable where the field should be saved in
+        if (Variables.isNull("PACKAGE_TYPE")) {
+        	// DEB package by default
+        	choicePackages.setSelected(choiceDEB.getModel(), true);	
+        } else {
+        	if (Variables.PACKAGE_TYPE.equals("RPM")) {
+        		choicePackages.setSelected(choiceRPM.getModel(), true);
+        	} else {
+        		choicePackages.setSelected(choiceDEB.getModel(), true);
+        	}
+        }
+        
+        // New row
+        this.add(new JLabel());
+        this.add(new JLabel());
+        
+        // Sign with GPG
+        JLabel signGPGLabel = new JLabel("Sign package with GPG?");
+        JCheckBox signGPG = new JCheckBox();
+        signGPG.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
+        signGPGLabel.setLabelFor(signGPG);
+        // Set name of variable where the field should be saved in
+        signGPG.setName("PACKAGE_SIGN");
+        // TODO Fill in CommonStep
+    	signGPG.setSelected(Boolean.valueOf((String) Variables.get(signGPG.getName())));
+        this.add(signGPGLabel);
+        this.add(signGPG);
+        
+        // New row
+        this.add(new JLabel());
+        this.add(new JLabel());
+        
         // Description
         JLabel bundleChoiceDescription = new JLabel("Choose the bundling mode:", JLabel.TRAILING);
         this.add(bundleChoiceDescription);
@@ -106,7 +171,7 @@ public class SetBundleMode extends CommonStep {
         addSourceFiles.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
         addSourceFiles.addActionListener (new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				String sourcePath = Files.choosePath(Variables.BUNDLE_MODE_ADVANCED_PATH);
+				String sourcePath = Files.choosePath();
 				if (sourcePath != null && !sourcePath.isEmpty()) {
 					try {
 						Variables.set("BUNDLE_MODE_ADVANCED_PATH", sourcePath);
@@ -183,7 +248,7 @@ public class SetBundleMode extends CommonStep {
        
         // Lay out the panel
         SpringUtilities.makeCompactGrid(this,
-                                        5, 2,		//rows, cols
+                                        9, 2,		//rows, cols
                                         6, 6,		//initX, initY
                                         6, 6);		//xPad, yPad
         
