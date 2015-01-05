@@ -58,9 +58,16 @@ public class GeneratePackage extends CommonStep {
         });
 		this.add(addSourcePath);
 
+        // New row
+        this.add(new JLabel());
+        
+        // Final information
+        JLabel outputLabel = new JLabel("You can find the output of the script in the console");
+        this.add(outputLabel);
+        
         //Lay out the panel
         SpringUtilities.makeCompactGrid(this,
-                                        4, 1, //rows, cols
+                                        4+2, 1, //rows, cols
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
 	}
