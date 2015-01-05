@@ -103,6 +103,7 @@ function parse_arguments()
         shift
         ;;
     -d|--debian-files)
+        echo " debian_files_location :: $debian_files_location"
         # Only one path allowed
         debian_files_location="$1"
         shift
@@ -193,11 +194,11 @@ function do_clean_debianized()
   if [[ -d $root_script/${source_path}_${package_version}/debian ]]; then
     rm -r $root_script/${source_path}_${package_version}/debian;
   fi
-  if [[ -f $root_script/$path.orig.tar.gz ]]; then
-    rm $root_script/$path.orig.tar.gz;
+  if [[ -f $root_script/${source_path}_${package_version}.orig.tar.gz ]]; then
+    rm $root_script/${source_path}_${package_version}.orig.tar.gz;
   fi
-  if [[ -f $root_script/$path*.dsc ]]; then
-    rm $root_script/$path*.dsc;
+  if [[ -f $root_script/${source_path}_${package_version}*.dsc ]]; then
+    rm $root_script/${source_path}_${package_version}*.dsc;
   fi
   if [[ -f build-stamp ]]; then
     rm build-stamp;
@@ -253,7 +254,7 @@ function copy_edit_samples()
 function do_copy_samples()
 {
   if [[ -d $root_script/create_deb/debian ]]; then
-    rm -r $root_script/create_deb/debian || error "Could not remove automatically generated files under $path/debian/";
+    rm -r $root_script/create_deb/debian || error "Could not remove automatically generated files under $root_script/create_deb/debian/";
   fi;
   copy_samples;
 }
@@ -262,10 +263,13 @@ function do_copy_user_samples()
 {
   if [[ -d $debian_files_location ]]; then
     # Remove pre-generated files under the script folder
-    if [[ -d $root_script/create_deb/debian/ ]]; then
-      rm -r $root_script/create_deb/debian/*
+    if [[ -d $root_script/${source_path}_${package_version}/debian ]]; then
+      rm -r $root_script/${source_path}_${package_version}/debian/*
+    else
+      mkdir -p $root_script/${source_path}_${package_version}/debian
     fi
     # And use the user samples for it
+    echo "Copying $debian_files_location/* -> $root_script/${source_path}_${package_version}/debian/"
     cp -Rp $debian_files_location/* $root_script/${source_path}_${package_version}/debian/ || error "Could not copy user's sample files into $root_script/${source_path}_${package_version}/debian/";
   fi
 }
@@ -306,7 +310,7 @@ echo  "*NOTE* If you want to SIGN this package please see that the name and e-ma
 create_dir=$PWD
 
 breakline 2
-echo "> Generating $path.tar.gz..."
+echo "> Generating ${source_path}_${package_version}.tar.gz..."
 tar --ignore-failed-read -pczf ${source_path}_${package_version}.tar.gz ${source_path}_${package_version} --exclude='create_deb' || echo "Could not create ${source_path}_${package_version}.tar.gz"
 
 # Export DEBFULLNAME environment variable to set the maintainer name
@@ -325,8 +329,8 @@ rm $root_script/${source_path}_${package_version}.tar.gz || error "Could not del
 breakline 2
 echo "> Cleaning & copying sample files under debian/ ..."
 copy_samples
-cd  $root_script/create_deb/debian || error "Could not remove non-relevant files under $path/debian/"
-ls | rm -r `awk '{ if ($i != "changelog" && $i != "control" && $i != "copyright" && $i != "install" && $i != "README.Debian" && $i != "README.source" && $i != "rules") { print $i;} }'` || error "Could not remove non-relevant files under $path/debian/"
+cd  $root_script/create_deb/debian || error "Could not remove non-relevant files under $root_script/create_deb/debian"
+ls | rm -r `awk '{ if ($i != "changelog" && $i != "control" && $i != "copyright" && $i != "install" && $i != "README.Debian" && $i != "README.source" && $i != "rules") { print $i;} }'` || error "Could not remove non-relevant files under $root_script/create_deb/debian"
 cd $root_script/create_deb || error "Could not remove non-relevant files under $root_script/create_deb/debian/"
 copy_edit_samples
 
@@ -373,13 +377,12 @@ breakline 2
 cd $root_script/${source_path}_${package_version}
 export DH_COMPAT=5
 if [[ $sign_package == true ]]; then
-    echo "> Performing (signed) dpkg-buildpackage -F..."
-    /usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $path"
+    echo "> Performing (signed) dpkg-buildpackage..."
+    /usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $root_script/${source_path}_${package_version}"
 else
-    echo "> Performing (unsigned) dpkg-buildpackage -F..."
-    /usr/bin/dpkg-buildpackage -F -us -uc || error "Could not dpkg-buildpackage (unsigned) on $path"
+    echo "> Performing (unsigned) dpkg-buildpackage..."
+    /usr/bin/dpkg-buildpackage -F -us -uc || error "Could not dpkg-buildpackage (unsigned) on $root_script/${source_path}_${package_version}"
 fi
-#rm $root_script/$source_path.orig.tar.gz || error "Could not clean after dpkg-buildpackage"
 
 generated_deb_file_location=$(find $root_script/ -name "*.deb" | head -1)
 generated_deb_desc_location=$(find $root_script/ -name "*.dsc" | head -1)
