@@ -108,19 +108,12 @@ public class GeneratePackage extends CommonStep {
         	}
         }
         
-        boolean checkArgumentsExist = true;
         for (Entry<String, String> entry : argumentList.entrySet()) {
-			System.out.println("key:value => " + entry.getKey() + ":" + entry.getValue());
         	commandListValidated.add(entry.getKey());
         	// Check arguments that are not "-y" or "-S"
         	if (entry.getKey().matches("-(\\w?[^yS]){1}")) {
         		if (entry.getValue() != null) {
-        			System.out.println("key:value not null => " + entry.getKey() + ":" + entry.getValue());
         			commandListValidated.add(entry.getValue());
-//        			if (entry.getValue() == null) {
-//        				checkArgumentsExist = false;
-//        				break;
-//        			}
         		} else {
         			// If value is null, entry shall not be added
         			commandListValidated.remove(entry.getKey());
@@ -128,14 +121,7 @@ public class GeneratePackage extends CommonStep {
         	}
         }
         
-        // If all arguments required exist, return list with parameters
-        if (checkArgumentsExist) {
-        	commandList = commandListValidated;
-        }
-        
-        for (String c : commandList) {
-        	System.out.println("> command: " + c);
-        }
+       	commandList = commandListValidated;
         
         return commandList;
 	}
