@@ -16,20 +16,22 @@ import com.github.unixpackages.data.UnixPreferences;
 
 @SuppressWarnings("serial")
 public class Listeners {
-	
-    public static void bindEscapeKey(final CommonFrame component) {
-        // Allows closing by pressing ESC key
-    	KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
-        Action escapeAction = new AbstractAction() {
+
+	public static void bindEscapeKey(final CommonFrame component) {
+		// Allows closing by pressing ESC key
+		KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,
+				0, false);
+		Action escapeAction = new AbstractAction() {
 			// Close the frame when the user presses escape
-            public void actionPerformed(ActionEvent e) {
-            	Listeners.onExit(component);
-            }
-        }; 
-        component.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeKeyStroke, "ESCAPE");
-        component.getRootPane().getActionMap().put("ESCAPE", escapeAction);
-    }
-    
+			public void actionPerformed(ActionEvent e) {
+				Listeners.onExit(component);
+			}
+		};
+		component.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+				.put(escapeKeyStroke, "ESCAPE");
+		component.getRootPane().getActionMap().put("ESCAPE", escapeAction);
+	}
+
 	public static void bindExitButton(final CommonFrame component) {
 		component.addWindowListener(new WindowAdapter() {
 			@Override
@@ -38,17 +40,17 @@ public class Listeners {
 			}
 		});
 		// Allow to close when clicking 'X' button
-        component.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		component.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-    
+
 	public static void onLoad() {
 		// Load preferences from file
 		UnixPreferences preferences = new UnixPreferences();
 		preferences.loadFromFile();
 	}
-	
+
 	private static void onExit() {
-		/** 
+		/**
 		 * Performs any needed post-processing operation
 		 */
 		// Save preferences into file
@@ -57,12 +59,12 @@ public class Listeners {
 		// Perform post-processing
 		Shell.postProcess();
 	}
-	
+
 	private static void onExit(final CommonFrame component) {
 		Listeners.onExit();
 		component.dispose();
 	}
-	
+
 	private static void onExit(final CommonFrame component, WindowEvent e) {
 		Listeners.onExit();
 		e.getWindow().dispose();

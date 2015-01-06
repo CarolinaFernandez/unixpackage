@@ -39,8 +39,10 @@ public class TitlePanel extends JPanel {
 	/**
 	 * Constructor that creates a label with the given title.
 	 * 
-	 * @param layout LayoutManager to be used
-	 * @param title Some text for the header
+	 * @param layout
+	 *            LayoutManager to be used
+	 * @param title
+	 *            Some text for the header
 	 */
 	TitlePanel(LayoutManager layout, String title) {
 		// Calls basic constructor
@@ -55,15 +57,16 @@ public class TitlePanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		try {
 			// Load images as class path resources
-            URL imgURL = getClass().getClassLoader().getResource(Constants.APP_IMAGE);
-            if (imgURL != null) {
-            	backgroundImage = Toolkit.getDefaultToolkit().getImage(imgURL);
-            } else {
-            	backgroundImage = ImageIO.read(new File(Constants.APP_IMAGE));
-            }
-		    super.paintComponent(g);
-		    // Draw the background image
-		    g.drawImage(backgroundImage, 0, 0, this);
+			URL imgURL = getClass().getClassLoader().getResource(
+					Constants.APP_IMAGE);
+			if (imgURL != null) {
+				backgroundImage = Toolkit.getDefaultToolkit().getImage(imgURL);
+			} else {
+				backgroundImage = ImageIO.read(new File(Constants.APP_IMAGE));
+			}
+			super.paintComponent(g);
+			// Draw the background image
+			g.drawImage(backgroundImage, 0, 0, this);
 		} catch (Exception e) {
 		}
 	}

@@ -17,7 +17,7 @@ public class UnixPreferences {
 	private void setPreferences() {
 		Field[] variablesList = Variables.class.getFields();
 		ArrayList<Field> variablesArray = new ArrayList<Field>();
-		
+
 		// Filter variables that start with "_" (private use)
 		for (Field var : variablesList) {
 			if (!var.getName().startsWith("_")) {
@@ -32,11 +32,12 @@ public class UnixPreferences {
 		}
 	}
 
-	private void setProperty(String key, Object value) {		
+	private void setProperty(String key, Object value) {
 		if (!Variables.isNull(key)) {
 			// Extra checks for variables depending on each other
 			if (key.equals("BUNDLE_MODE_ADVANCED_PATH")) {
-				if (Variables.get("BUNDLE_MODE").equals(Constants.BUNDLE_MODE_ADVANCED)) {
+				if (Variables.get("BUNDLE_MODE").equals(
+						Constants.BUNDLE_MODE_ADVANCED)) {
 					props.setProperty(key, value.toString());
 				}
 			} else {
@@ -44,10 +45,11 @@ public class UnixPreferences {
 			}
 		}
 	}
-	
+
 	public void loadFromFile() {
 		try {
-			InputStream in = new FileInputStream(Constants.APP_PREFERENCES_FILE_PATH);			
+			InputStream in = new FileInputStream(
+					Constants.APP_PREFERENCES_FILE_PATH);
 			props.load(in);
 			in.close();
 			// Load file data into variables
@@ -62,7 +64,7 @@ public class UnixPreferences {
 			// Nothing happens if the file is not loaded
 		}
 	}
-	
+
 	public void saveToFile() {
 		// Set preferences first
 		this.setPreferences();

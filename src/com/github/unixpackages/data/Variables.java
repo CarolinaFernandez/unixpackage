@@ -10,31 +10,31 @@ public class Variables {
 	 */
 	public static Boolean _GPG_KEY_EXISTS = false;
 	public static String MAINTAINER_EMAIL;
-    public static String MAINTAINER_NAME;
-    public static String PACKAGE_NAME;
-    public static String PACKAGE_SHORT_DESCRIPTION;
-    public static String PACKAGE_DESCRIPTION;
-    public static String PACKAGE_VERSION;
-    public static String _PACKAGE_INSTALL_PATH;
-    public static String PACKAGE_LICENSE;
-    public static String PACKAGE_CLASS;
-    public static Boolean PACKAGE_SIGN;
-    public static ArrayList<ArrayList<String>> PACKAGE_SOURCE_INSTALL_PAIRS;
-    public static String _PACKAGE_SOURCE_PATH;
-    // Can be "DEB" or "RPM"
-    public static String PACKAGE_TYPE;
-    public static String _DEB_PACKAGE;
-    public static String _RPM_PACKAGE;
-    // Can be "Simple", "Manual" or "Advanced"
-    public static String BUNDLE_MODE;
-    public static String _BUNDLE_MODE_SIMPLE;
-    public static String _BUNDLE_MODE_MANUAL;
-    public static String _BUNDLE_MODE_ADVANCED;
-    public static String BUNDLE_MODE_ADVANCED_PATH;
+	public static String MAINTAINER_NAME;
+	public static String PACKAGE_NAME;
+	public static String PACKAGE_SHORT_DESCRIPTION;
+	public static String PACKAGE_DESCRIPTION;
+	public static String PACKAGE_VERSION;
+	public static String _PACKAGE_INSTALL_PATH;
+	public static String PACKAGE_LICENSE;
+	public static String PACKAGE_CLASS;
+	public static Boolean PACKAGE_SIGN;
+	public static ArrayList<ArrayList<String>> PACKAGE_SOURCE_INSTALL_PAIRS;
+	public static String _PACKAGE_SOURCE_PATH;
+	// Can be "DEB" or "RPM"
+	public static String PACKAGE_TYPE;
+	public static String _DEB_PACKAGE;
+	public static String _RPM_PACKAGE;
+	// Can be "Simple", "Manual" or "Advanced"
+	public static String BUNDLE_MODE;
+	public static String _BUNDLE_MODE_SIMPLE;
+	public static String _BUNDLE_MODE_MANUAL;
+	public static String _BUNDLE_MODE_ADVANCED;
+	public static String BUNDLE_MODE_ADVANCED_PATH;
 
-    public static Object get(String key) {
-    	Object value = null;
-    	try {
+	public static Object get(String key) {
+		Object value = null;
+		try {
 			try {
 				value = Variables.class.getField(key).get(key);
 			} catch (IllegalArgumentException e) {
@@ -47,28 +47,30 @@ public class Variables {
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 		}
-    	return value;
-    }
+		return value;
+	}
 
-    public static boolean isNull(String key) {
-    	return (Variables.get(key) == null);
-    }
+	public static boolean isNull(String key) {
+		return (Variables.get(key) == null);
+	}
 
-    public static void set(String key, String value) {
+	public static void set(String key, String value) {
 		Object e;
 		try {
 			e = Variables.get(key);
-			String variableType = Variables.class.getField(key).getType().getCanonicalName();
+			String variableType = Variables.class.getField(key).getType()
+					.getCanonicalName();
 			if (ArrayList.class.getCanonicalName().equals(variableType)) {
 				ArrayList<ArrayList<String>> valueModified = new ArrayList<ArrayList<String>>();
 				// Remove enclosing brackets first
-				value = value.substring(1, value.length()-1);
+				value = value.substring(1, value.length() - 1);
 				ArrayList<String> pairValue = new ArrayList<String>();
 				// Split pairs
 				if (value.indexOf("],") >= 0) {
 					for (String splittedValue : value.split("],")) {
 						// Then clean and add to array
-						splittedValue = splittedValue.replace("[","").replace("]","");
+						splittedValue = splittedValue.replace("[", "").replace(
+								"]", "");
 						String[] splittedValuePair = splittedValue.split(",");
 						pairValue = new ArrayList<String>();
 						pairValue.add(splittedValuePair[0].trim());
@@ -76,8 +78,8 @@ public class Variables {
 						valueModified.add(pairValue);
 					}
 				} else {
-					value = value.substring(1, value.length()-1);
-					value = value.replace("[","").replace("]","");
+					value = value.substring(1, value.length() - 1);
+					value = value.replace("[", "").replace("]", "");
 					String[] splittedValuePair = value.split(",");
 					pairValue = new ArrayList<String>();
 					pairValue.add(splittedValuePair[0].trim());
@@ -100,5 +102,5 @@ public class Variables {
 		} catch (NoSuchFieldException e1) {
 			e1.printStackTrace();
 		}
-    }
+	}
 }

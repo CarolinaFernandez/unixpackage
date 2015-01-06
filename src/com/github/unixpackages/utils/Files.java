@@ -27,7 +27,7 @@ public class Files {
 	public static String choosePath() {
 		return choosePath(Variables.BUNDLE_MODE_ADVANCED_PATH);
 	}
-	
+
 	public static String choosePath(String path) {
 		String chosenPath = "";
 		JFileChooser pathChooser;
@@ -46,7 +46,7 @@ public class Files {
 		}
 		return chosenPath;
 	}
-	
+
 	public boolean copyFile(final File toCopy, final File destFile) {
 		try {
 			return copyStream(new FileInputStream(toCopy),
@@ -99,27 +99,27 @@ public class Files {
 			}
 		}
 	}
-	
+
 	public boolean copyFolderIntoTempFolder(String source, String destination) {
 
 		boolean result = false;
-		
+
 		Locations loc = new Locations();
 		String validatedSource = loc.getAbsolutePath(source);
 		File sourceDir = new File(validatedSource);
 
 		File destDir = new File(destination);
-//		if (destDir.exists()) {
-//			return true;
-//		} else {
-			try {
-				// Create first all intermediate directories as needed
-				destDir.mkdirs();
-				result = true;
-			} catch (SecurityException se) {
-				result = false;
-			}
-//		}
+		// if (destDir.exists()) {
+		// return true;
+		// } else {
+		try {
+			// Create first all intermediate directories as needed
+			destDir.mkdirs();
+			result = true;
+		} catch (SecurityException se) {
+			result = false;
+		}
+		// }
 
 		try {
 			copyResourcesRecursively(new URL(sourceDir.toString()), destDir);
@@ -131,28 +131,30 @@ public class Files {
 		}
 		return result;
 	}
-	
+
 	public boolean copyPackageSourcesIntoTempFolder() {
 		Locations loc = new Locations();
-		String validatedSource = loc.getAbsolutePath(Constants.ROOT_PACKAGE_FILES_PATH);
+		String validatedSource = loc
+				.getAbsolutePath(Constants.ROOT_PACKAGE_FILES_PATH);
 		String validatedDestination = Constants.ROOT_TMP_PACKAGE_FILES_PATH;
 		if (validatedSource.startsWith("jar:")) {
 			validatedDestination = Constants.TMP_PACKAGE_FILES_PATH;
 		}
-		
-		return copyFolderIntoTempFolder(Constants.ROOT_PACKAGE_FILES_PATH, 
+
+		return copyFolderIntoTempFolder(Constants.ROOT_PACKAGE_FILES_PATH,
 				validatedDestination);
 	}
-	
+
 	public boolean copyScriptSourcesIntoTempFolder() {
 		Locations loc = new Locations();
-		String validatedSource = loc.getAbsolutePath(Constants.ROOT_SCRIPT_FILES_PATH);
+		String validatedSource = loc
+				.getAbsolutePath(Constants.ROOT_SCRIPT_FILES_PATH);
 		String validatedDestination = Constants.ROOT_TMP_PACKAGE_FILES_PATH;
 		if (validatedSource.startsWith("jar:")) {
 			validatedDestination = Constants.TMP_SCRIPT_FILES_PATH;
 		}
-		
-		return copyFolderIntoTempFolder(Constants.ROOT_SCRIPT_FILES_PATH, 
+
+		return copyFolderIntoTempFolder(Constants.ROOT_SCRIPT_FILES_PATH,
 				validatedDestination);
 	}
 
@@ -165,7 +167,7 @@ public class Files {
 					(JarURLConnection) urlConnection);
 		} else if (urlConnection instanceof FileURLConnection) {
 			copyFilesRecursively(new File(originUrl.getPath()), destination);
-		} else{
+		} else {
 			throw new Exception("URLConnection["
 					+ urlConnection.getClass().getSimpleName()
 					+ "] is not a recognized/implemented connection type.");

@@ -40,7 +40,8 @@ public class ReviewPackageInfo extends CommonStep {
 		numRows++;
 
 		// Path of source files only present in advanced mode
-		if (!Variables.isNull("BUNDLE_MODE") && Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+		if (!Variables.isNull("BUNDLE_MODE")
+				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
 			l = new JLabel("Path of source files: ", JLabel.TRAILING);
 			this.add(l);
 			l = new JLabel(Variables.BUNDLE_MODE_ADVANCED_PATH);
@@ -48,7 +49,7 @@ public class ReviewPackageInfo extends CommonStep {
 			this.add(l);
 			numRows++;
 		}
-		
+
 		l = new JLabel("Sign with GPG: ", JLabel.TRAILING);
 		this.add(l);
 		String signWithGPG;
@@ -62,7 +63,8 @@ public class ReviewPackageInfo extends CommonStep {
 		this.add(l);
 		numRows++;
 
-		if (!(Variables.isNull("BUNDLE_MODE") || Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED))) {
+		if (!(Variables.isNull("BUNDLE_MODE") || Variables.BUNDLE_MODE
+				.equals(Constants.BUNDLE_MODE_ADVANCED))) {
 			// Author info
 			l = new JLabel("Maintainer name: ", JLabel.TRAILING);
 			this.add(l);
@@ -113,7 +115,7 @@ public class ReviewPackageInfo extends CommonStep {
 			this.add(l);
 			numRows++;
 		}
-		
-		this.setLayout(new GridLayout(numRows,2));
+
+		this.setLayout(new GridLayout(numRows, 2));
 	}
 }

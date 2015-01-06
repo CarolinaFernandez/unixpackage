@@ -14,7 +14,7 @@ public class TablePanel extends DefaultTableModel {
 	private DefaultTableModel dm;
 	private JTable table = new JTable();
 
-	//	   private JButton changeTableBtn = new JButton();
+	// private JButton changeTableBtn = new JButton();
 	private JScrollPane scrollpane = new JScrollPane(table);
 
 	/*
@@ -23,6 +23,7 @@ public class TablePanel extends DefaultTableModel {
 	public TablePanel(ArrayList<ArrayList<String>> data, String[] columnNames) {
 		this("", convertDoubleArrayListToDoubleVector(data), columnNames);
 	}
+
 	public TablePanel(Object[][] data, Object[] columnNames) {
 		this("", data, columnNames);
 	}
@@ -32,11 +33,11 @@ public class TablePanel extends DefaultTableModel {
 	 */
 	public TablePanel(String title, Object[][] data, Object[] columnNames) {
 		dm = new DefaultTableModel(data, columnNames) {
-		    @Override
-		    public boolean isCellEditable(int row, int column) {
-		       // Disable edition of cells
-		       return false;
-		    }
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// Disable edition of cells
+				return false;
+			}
 		};
 		table.setModel(dm);
 		table.setAutoscrolls(true);
@@ -52,19 +53,22 @@ public class TablePanel extends DefaultTableModel {
 		mainPanel.setPreferredSize(Constants.FILECHOOSER_DIMENSION);
 	}
 
-	private static Object[][] convertDoubleArrayListToDoubleVector(ArrayList<ArrayList<String>> data) {		
+	private static Object[][] convertDoubleArrayListToDoubleVector(
+			ArrayList<ArrayList<String>> data) {
 		int dataLength = data.size();
 		Object[][] dataParsed = new Object[dataLength][];
-		
+
 		for (int i = 0; i < data.size(); i++) {
 			dataParsed[i] = data.get(i).toArray();
 		}
 		return dataParsed;
 	}
-	
+
 	// TODO: Parameterize ArrayList<ArrayList<T>>
-	public void setTableModelDataVector(ArrayList<ArrayList<String>> data, Object[] columnNames) {
-		Object[][] dataParsed = TablePanel.convertDoubleArrayListToDoubleVector(data);
+	public void setTableModelDataVector(ArrayList<ArrayList<String>> data,
+			Object[] columnNames) {
+		Object[][] dataParsed = TablePanel
+				.convertDoubleArrayListToDoubleVector(data);
 		setTableModelDataVector(dataParsed, columnNames);
 	}
 
@@ -75,7 +79,7 @@ public class TablePanel extends DefaultTableModel {
 	public JTable getTable() {
 		return table;
 	}
-	
+
 	@Override
 	public void fireTableDataChanged() {
 		dm.fireTableDataChanged();
