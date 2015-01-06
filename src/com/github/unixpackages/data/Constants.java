@@ -84,11 +84,15 @@ public final class Constants {
     public static final int TEXTFIELD_COLUMNS_MAX = 30;
 	public static final Dimension FILECHOOSER_DIMENSION = new Dimension(CONTENT_DIMENSION.width, (int) (CONTENT_DIMENSION.height - 2*STEPTITLE_DIMENSION.height));
 
-	// Constants for the steps
+	// Values for the bundle modes
 	public static final String BUNDLE_MODE_SIMPLE = "Simple";
 	public static final String BUNDLE_MODE_MANUAL = "Manual";
 	public static final String BUNDLE_MODE_ADVANCED = "Advanced";
-
+	
+	// Values for the bundle types
+	public static final String BUNDLE_TYPE_DEB = "DEB";
+	public static final String BUNDLE_TYPE_RPM = "RPM";
+	
 	// Mappings
 	public static final Map<Integer, String> STEPS_METHODS;
 	public static final Map<Integer, String> STEPS_DESCRIPTIONS;

@@ -23,11 +23,8 @@ public class Shell {
 
             // Read the output from the command
             BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-//			StringBuilder builder = new StringBuilder();
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-//			   builder.append(line);
-//			   builder.append(System.getProperty("line.separator"));
 			   System.out.println(line);
 			}
     

@@ -18,7 +18,7 @@ public class Variables {
     public static String _PACKAGE_INSTALL_PATH;
     public static String PACKAGE_LICENSE;
     public static String PACKAGE_CLASS;
-    public static String PACKAGE_SIGN;
+    public static Boolean PACKAGE_SIGN;
     public static ArrayList<ArrayList<String>> PACKAGE_SOURCE_INSTALL_PAIRS;
     public static String _PACKAGE_SOURCE_PATH;
     // Can be "DEB" or "RPM"
@@ -85,7 +85,7 @@ public class Variables {
 					valueModified.add(pairValue);
 				}
 				Variables.class.getField(key).set(e, valueModified);
-			} else if (Boolean.class.isInstance(variableType)) {
+			} else if (Boolean.class.getCanonicalName().equals(variableType)) {
 				Variables.class.getField(key).set(e, new Boolean(value));
 			} else {
 				// Should be a String here

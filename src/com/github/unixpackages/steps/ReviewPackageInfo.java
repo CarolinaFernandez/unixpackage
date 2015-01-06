@@ -22,7 +22,7 @@ public class ReviewPackageInfo extends CommonStep {
 		l = new JLabel("Type of UNIX package: ", JLabel.TRAILING);
 		this.add(l);
 		String packageTypeOS;
-		if (Variables.PACKAGE_TYPE.equals("DEB")) {
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 			packageTypeOS = "Debian";
 		} else {
 			packageTypeOS = "Red Hat";
@@ -52,7 +52,7 @@ public class ReviewPackageInfo extends CommonStep {
 		l = new JLabel("Sign with GPG: ", JLabel.TRAILING);
 		this.add(l);
 		String signWithGPG;
-		if (Variables.PACKAGE_SIGN.equals("true")) {
+		if (Variables.PACKAGE_SIGN) {
 			signWithGPG = "yes";
 		} else {
 			signWithGPG = "no";

@@ -78,28 +78,52 @@ public class GeneratePackage extends CommonStep {
         HashMap<String, String> argumentList = new HashMap<String, String>();
         
         argumentList.put("-y", null);
-        argumentList.put("-s", Variables.PACKAGE_NAME);
-        argumentList.put("-v", Variables.PACKAGE_VERSION);
-        argumentList.put("-n", Variables.MAINTAINER_NAME);
-        argumentList.put("-e", Variables.MAINTAINER_EMAIL);
-        // Translate to something understandable by the script
-        argumentList.put("-l", Constants.PACKAGE_LICENSES.get(Variables.PACKAGE_LICENSE));
-        // Translate to something understandable by the script
-        argumentList.put("-C", Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
-        argumentList.put("-p", Variables.PACKAGE_NAME);
+        
+        // In simple and manual modes, the majority of the arguments are passed
+        if (Variables.isNull("BUNDLE_MODE") || !Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+        	argumentList.put("-s", Variables.PACKAGE_NAME);
+        	argumentList.put("-v", Variables.PACKAGE_VERSION);
+        	argumentList.put("-n", Variables.MAINTAINER_NAME);
+        	argumentList.put("-e", Variables.MAINTAINER_EMAIL);
+        	// Translate to something understandable by the script
+        	argumentList.put("-l", Constants.PACKAGE_LICENSES.get(Variables.PACKAGE_LICENSE));
+        	// Translate to something understandable by the script
+        	argumentList.put("-C", Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
+        	argumentList.put("-p", Variables.PACKAGE_NAME);
+        }
+        
         // In advanced mode, a path is passed to copy the user's scripts from
         if (!Variables.isNull("BUNDLE_MODE") && Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
         	argumentList.put("-d", Variables.BUNDLE_MODE_ADVANCED_PATH);
         }
         
+        // Notify if package is to be signed
+        if (Variables.PACKAGE_SIGN) {
+        	argumentList.put("-S", null);
+        	if (!argumentList.containsKey("-n")) {
+            	argumentList.put("-n", Variables.MAINTAINER_NAME);
+        	}
+        	if (!argumentList.containsKey("-e")) {
+            	argumentList.put("-e", Variables.MAINTAINER_EMAIL);
+        	}
+        }
+        
         boolean checkArgumentsExist = true;
         for (Entry<String, String> entry : argumentList.entrySet()) {
+			System.out.println("key:value => " + entry.getKey() + ":" + entry.getValue());
         	commandListValidated.add(entry.getKey());
-        	if (entry.getKey() != "-y") {
-            	commandListValidated.add(entry.getValue());
-        		if (entry.getValue() == null) {
-        			checkArgumentsExist = false;
-        			break;
+        	// Check arguments that are not "-y" or "-S"
+        	if (entry.getKey().matches("-(\\w?[^yS]){1}")) {
+        		if (entry.getValue() != null) {
+        			System.out.println("key:value not null => " + entry.getKey() + ":" + entry.getValue());
+        			commandListValidated.add(entry.getValue());
+//        			if (entry.getValue() == null) {
+//        				checkArgumentsExist = false;
+//        				break;
+//        			}
+        		} else {
+        			// If value is null, entry shall not be added
+        			commandListValidated.remove(entry.getKey());
         		}
         	}
         }
@@ -107,6 +131,10 @@ public class GeneratePackage extends CommonStep {
         // If all arguments required exist, return list with parameters
         if (checkArgumentsExist) {
         	commandList = commandListValidated;
+        }
+        
+        for (String c : commandList) {
+        	System.out.println("> command: " + c);
         }
         
         return commandList;

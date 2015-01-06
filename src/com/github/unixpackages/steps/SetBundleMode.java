@@ -45,14 +45,14 @@ public class SetBundleMode extends CommonStep {
         JRadioButton choiceDEB = new JRadioButton();
         choiceDEB.setText("Create DEB package");
         choiceDEB.setToolTipText("Generate a package for Debian-based distros");
-        choiceDEB.setName("DEB_PACKAGE");
+        choiceDEB.setName("_DEB_PACKAGE");
 //        this.add(choiceDEB);
         JRadioButton choiceRPM = new JRadioButton();
         // Fill the width gap
         choiceRPM.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
         choiceRPM.setText("Create RPM package");
         choiceRPM.setToolTipText("Generate a Red hat-based distros");
-        choiceRPM.setName("RPM_PACKAGE");
+        choiceRPM.setName("_RPM_PACKAGE");
         // XXX Temporarily not available
         choiceRPM.setFocusable(false);
         choiceRPM.setEnabled(false);
@@ -64,7 +64,7 @@ public class SetBundleMode extends CommonStep {
         
         // Add choices to vertical box
         Box choicePackagesBox = Box.createVerticalBox();
-        choicePackagesBox.setName("BUNDLE_MODE");
+        choicePackagesBox.setName("PACKAGE_TYPE");
         choicePackagesBox.add(choiceDEB);
         choicePackagesBox.add(choiceRPM);
         this.add(choicePackagesBox);
@@ -72,9 +72,10 @@ public class SetBundleMode extends CommonStep {
         // Set name of variable where the field should be saved in
         if (Variables.isNull("PACKAGE_TYPE")) {
         	// DEB package by default
-        	choicePackages.setSelected(choiceDEB.getModel(), true);	
+        	choicePackages.setSelected(choiceDEB.getModel(), true);
+        	Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_DEB);
         } else {
-        	if (Variables.PACKAGE_TYPE.equals("RPM")) {
+        	if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
         		choicePackages.setSelected(choiceRPM.getModel(), true);
         	} else {
         		choicePackages.setSelected(choiceDEB.getModel(), true);
@@ -93,7 +94,9 @@ public class SetBundleMode extends CommonStep {
         // Set name of variable where the field should be saved in
         signGPG.setName("PACKAGE_SIGN");
         // TODO Fill in CommonStep
-    	signGPG.setSelected(Boolean.valueOf((String) Variables.get(signGPG.getName())));
+        if (!Variables.isNull(signGPG.getName())) {
+        	signGPG.setSelected((Boolean) Variables.get(signGPG.getName()));
+        }
         this.add(signGPGLabel);
         this.add(signGPG);
         

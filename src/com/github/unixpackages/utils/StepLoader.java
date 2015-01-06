@@ -52,11 +52,17 @@ public class StepLoader {
 		 */
 		if (StepLoader.currentStep < Constants.STEPS_METHODS.size()) {
 			switch (StepLoader.currentStep) {
-				case 2: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Advanced")) {
+				// Advanced mode may skip to step #7 if there is no signing involved
+				case 2: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals(Constants.BUNDLE_MODE_ADVANCED) && (!(Boolean) Variables.get("PACKAGE_SIGN"))) {
 							return getStep((Constants.STEPS_METHODS.get(7)));
 						}
 						break;
-				case 5: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Simple")) {
+				// Advanced mode & signing must go through step #3, then skip to #7
+				case 3: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals(Constants.BUNDLE_MODE_ADVANCED) && ((Boolean) Variables.get("PACKAGE_SIGN"))) {
+						return getStep((Constants.STEPS_METHODS.get(7)));
+						}
+					break;
+				case 5: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals(Constants.BUNDLE_MODE_SIMPLE)) {
 							return getStep((Constants.STEPS_METHODS.get(7)));
 						}
 						break;
@@ -74,10 +80,15 @@ public class StepLoader {
 		 */
 		if (StepLoader.currentStep > 1) {
 			switch (StepLoader.currentStep) {
-				case 7: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Simple")) {
-							return getStep((Constants.STEPS_METHODS.get(5)));
-						} else if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals("Advanced")) {
-							return getStep((Constants.STEPS_METHODS.get(2)));
+				case 7: if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals(Constants.BUNDLE_MODE_SIMPLE)) {
+				 			return getStep((Constants.STEPS_METHODS.get(5)));
+						} else if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals(Constants.BUNDLE_MODE_ADVANCED)) {
+					 		if (!(Boolean) Variables.get("PACKAGE_SIGN")) {
+					 			return getStep((Constants.STEPS_METHODS.get(2)));
+							// Advanced mode & signing must go back to step #3
+					 		} else {
+					 			return getStep((Constants.STEPS_METHODS.get(3)));
+					 		}
 						}
 						break;
 			}
