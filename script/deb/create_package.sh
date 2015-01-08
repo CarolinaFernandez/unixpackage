@@ -17,25 +17,6 @@
 #
 
 default_source_path=`ls -l --time-style="long-iso" | egrep '^d' | awk '{print $8}' | grep -v "create_deb*" | head -2 | tail -1`
-default_name="Carolina Fernandez"
-default_email="carolina.fernandez@i2cat.net"
-default_license="lgpl3"
-default_package_name="test-deb"
-package_version="0.1"
-default_package_class="i"
-default_create_gpg_key=true
-default_sign_package=true
-
-#source_path=$1
-##source_path={$1:=$default_source_path}
-#name=$2
-#email=$3
-#license=$4
-#package_name=$5
-#package_version=$6
-#package_class=$7
-#create_gpg_key=$8
-#sign_package=$9
 
 source_path=""
 name=""
@@ -44,14 +25,19 @@ license=""
 package_name=""
 package_version=""
 package_class=""
-create_gpg_key=""
-sign_package=""
+debian_files_location=""
+create_gpg_key=false
+sign_package=false
 
 # Default: interactive. May be disabled via parameters
 interactive=true
-required_arguments=('$package_name' '$package_version' '$package_class' '$name' '$email' '$license' '$source_path')
+# Required parameters for simple/manual executions
+# In advanced mode, pre-configured debian files are retrieved from another location
+required_arguments_dh=('$package_name' '$package_version' '$package_class' '$name' '$email' '$license' '$source_path')
+required_arguments_sign=('$name' '$email')
+
 native_package=""
-debian_files_location=""
+gpg_key_exists=""
 
 ########################################
 
@@ -62,8 +48,12 @@ base_path=${PWD}
 root_script=$(cd $(dirname $0); pwd -P; cd $base_path)
 root_package=$(readlink -e $root_script/../../packages/deb)
 path_to_script=$root_script
-# Output location does not exist (yet)
-output_path=$(readlink -m $root_script/../../../unix_package_output__$(date +"%Y-%m-%d_%H-%M-%S"))
+
+current_date=$(date +"%Y-%m-%d_%H-%M-%S")
+# Output and package locations (not yet existing)
+path_to_package=$root_script/${source_path}_${package_version}
+output_path=$(readlink -m $root_script/../../../unix_package_output__${current_date})
+
 # Helps installing dependencies
 dpkg_dependencies=('dh-make' 'lintian')
 
@@ -79,9 +69,15 @@ function breakline()
 
 function install_dependencies()
 {
+  # Install this package prior to sign any package
+  if [[ $sign_package == true ]]; then
+    dpkg_dependencies=('${dpkg_dependencies[@]}' 'rng-tools')
+    #apt-get install -y rng-tools
+  fi
   for dpkg_dependency in ${dpkg_dependencies[@]}; do
     dependency_exists=$(dpkg -l | grep "$dpkg_dependency")
-    if [[ -z $dependency_exists ]]; then
+    # If package does not exist OR it is not properly installed, do install it
+    if [[ -z $dependency_exists || $dependency_exists != *ii* ]]; then
       apt-get install -y $dpkg_dependency
     fi
   done
@@ -90,7 +86,8 @@ function install_dependencies()
 function parse_arguments()
 {
   path_to_script=$(dirname $0)
-  while [[ $# > 1 ]]; do
+  # Not every argument contains data (sometimes, one is enough to parse)
+  while [[ $# > 0 ]]; do
     key="$1"
     shift
 
@@ -102,8 +99,7 @@ function parse_arguments()
         source_path="$1"
         shift
         ;;
-    -d|--debian-files)
-        echo " debian_files_location :: $debian_files_location"
+    -d|--debianfiles)
         # Only one path allowed
         debian_files_location="$1"
         shift
@@ -151,11 +147,23 @@ function parse_arguments()
 # Validate input to script
 function validate_parameters()
 {
-  for required_argument in ${required_arguments[@]}; do
-    if [[ -z $(eval echo $required_argument) ]]; then
-      error "E: Argument '$required_argument' is required"
-    fi
-  done
+  # No file location for debian means it is simple/manual mode
+  # and thus no further information is needed
+  if [[ -z $debian_files_location ]]; then
+    for required_argument_dh in ${required_arguments_dh[@]}; do
+      if [[ -z $(eval echo $required_argument_dh) ]]; then
+        error "E: Argument '$required_argument_dh' is required for dh-make"
+      fi
+    done
+  fi
+  # When signing the package, though, name and e-mail are required
+  if [[ $sign_package == true ]]; then
+    for required_argument_sign in ${required_arguments_sign[@]}; do
+      if [[ -z $(eval echo $required_argument_sign) ]]; then
+        error "E: Argument '$required_argument_sign' is required for signing the package"
+      fi
+    done
+  fi
 }
 
 # Exit on failure
@@ -191,14 +199,14 @@ function do_clean_debianized()
   if [[ -d $root_script/create_deb ]]; then
     rm -r $root_script/create_deb;
   fi
-  if [[ -d $root_script/${source_path}_${package_version}/debian ]]; then
-    rm -r $root_script/${source_path}_${package_version}/debian;
+  if [[ -d $path_to_package/debian ]]; then
+    rm -r $path_to_package/debian;
   fi
-  if [[ -f $root_script/${source_path}_${package_version}.orig.tar.gz ]]; then
-    rm $root_script/${source_path}_${package_version}.orig.tar.gz;
+  if [[ -f $path_to_package.orig.tar.gz ]]; then
+    rm $path_to_package.orig.tar.gz;
   fi
-  if [[ -f $root_script/${source_path}_${package_version}*.dsc ]]; then
-    rm $root_script/${source_path}_${package_version}*.dsc;
+  if [[ -f $path_to_package*.dsc ]]; then
+    rm $path_to_package*.dsc;
   fi
   if [[ -f build-stamp ]]; then
     rm build-stamp;
@@ -207,8 +215,12 @@ function do_clean_debianized()
 
 function create_sources_folder()
 {
-  if [[ ! -d $root_script/${source_path}_${package_version} ]]; then
-    mkdir -p $root_script/${source_path}_${package_version}
+  # If a source for debian files is passed, take into account for the directory
+#  if [[ ! -z $debian_files_location ]]; then
+#    path_to_package=$root_script/unix_package__${current_date}
+#  fi
+  if [[ ! -d $path_to_package ]]; then
+    mkdir -p $path_to_package
   fi
 }
 
@@ -218,6 +230,14 @@ function copy_samples()
     mkdir -p $root_script/create_deb/debian
   fi
   cp -Rp $root_package/* $root_script/create_deb/debian/ || error "Could not copy sample files into $root_script/create_deb/debian/";
+}
+
+function do_copy_samples()
+{
+  if [[ -d $root_script/create_deb/debian ]]; then
+    rm -r $root_script/create_deb/debian || error "Could not remove automatically generated files under $root_script/create_deb/debian/";
+  fi;
+  copy_samples;
 }
 
 function copy_edit_samples()
@@ -245,32 +265,23 @@ function copy_edit_samples()
       do_copy_user_samples
     else
       do_copy_samples
+      # Symlink so as to dh_install finds the source at fallback
+      ln -s  $root_script/$source_path $root_script/create_deb/debian/$source_path || error "Could not link the $source_path code from debian/"
     fi
   fi
-  # Symlink so as to dh_install finds the source at fallback
-  ln -s  $root_script/$source_path $root_script/create_deb/debian/$source_path || error "Could not link the $source_path code from debian/"
-}
-
-function do_copy_samples()
-{
-  if [[ -d $root_script/create_deb/debian ]]; then
-    rm -r $root_script/create_deb/debian || error "Could not remove automatically generated files under $root_script/create_deb/debian/";
-  fi;
-  copy_samples;
 }
 
 function do_copy_user_samples()
 {
   if [[ -d $debian_files_location ]]; then
     # Remove pre-generated files under the script folder
-    if [[ -d $root_script/${source_path}_${package_version}/debian ]]; then
-      rm -r $root_script/${source_path}_${package_version}/debian/*
+    if [[ -d $path_to_package/debian ]]; then
+      rm -r $path_to_package/debian/*
     else
-      mkdir -p $root_script/${source_path}_${package_version}/debian
+      mkdir -p $path_to_package/debian
     fi
     # And use the user samples for it
-    echo "Copying $debian_files_location/* -> $root_script/${source_path}_${package_version}/debian/"
-    cp -Rp $debian_files_location/* $root_script/${source_path}_${package_version}/debian/ || error "Could not copy user's sample files into $root_script/${source_path}_${package_version}/debian/";
+    cp -Rp $debian_files_location/* $path_to_package/debian/ || error "Could not copy user's sample files into $path_to_package/debian/"
   fi
 }
 
@@ -279,18 +290,34 @@ function move_to_output()
   if [[ ! -d $output_path ]]; then
     mkdir -p $output_path
   fi
-  mv $root_script/${source_path}_${package_version}* $output_path/
-  echo "> The output is located under $output_path"
+  mv $root_script/*.deb $output_path/
+  mv $root_script/*.dsc $output_path/
+  mv $root_script/*.changes $output_path/
+  echo ">> The output is located under $output_path/"
 }
 
+function perform_dh_make()
+{
+  echo "> Generating ${source_path}_${package_version}.tar.gz..."
+  tar --ignore-failed-read -pczf ${source_path}_${package_version}.tar.gz ${source_path}_${package_version} --exclude='create_deb' || echo "Could not create ${source_path}_${package_version}.tar.gz"
+
+  # Export DEBFULLNAME environment variable to set the maintainer name
+  export DEBFULLNAME=$name
+  # Use "yes" to run non-interactively
+  cd ${source_path}_${package_version}
+  # Use native (-n) to avoid having a revision appended to the version
+  if [[ $package_version != *"-"* ]]; then
+    native_package="-n"
+  fi
+  dh_make_params="--yes $native_package -$package_class -c $license -e $email -p ${source_path}_${package_version} -f $path_to_package.tar.gz"
+
+  /usr/bin/dh_make --yes $dh_make_params || error "Could not dh_make in $source_path with ${source_path}_${package_version}.tar.gz"
+  rm $path_to_package.tar.gz || error "Could not delete ${source_path}_${package_version}.tar.gz"
+}
 
 breakline 1
 echo "  ********** DEBIAN GENERATOR: START **********"
 cd $path_to_script
-
-breakline 1
-echo "> Installing dependencies..."
-install_dependencies
 
 breakline 1
 echo "> Fetching parameters..."
@@ -301,52 +328,44 @@ echo "> Validating parameters..."
 validate_parameters
 
 breakline 1
+echo "> Installing dependencies..."
+install_dependencies
+
+breakline 1
 echo "> Creating sources..."
 create_sources_folder
 
 breakline 1
-echo  "*NOTE* If you want to SIGN this package please see that the name and e-mail you use are already part of one of your GPG signatures. If this were not the case you will have the chance to generate it later."
+if [[ $interactive == true ]]; then 
+  echo "*NOTE* If you want to SIGN this package please see that the name and e-mail you use are already part of one of your GPG signatures. If this were not the case you will have the chance to generate it later."
+fi
 
 create_dir=$PWD
 
 breakline 2
-echo "> Generating ${source_path}_${package_version}.tar.gz..."
-tar --ignore-failed-read -pczf ${source_path}_${package_version}.tar.gz ${source_path}_${package_version} --exclude='create_deb' || echo "Could not create ${source_path}_${package_version}.tar.gz"
-
-# Export DEBFULLNAME environment variable to set the maintainer name
-export DEBFULLNAME=$name
-# Use "yes" to run non-interactively
-cd ${source_path}_${package_version}
-# Use native (-n) to avoid having a revision appended to the version
-if [[ $package_version != *"-"* ]]; then
-  native_package="-n"
+# Generating .tar.gz file (for typical installations)
+if [[ -z $debian_files_location ]]; then
+  perform_dh_make
 fi
-dh_make_params="--yes $native_package -$package_class -c $license -e $email -p ${source_path}_${package_version} -f $root_script/${source_path}_${package_version}.tar.gz"
-
-/usr/bin/dh_make --yes $dh_make_params || error "Could not dh_make in $source_path with ${source_path}_${package_version}.tar.gz"
-rm $root_script/${source_path}_${package_version}.tar.gz || error "Could not delete ${source_path}_${package_version}.tar.gz"
 
 breakline 2
 echo "> Cleaning & copying sample files under debian/ ..."
-copy_samples
-cd  $root_script/create_deb/debian || error "Could not remove non-relevant files under $root_script/create_deb/debian"
-ls | rm -r `awk '{ if ($i != "changelog" && $i != "control" && $i != "copyright" && $i != "install" && $i != "README.Debian" && $i != "README.source" && $i != "rules") { print $i;} }'` || error "Could not remove non-relevant files under $root_script/create_deb/debian"
-cd $root_script/create_deb || error "Could not remove non-relevant files under $root_script/create_deb/debian/"
+#copy_samples
+#cd  $root_script/create_deb/debian || error "Could not remove non-relevant files under $root_script/create_deb/debian"
+#ls | rm -r `awk '{ if ($i != "changelog" && $i != "control" && $i != "copyright" && $i != "install" && $i != "README.Debian" && $i != "README.source" && $i != "rules") { print $i;} }'` || error "Could not remove non-relevant files under $root_script/create_deb/debian"
+#cd $root_script/create_deb || error "Could not remove non-relevant files under $root_script/create_deb/debian/"
 copy_edit_samples
 
 breakline 2
 echo "> Checking keys for package signing..."
 if [[ $interactive == true ]]; then
   read -p "> Do you want to sign the package? (y/n) [y]: " sign_package
-  sign_package=${sign_package:-$default_sign_package}
   case $sign_package in
-#    [Nn]* ) break;;
-    [Yy]* ) gpg_key_exists=`/usr/bin/gpg --list-keys | grep "$name" | grep "$email"`
-            if [[ $gpg_key_exists == "" ]]; then
+    [Yy]* ) gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
+            if [[ -z $gpg_key_exists ]]; then
                 breakline 2
-                while [[ $create_gpg_key == "" ]]; do
+                while [[ ! $create_gpg_key ]]; do
                     read -p "> Do you want to create a GPG key to sign the package? (y/n) [y]: " create_gpg_key
-                    create_gpg_key=${create_gpg_key:-$default_create_gpg_key}
                     case $create_gpg_key in
                         [Yy]* ) /usr/bin/gpg --gen-key;
                                 break;;
@@ -362,32 +381,46 @@ if [[ $interactive == true ]]; then
   esac
 else
   if [[ $sign_package == true ]]; then
-    gpg_key_exists=`/usr/bin/gpg --list-keys | grep "$name" | grep "$email"`
-    if [[ $gpg_key_exists == "" ]]; then
+    test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools start
+    gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
+    # Look for key. If it does not exist, create
+    if [[ -z $gpg_key_exists ]]; then
       breakline 2
-      if [[ $create_gpg_key == true ]]; then
-        /usr/bin/gpg --gen-key
-      fi
+      echo ">> Generating key for $name <$email>..."
+      gpg --batch --gen-key <<EOF
+        Key-Type: DSA
+        Key-Length: 2048
+        Subkey-Type: ELG-E
+        Subkey-Length: 2048
+        Name-Real: $name
+        # The following forbids literal string matching. Avoiding!
+        #Name-Comment: used for unixpackage
+        Name-Email: $email
+        #Passphrase: unixpackage
+EOF
+      test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools stop
+      #gpg --list-keys
     fi
   fi
 fi
 
 breakline 2
 # Move to proper location for dpkg-buildpackage
-cd $root_script/${source_path}_${package_version}
+cd $path_to_package
 export DH_COMPAT=5
 if [[ $sign_package == true ]]; then
     echo "> Performing (signed) dpkg-buildpackage..."
-    /usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $root_script/${source_path}_${package_version}"
+    /usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $path_to_package"
 else
     echo "> Performing (unsigned) dpkg-buildpackage..."
-    /usr/bin/dpkg-buildpackage -F -us -uc || error "Could not dpkg-buildpackage (unsigned) on $root_script/${source_path}_${package_version}"
+    /usr/bin/dpkg-buildpackage -F -us -uc || error "Could not dpkg-buildpackage (unsigned) on $path_to_package"
 fi
 
-generated_deb_file_location=$(find $root_script/ -name "*.deb" | head -1)
-generated_deb_desc_location=$(find $root_script/ -name "*.dsc" | head -1)
 breakline 1
-echo "> Review final info for package ${source_path}_${package_version}.deb..."
+generated_deb_file_location=$(find $root_script/ -name "*.deb" | head -1)
+generated_deb_file_name=$(basename $generated_deb_file_location)
+generated_deb_desc_location=$(find $root_script/ -name "*.dsc" | head -1)
+echo "> Review final info for package $generated_deb_file_name..."
 /usr/bin/dpkg --info $generated_deb_file_location || error "Could not show info for debian package"
 
 breakline 1
@@ -395,11 +428,12 @@ echo "> Please check the correctness of the package..."
 /usr/bin/lintian $generated_deb_file_location #|| error "Could not show info about the correctness of the .deb file"
 /usr/bin/lintian $generated_deb_desc_location #|| error "Coult not show info about the correctness of the .dsc file"
 
-clean_debianized
-
 breakline 1
 echo "> Ending package generation..."
 move_to_output
+
+# Cleaning temporary files
+clean_debianized
 
 breakline 1
 echo "  ********** DEBIAN GENERATOR: END **********"
