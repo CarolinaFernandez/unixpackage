@@ -1,52 +1,53 @@
-# Set the file name of your jar package:
-JAR_PKG = CreateUNIXPackage.jar
+# Related paths
+SRC_DIR = src
+LIB_DIR = lib
+BIN_DIR = bin
+BUILD_DIR = build
+
+# Filename of the JAR package
+JAR_PKG = $(BIN_DIR)/unixpackage.jar
 
 # Set your entry point(s) of your java app:
-ENTRY_POINT = src/com/github/unixpackages/MainApp.java
+ENTRY_POINT = $(SRC_DIR)/com/github/unixpackages/MainApp.java
 ENTRY_POINT_JAVA = com.github.unixpackages.MainApp
-ENTRY_POINT_CLASS = bin/com/github/unixpackages/MainApp.class
+ENTRY_POINT_CLASS = $(BUILD_DIR)/com/github/unixpackages/MainApp.class
 
-SRC_DIR = src
-BIN_DIR = bin
-
+# Java, flags and classpath
+JAVA = java
 JAVAC = javac
-# Use UTF-8 (and ignore all warnings)
+JAR = jar
 JFLAGS = -encoding UTF-8 -Xlint:none
+CLASSPATH = $(SRC_DIR):$(BUILD_DIR):media:packages:script:$(LIB_DIR)/commons-io-1.2.jar
 
-CLASSPATH = src:bin:media:packages:script:lib/commons-io-1.2.jar
-
-build: 		# Create BIN folder if it does not exist
-		test -d $(BIN_DIR) || mkdir $(BIN_DIR)
-		$(JAVAC) -cp $(CLASSPATH) -d $(BIN_DIR) -sourcepath src $(ENTRY_POINT) $(JFLAGS)
-		#find . -name "*.java" > sources.txt
-		#$(JAVAC) -cp $(CLASSPATH) -d $(BIN_DIR) -sourcepath @sources.txt $(ENTRY_POINT) $(JFLAGS)
-		#rm sources.txt
-		cp -Rp media bin/
-		cp -Rp script bin/
-		cp -Rp packages bin/
-		cp -p README.md bin/
-		cp -p LICENSE.txt bin/
-
-.PHONY:		clean run jar
-
-clean:		
-		test -d $(BIN_DIR) && rm -r $(BIN_DIR) || echo "" > /dev/null
-		test -d $(JAR_PKG) && rm $(JAR_PKG) || echo "" > /dev/null
-
-all:		clean build jar run
+build: 		
+		mkdir -p $(BUILD_DIR)
+		find $(SRC_DIR) -iname *.java > $(BUILD_DIR)/sources.txt
+		$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) @$(BUILD_DIR)/sources.txt -encoding UTF-8
+		#$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) -sourcepath $(SRC_DIR) $(ENTRY_POINT) $(JFLAGS)
+		cp -Rp media $(BUILD_DIR)
+		cp -Rp script $(BUILD_DIR)
+		cp -Rp packages $(BUILD_DIR)
+		cp -p README.md $(BUILD_DIR)
+		cp -p LICENSE.txt $(BUILD_DIR)
+		test -d $(BUILD_DIR) || echo "Error: $(BUILD_DIR) directory is not found"
 
 run-class: 	
-		java -cp $(CLASSPATH) $(ENTRY_POINT_JAVA)
+		$(JAVA) -cp $(CLASSPATH) $(ENTRY_POINT_JAVA)
 
 jar:		
-		cp -p lib/commons-io-1.2.jar $(BIN_DIR)/
-		# Extract contents of dependencies under BIN_DIR
-		#jar xf $(BIN_DIR)/commons-io-1.2.jar org -C $(BIN_DIR)/ .
-		#mv org $(BIN_DIR)/
-		#jar cvfe $(JAR_PKG) $(ENTRY_POINT_CLASS) src -C $(BIN_DIR) .
-		jar cvfm $(JAR_PKG) MANIFEST.MF -C $(BIN_DIR) .
-		#jar cvfe $(JAR_PKG) $(ENTRY_POINT) -C $(CLASSPATH) .
+		cp -p $(LIB_DIR)/commons-io-1.2.jar $(BUILD_DIR)/
+		# Extract contents of dependencies under BUILD_DIR
+		$(JAR) xf $(BUILD_DIR)/commons-io-1.2.jar org -C $(BUILD_DIR)/ .
+		mv org $(BUILD_DIR)/
+		$(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C $(BUILD_DIR) .
+		#$(JAR) cvfe $(JAR_PKG) $(ENTRY_POINT_CLASS) src -C $(BUILD_DIR) .
 
 run-jar: 	
-		java -jar $(JAR_PKG)
+		$(JAVA) -$(JAR) $(JAR_PKG)
+
+clean:		
+		rm -rf $(BUILD_DIR)
+		rm -f $(JAR_PKG)
+
+all:		clean build jar run-jar
 
