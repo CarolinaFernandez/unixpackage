@@ -25,7 +25,7 @@ build: 		# Create BIN folder if it does not exist
 		cp -Rp script bin/
 		cp -Rp packages bin/
 		cp -p README.md bin/
-		cp -p LICENSE bin/
+		cp -p LICENSE.txt bin/
 
 .PHONY:		clean run jar
 
