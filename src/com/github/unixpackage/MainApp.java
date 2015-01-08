@@ -1,7 +1,7 @@
-package com.github.unixpackages;
+package com.github.unixpackage;
 
-import com.github.unixpackages.components.CommonFrame;
-import com.github.unixpackages.utils.StepLoader;
+import com.github.unixpackage.components.CommonFrame;
+import com.github.unixpackage.utils.StepLoader;
 
 import javax.swing.JPanel;
 

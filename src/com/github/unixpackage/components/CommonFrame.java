@@ -1,4 +1,4 @@
-package com.github.unixpackages.components;
+package com.github.unixpackage.components;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -8,8 +8,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.github.unixpackages.data.Constants;
-import com.github.unixpackages.utils.Listeners;
+import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.utils.Listeners;
 
 @SuppressWarnings("serial")
 public class CommonFrame extends JFrame {

@@ -1,4 +1,4 @@
-package com.github.unixpackages.utils;
+package com.github.unixpackage.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,8 +17,8 @@ import java.util.jar.JarFile;
 
 import javax.swing.JFileChooser;
 
-import com.github.unixpackages.data.Constants;
-import com.github.unixpackages.data.Variables;
+import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.Variables;
 
 import sun.net.www.protocol.file.FileURLConnection;
 

@@ -1,4 +1,4 @@
-package com.github.unixpackages.components;
+package com.github.unixpackage.components;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-import com.github.unixpackages.data.Constants;
+import com.github.unixpackage.data.Constants;
 
 @SuppressWarnings("serial")
 public class CommonPanel extends JPanel {

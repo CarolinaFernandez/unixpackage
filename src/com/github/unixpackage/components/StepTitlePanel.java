@@ -1,4 +1,4 @@
-package com.github.unixpackages.components;
+package com.github.unixpackage.components;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -7,8 +7,8 @@ import java.awt.LayoutManager;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.github.unixpackages.data.Constants;
-import com.github.unixpackages.utils.StepLoader;
+import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.utils.StepLoader;
 
 @SuppressWarnings("serial")
 public class StepTitlePanel extends JPanel {

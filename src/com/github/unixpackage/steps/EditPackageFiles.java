@@ -1,4 +1,4 @@
-package com.github.unixpackages.steps;
+package com.github.unixpackage.steps;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
@@ -14,11 +14,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpringLayout;
 
-import com.github.unixpackages.components.CommonStep;
-import com.github.unixpackages.data.Constants;
-import com.github.unixpackages.data.Variables;
-import com.github.unixpackages.utils.Shell;
-import com.github.unixpackages.utils.SpringUtilities;
+import com.github.unixpackage.components.CommonStep;
+import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.Variables;
+import com.github.unixpackage.utils.Shell;
+import com.github.unixpackage.utils.SpringUtilities;
 
 @SuppressWarnings("serial")
 public class EditPackageFiles extends CommonStep {

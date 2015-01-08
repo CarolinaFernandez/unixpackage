@@ -1,4 +1,4 @@
-package com.github.unixpackages.components;
+package com.github.unixpackage.components;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -13,7 +13,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.github.unixpackages.data.Constants;
+import com.github.unixpackage.data.Constants;
 
 @SuppressWarnings("serial")
 public class TitlePanel extends JPanel {

@@ -1,12 +1,12 @@
-package com.github.unixpackages.steps;
+package com.github.unixpackage.steps;
 
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 
-import com.github.unixpackages.components.CommonStep;
-import com.github.unixpackages.data.Constants;
-import com.github.unixpackages.data.Variables;
+import com.github.unixpackage.components.CommonStep;
+import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.Variables;
 
 @SuppressWarnings("serial")
 public class ReviewPackageInfo extends CommonStep {

@@ -1,4 +1,4 @@
-package com.github.unixpackages.utils;
+package com.github.unixpackage.utils;
 
 import java.io.IOException;
 import java.util.logging.ConsoleHandler;

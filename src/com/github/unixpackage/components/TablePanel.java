@@ -1,4 +1,4 @@
-package com.github.unixpackages.components;
+package com.github.unixpackage.components;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import com.github.unixpackages.data.Constants;
+import com.github.unixpackage.data.Constants;
 
 @SuppressWarnings("serial")
 public class TablePanel extends DefaultTableModel {

@@ -1,4 +1,4 @@
-package com.github.unixpackages.steps;
+package com.github.unixpackage.steps;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,10 +12,10 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
-import com.github.unixpackages.components.CommonStep;
-import com.github.unixpackages.components.TablePanel;
-import com.github.unixpackages.data.Variables;
-import com.github.unixpackages.utils.Files;
+import com.github.unixpackage.components.CommonStep;
+import com.github.unixpackage.components.TablePanel;
+import com.github.unixpackage.data.Variables;
+import com.github.unixpackage.utils.Files;
 
 @SuppressWarnings("serial")
 public class SetPackageSources extends CommonStep {

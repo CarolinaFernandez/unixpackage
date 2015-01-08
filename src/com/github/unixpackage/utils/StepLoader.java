@@ -1,11 +1,11 @@
-package com.github.unixpackages.utils;
+package com.github.unixpackage.utils;
 
 import java.awt.Component;
 import java.util.Collection;
 
-import com.github.unixpackages.components.CommonStep;
-import com.github.unixpackages.data.Constants;
-import com.github.unixpackages.data.Variables;
+import com.github.unixpackage.components.CommonStep;
+import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.Variables;
 
 public class StepLoader {
 

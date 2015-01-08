@@ -1,4 +1,4 @@
-package com.github.unixpackages.utils;
+package com.github.unixpackage.utils;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -11,8 +11,8 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
-import com.github.unixpackages.components.CommonFrame;
-import com.github.unixpackages.data.UnixPreferences;
+import com.github.unixpackage.components.CommonFrame;
+import com.github.unixpackage.data.UnixPreferences;
 
 @SuppressWarnings("serial")
 public class Listeners {

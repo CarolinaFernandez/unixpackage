@@ -1,4 +1,4 @@
-package com.github.unixpackages.components;
+package com.github.unixpackage.components;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -15,9 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import com.github.unixpackages.data.Constants;
-import com.github.unixpackages.data.Variables;
-import com.github.unixpackages.utils.StepLoader;
+import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.Variables;
+import com.github.unixpackage.utils.StepLoader;
 
 @SuppressWarnings("serial")
 public class CommonStep extends CommonPanel {

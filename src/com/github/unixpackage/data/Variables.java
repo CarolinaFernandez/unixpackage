@@ -1,4 +1,4 @@
-package com.github.unixpackages.data;
+package com.github.unixpackage.data;
 
 import java.lang.String;
 import java.util.ArrayList;

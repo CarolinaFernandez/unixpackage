@@ -1,9 +1,9 @@
-package com.github.unixpackages.utils;
+package com.github.unixpackage.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import com.github.unixpackages.MainApp;
+import com.github.unixpackage.MainApp;
 
 public class Locations {
 

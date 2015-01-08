@@ -1,4 +1,4 @@
-package com.github.unixpackages.utils;
+package com.github.unixpackage.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import com.github.unixpackages.data.Constants;
+import com.github.unixpackage.data.Constants;
 
 public class Shell {
 

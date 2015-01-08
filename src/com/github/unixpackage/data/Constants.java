@@ -1,4 +1,4 @@
-package com.github.unixpackages.data;
+package com.github.unixpackage.data;
 
 import java.awt.Color;
 import java.awt.Dimension;

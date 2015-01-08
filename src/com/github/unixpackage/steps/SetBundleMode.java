@@ -1,4 +1,4 @@
-package com.github.unixpackages.steps;
+package com.github.unixpackage.steps;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,11 +13,11 @@ import javax.swing.SpringLayout;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.github.unixpackages.components.CommonStep;
-import com.github.unixpackages.data.Constants;
-import com.github.unixpackages.data.Variables;
-import com.github.unixpackages.utils.Files;
-import com.github.unixpackages.utils.SpringUtilities;
+import com.github.unixpackage.components.CommonStep;
+import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.Variables;
+import com.github.unixpackage.utils.Files;
+import com.github.unixpackage.utils.SpringUtilities;
 
 @SuppressWarnings("serial")
 public class SetBundleMode extends CommonStep {
