@@ -45,6 +45,7 @@ public class ReviewPackageInfo extends CommonStep {
 			l = new JLabel("Path of source files: ", JLabel.TRAILING);
 			this.add(l);
 			l = new JLabel(Variables.BUNDLE_MODE_ADVANCED_PATH);
+			l.setToolTipText(Variables.BUNDLE_MODE_ADVANCED_PATH);
 			l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 			this.add(l);
 			numRows++;

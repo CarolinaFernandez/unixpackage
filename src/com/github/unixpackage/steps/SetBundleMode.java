@@ -184,6 +184,7 @@ public class SetBundleMode extends CommonStep {
 		final JLabel addSourceFilesPath = new JLabel(
 				(String) Variables.get("BUNDLE_MODE_ADVANCED_PATH"),
 				JLabel.TRAILING);
+		addSourceFilesPath.setToolTipText(Variables.BUNDLE_MODE_ADVANCED_PATH);
 
 		addSourceFiles = new JButton("Add path of source files");
 		addSourceFiles.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
