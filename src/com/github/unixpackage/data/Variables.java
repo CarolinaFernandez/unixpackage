@@ -14,6 +14,7 @@ public class Variables {
 	public static String PACKAGE_NAME;
 	public static String PACKAGE_SHORT_DESCRIPTION;
 	public static String PACKAGE_DESCRIPTION;
+	public static String PACKAGE_WEBSITE;
 	public static String PACKAGE_VERSION;
 	public static String _PACKAGE_INSTALL_PATH;
 	public static String PACKAGE_LICENSE;

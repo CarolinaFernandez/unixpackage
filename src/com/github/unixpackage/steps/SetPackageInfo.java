@@ -15,11 +15,12 @@ import com.github.unixpackage.utils.SpringUtilities;
 public class SetPackageInfo extends CommonStep {
 
 	protected String[] labels = { "Name: ", "Description (short): ",
-			"Description (long): " };
+			"Description (long): ", "Website: " };
 	protected String[] tooltips = { "Name of the package (lower case)",
-			"Up to 60 characters", "Detailed description" };
+			"Up to 60 characters", "Detailed description", "URL of the website" };
 	protected String[] variables = { "PACKAGE_NAME",
-			"PACKAGE_SHORT_DESCRIPTION", "PACKAGE_DESCRIPTION" };
+			"PACKAGE_SHORT_DESCRIPTION", "PACKAGE_DESCRIPTION",
+	"PACKAGE_WEBSITE" };
 
 	public SetPackageInfo() {
 		int numPairs = labels.length;
@@ -57,10 +58,11 @@ public class SetPackageInfo extends CommonStep {
 		// Set name of variable where the field should be saved in
 		packageVersionField.setName("PACKAGE_VERSION");
 		packageVersionField
-				.setToolTipText("Version (and optionally revision) of the package");
+		.setToolTipText("Version (and optionally revision) of the package");
 		packageVersionField.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
+		packageVersionField.setColumns(Constants.TEXTFIELD_COLUMNS_MAX);		
 		this.add(packageVersionField);
-
+		
 		// License
 		JLabel licenseLabel = new JLabel("License:", JLabel.TRAILING);
 		DefaultComboBoxModel licensesList = new DefaultComboBoxModel();
@@ -89,7 +91,7 @@ public class SetPackageInfo extends CommonStep {
 		JComboBox classesListBox = new JComboBox(classesList);
 		classLabel.setLabelFor(classesListBox);
 		classesListBox
-				.setToolTipText("Choose a class in which your package fits");
+		.setToolTipText("Choose a class in which your package fits");
 		// Set name of variable where the field should be saved in
 		classesListBox.setName("PACKAGE_CLASS");
 		// TODO Fill in CommonStep
@@ -100,8 +102,23 @@ public class SetPackageInfo extends CommonStep {
 		this.add(classLabel);
 		this.add(classesListBox);
 
+		// New row
+		this.add(new JLabel());
+		this.add(new JLabel());
+
+		if (!Variables.isNull("BUNDLE_MODE") && Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED) && !Variables.isNull("BUNDLE_MODE_ADVANCED_PATH")) {
+			JLabel warningLabel1 = new JLabel("Warning: ensure the",
+					JLabel.TRAILING);
+			JLabel warningLabel2 = new JLabel(
+					"package information is exactly the same as in your templates",
+					JLabel.TRAILING);
+			numPairs += 1;
+			this.add(warningLabel1);
+			this.add(warningLabel2);
+		}
+
 		// Lay out the panel
-		SpringUtilities.makeCompactGrid(this, numPairs + 3, 2, // rows, cols
+		SpringUtilities.makeCompactGrid(this, numPairs + 4, 2, // rows, cols
 				6, 6, // initX, initY
 				6, 6); // xPad, yPad
 	}
