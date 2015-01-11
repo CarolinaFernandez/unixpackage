@@ -38,7 +38,10 @@ public final class Constants {
 			+ "/deb";
 	public static final String REDHAT_FILES_PATH = ROOT_PACKAGE_FILES_PATH
 			+ "/rpm";
-
+	
+	public static final String BUNDLE_TYPE_DEB_FOLDER = "debian";
+	public static final String BUNDLE_TYPE_RPM_FOLDER = "rpm";
+	
 	public static final String ROOT_TMP_FILES_PATH = "/tmp";
 	public static final String ROOT_TMP_PACKAGE_FILES_PATH = ROOT_TMP_FILES_PATH
 			+ "/unix_package_" + (new Random().nextInt(1000 - 1 + 1) + 1);
@@ -196,16 +199,20 @@ public final class Constants {
 		// Validation of fields (must be synchronized!)
 		FIELDS_CANONICAL_NAME = new HashMap<String, String>();
 		FIELDS_CANONICAL_NAME.put("PACKAGE_NAME", "package name");
+		FIELDS_CANONICAL_NAME.put("PACKAGE_SHORT_DESCRIPTION", "package short description");
+		FIELDS_CANONICAL_NAME.put("PACKAGE_WEBSITE", "package website");
 		FIELDS_CANONICAL_NAME.put("PACKAGE_VERSION", "package version");
 		FIELDS_CANONICAL_NAME.put("MAINTAINER_EMAIL", "e-mail");
 
 		FIELDS_FORMAT_EXPLANATION = new HashMap<String, String>();
 		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_NAME",
 				"must consist only of lower case letters (a-z), digits (0-9), plus (+) and minus (-) signs, and periods (.). They must be at least two characters long and must start with an alphanumeric character");
-		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_VERSION",
-				"is restricted to the format x.y[-revision], where all fields are digits");
 		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_SHORT_DESCRIPTION",
 				"must be 60 characters at most");
+		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_WEBSITE",
+				"must be well formed");
+		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_VERSION",
+				"is restricted to the format x.y[-revision], where all fields are digits");
 		FIELDS_FORMAT_EXPLANATION.put("MAINTAINER_EMAIL",
 				"must be a valid e-mail address");
 	}

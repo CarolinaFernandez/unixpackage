@@ -1,4 +1,4 @@
-package com.github.unixpackage.components;
+package com.github.unixpackage.data;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.components.CommonStep;
 
 public class UnixVerifier extends InputVerifier {
 
@@ -24,6 +24,10 @@ public class UnixVerifier extends InputVerifier {
 	private static final Pattern packageNameRE = Pattern.compile(
 	        "^[a-z]{2,}([a-z]|[0-9]|[+]|[-]|[.])*?$"
 	);
+	// RegExp for package website
+	private static final Pattern packageWebsiteRE = Pattern.compile(
+			"^([a-z]*[://])?([a-zA-Z0-9]|[-_./#?&%$=])*?$"
+			);
 	// RegExp for package version
 	private static final Pattern packageVersionRE = Pattern.compile(
 			"^[0-9]+([.][0-9]+)(-[0-9]+)?$"
@@ -57,6 +61,9 @@ public class UnixVerifier extends InputVerifier {
 	}
 	
 	@Override
+	/**
+	 * Verify a single component
+	 */
 	public boolean verify(JComponent input) {
 		String fieldName = null;
 		String text = null;
@@ -79,6 +86,12 @@ public class UnixVerifier extends InputVerifier {
 				if (text.length() > Constants.PACKAGE_SHORT_DESCRIPTION_MAX_LENGTH) {
 					throw new Exception();
 				}
+			} else if (fieldName.equals("PACKAGE_WEBSITE")) {
+				if (text.length() > 0) {
+					if (!packageWebsiteRE.matcher(text).matches()) {
+						throw new Exception();
+					}
+				}
 			} else if (fieldName.equals("PACKAGE_VERSION")) {
 				if (!packageVersionRE.matcher(text).matches()) {
 					throw new Exception();
@@ -97,6 +110,15 @@ public class UnixVerifier extends InputVerifier {
 		return true;
 	}
 
+	/**
+	 * Verify all the components in a step
+	 * @param step
+	 * @return
+	 */
+	public boolean verify(CommonStep step) {
+		return true;
+	}
+	
 	@Override
 	public boolean shouldYieldFocus(JComponent input) {
 		boolean valid = verify(input);

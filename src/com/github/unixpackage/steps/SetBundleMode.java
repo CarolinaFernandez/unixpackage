@@ -8,6 +8,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.SpringLayout;
 import javax.swing.event.ChangeEvent;
@@ -154,7 +155,7 @@ public class SetBundleMode extends CommonStep {
 		// New row
 		this.add(new JLabel());
 		this.add(new JLabel());
-		
+
 		// Description of following action
 		final JLabel addSourceFilesPathLabel = new JLabel(
 				"Chosen source of files:", JLabel.TRAILING);
@@ -169,6 +170,20 @@ public class SetBundleMode extends CommonStep {
 			public void actionPerformed(ActionEvent e) {
 				String sourcePath = Files.choosePath();
 				if (sourcePath != null && !sourcePath.isEmpty()) {
+					// Debian by default
+					String bundleTypeFolder = Constants.BUNDLE_TYPE_DEB_FOLDER;
+					// Otherwise, use RPM convention
+					if (Variables.PACKAGE_TYPE
+							.equals(Constants.BUNDLE_TYPE_RPM)) {
+						bundleTypeFolder = Constants.BUNDLE_TYPE_RPM_FOLDER;
+					}
+					while (!sourcePath.isEmpty() && !Files.containsFolder(sourcePath, bundleTypeFolder)) {
+						JOptionPane.showMessageDialog(null,
+								"The chosen folder does not contain a '"
+										+ bundleTypeFolder + "' folder."
+										+ "\n" + "Please choose another");
+						sourcePath = Files.choosePath();
+					}
 					try {
 						Variables.set("BUNDLE_MODE_ADVANCED_PATH", sourcePath);
 						addSourceFilesPathLabel.setVisible(true);
@@ -177,6 +192,11 @@ public class SetBundleMode extends CommonStep {
 						addSourceFilesPath.setVisible(true);
 					} catch (Exception ex) {
 					}
+				}
+				// If location of sources is empty (user cancelled choice of path)
+				// then automatically choose another type of bundle
+				if (sourcePath.isEmpty()) {
+					SetBundleMode.setDefaultBundleMode(bundleManual);
 				}
 			}
 		});
@@ -204,7 +224,7 @@ public class SetBundleMode extends CommonStep {
 		// New row
 		this.add(new JLabel());
 		this.add(new JLabel());
-		
+
 		// Sign with GPG
 		JLabel signGPGLabel = new JLabel("Sign package with GPG?");
 		JCheckBox signGPG = new JCheckBox();
@@ -218,7 +238,7 @@ public class SetBundleMode extends CommonStep {
 		}
 		this.add(signGPGLabel);
 		this.add(signGPG);
-		
+
 		// One per radio button
 		bundleSimple.addChangeListener(new ChangeListener() {
 			@Override
@@ -228,7 +248,6 @@ public class SetBundleMode extends CommonStep {
 							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
 									.get(Constants.BUNDLE_MODE_SIMPLE));
 					Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_SIMPLE);
-//					Variables.set("BUNDLE_MODE_ADVANCED_PATH", "");
 					// Disabling importing package files
 					addSourceFiles.setVisible(false);
 					addSourceFilesPathLabel.setVisible(false);
@@ -243,8 +262,7 @@ public class SetBundleMode extends CommonStep {
 					choiceDescription
 							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
 									.get(Constants.BUNDLE_MODE_MANUAL));
-					Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_MANUAL);
-//					Variables.set("BUNDLE_MODE_ADVANCED_PATH", "");
+					SetBundleMode.setDefaultBundleMode(bundleManual);
 					// Disabling importing package files
 					addSourceFiles.setVisible(false);
 					addSourceFilesPathLabel.setVisible(false);
@@ -277,44 +295,11 @@ public class SetBundleMode extends CommonStep {
 		SpringUtilities.makeCompactGrid(this, 9, 2, // rows, cols
 				6, 6, // initX, initY
 				6, 6); // xPad, yPad
-
-		/* Layout */
-		// GroupLayout layout = new GroupLayout(this);
-		// this.setLayout(layout);
-		//
-		// layout.setAutoCreateGaps(true);
-		// layout.setAutoCreateContainerGaps(true);
-		//
-		// layout.setHorizontalGroup(
-		// layout.createParallelGroup()
-		// .addGroup(layout.createSequentialGroup()
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		// .addComponent(bundleChoiceDescription)
-		// )
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		// .addComponent(choiceBundleModeBox)
-		// )
-		// )
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		// .addComponent(choiceDescription)
-		// )
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		// .addComponent(addSourceFiles)
-		// )
-		// )
-		// ;
-		// layout.setVerticalGroup(
-		// layout.createSequentialGroup()
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-		// .addComponent(bundleChoiceDescription)
-		// .addComponent(choiceBundleModeBox)
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-		// .addComponent(choiceDescription)
-		// )
-		// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-		// .addComponent(addSourceFiles)
-		// )
-		// )
-		// );
+	}
+	
+	public static void setDefaultBundleMode(JRadioButton defaultBundleMode) {
+		defaultBundleMode.setSelected(true);
+		Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_MANUAL);
+		Variables.set("BUNDLE_MODE_ADVANCED_PATH", "");
 	}
 }

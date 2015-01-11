@@ -235,14 +235,4 @@ public class SetPackageSources extends CommonStep {
 			gregsPanel.fireTableDataChanged();
 		}
 	}
-
-	/*
-	 * private void errorMessage(String message) { JDialog dialog = new
-	 * JDialog(); JLabel errorLabel = new JLabel(message);
-	 * dialog.getContentPane().add(errorLabel, BorderLayout.NORTH);
-	 * dialog.add(errorLabel); // FIXME set button again // JButton button = new
-	 * JButton("OK"); // dialog.getContentPane().add(button,
-	 * BorderLayout.SOUTH); // dialog.add(button); dialog.setSize(300, 300);
-	 * dialog.setVisible(true); }
-	 */
 }

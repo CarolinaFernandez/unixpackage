@@ -57,6 +57,8 @@ public class GeneratePackage extends CommonStep {
 				// Run script in non-interactive mode by passing all required
 				// arguments
 				Shell.execute(commandList);
+				// Open browser in directory where the package is created
+//				Shell.execute("xdg-open /");
 			}
 		});
 		this.add(addSourcePath);
@@ -82,6 +84,7 @@ public class GeneratePackage extends CommonStep {
 
 		argumentList.put("-y", null);
 		argumentList.put("-s", Variables.PACKAGE_NAME);
+		argumentList.put("-w", Variables.PACKAGE_WEBSITE);
 		argumentList.put("-v", Variables.PACKAGE_VERSION);
 		// Translate to something understandable by the script
 		argumentList.put("-l",
@@ -90,6 +93,8 @@ public class GeneratePackage extends CommonStep {
 		argumentList.put("-C",
 				Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
 		argumentList.put("-p", Variables.PACKAGE_NAME);
+		argumentList.put("-d", Variables.PACKAGE_SHORT_DESCRIPTION);
+		argumentList.put("-D", Variables.PACKAGE_DESCRIPTION);
 		
 		// In simple and manual modes, the majority of the arguments are passed
 		if (Variables.isNull("BUNDLE_MODE")
@@ -99,10 +104,10 @@ public class GeneratePackage extends CommonStep {
 			argumentList.put("-e", Variables.MAINTAINER_EMAIL);
 		}
 
-		// In advanced mode, a path is passed to copy the user's scripts from
+		// In advanced mode, a path is passed to copy the user's templates from
 		if (!Variables.isNull("BUNDLE_MODE")
 				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-			argumentList.put("-d", Variables.BUNDLE_MODE_ADVANCED_PATH);
+			argumentList.put("-t", Variables.BUNDLE_MODE_ADVANCED_PATH);
 		}
 
 		// Notify if package is to be signed

@@ -47,6 +47,36 @@ public class Files {
 		return chosenPath;
 	}
 
+	public static boolean containsFolder(String location, final String folderName) {
+	    /*
+		File dir = new File(location);
+	    File[] contentsDirectory = dir.listFiles(new FilenameFilter() {
+	        @Override
+	        public boolean accept(File dir, String name) {
+	            return name.matches(folderName);
+	        }
+	    });
+	    */
+	    
+		File locationPath = new File(location);
+		boolean foundFolder = false;
+		String[] contentsDirectory = locationPath.list();
+		if (contentsDirectory != null) {
+			for (String content : contentsDirectory) {
+				File currentPath = new File(location + "/" + content);
+				if (content.equals(folderName)) {
+					foundFolder = true;
+					break;
+				} else {
+					if (currentPath.isDirectory()) {
+						return containsFolder(currentPath.getAbsolutePath(), folderName);
+					}
+				}
+			}
+		}
+		return foundFolder;
+	}
+	
 	public boolean copyFile(final File toCopy, final File destFile) {
 		try {
 			return copyStream(new FileInputStream(toCopy),
@@ -101,7 +131,6 @@ public class Files {
 	}
 
 	public boolean copyFolderIntoTempFolder(String source, String destination) {
-
 		boolean result = false;
 
 		Locations loc = new Locations();
@@ -182,8 +211,6 @@ public class Files {
 		}
 		return false;
 	}
-
-	/* END StringUtils methods */
 
 	private boolean copyStream(final InputStream is, final OutputStream os) {
 		try {

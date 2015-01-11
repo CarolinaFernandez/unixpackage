@@ -117,6 +117,7 @@ public class CommonStep extends CommonPanel {
 		this.addNavigationPanel(step);
 		
 		// Bind input verifiers to text fields
+		// so it validates on each change of step
 		Listeners.bindInputFields(this);
 	}
 

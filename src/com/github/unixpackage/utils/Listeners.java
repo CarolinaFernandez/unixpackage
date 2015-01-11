@@ -19,8 +19,8 @@ import javax.swing.KeyStroke;
 
 import com.github.unixpackage.components.CommonFrame;
 import com.github.unixpackage.components.CommonStep;
-import com.github.unixpackage.components.UnixVerifier;
 import com.github.unixpackage.data.UnixPreferences;
+import com.github.unixpackage.data.UnixVerifier;
 
 @SuppressWarnings("serial")
 public class Listeners {
