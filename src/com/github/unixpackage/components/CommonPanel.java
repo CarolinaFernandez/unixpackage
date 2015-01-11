@@ -38,7 +38,12 @@ public class CommonPanel extends JPanel {
 		// Add panels to the main panel
 		this.add(this.headerPanel, BorderLayout.PAGE_START);
 		this.add(this.titlePanel, BorderLayout.WEST);
+		
 		// Add step content panel within normal content panel
 		this.add(this.contentPanel, BorderLayout.WEST);
+	}
+	
+	public JPanel getContentPanel() {
+		return this.contentPanel;
 	}
 }

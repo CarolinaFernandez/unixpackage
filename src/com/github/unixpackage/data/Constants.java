@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import com.github.unixpackage.steps.*;
 
 public final class Constants {
 
@@ -112,24 +113,47 @@ public final class Constants {
 	public static final String BUNDLE_TYPE_DEB = "DEB";
 	public static final String BUNDLE_TYPE_RPM = "RPM";
 
+	// Values for the validation
+	public static final int VALIDATION_FORMAT_EXPLANATION_MAX_LENGTH = 40;
+	public static final int PACKAGE_SHORT_DESCRIPTION_MAX_LENGTH = 60;
+
+	// Steps
+	public static final String SplashStep = Splash.class.getSimpleName();
+	public static final String SetBundleModeStep = SetBundleMode.class
+			.getSimpleName();
+	public static final String SetAuthorInfoStep = SetAuthorInfo.class
+			.getSimpleName();
+	public static final String SetPackageInfoStep = SetPackageInfo.class
+			.getSimpleName();
+	public static final String SetPackageSourcesStep = SetPackageSources.class
+			.getSimpleName();
+	public static final String EditPackageFilesStep = EditPackageFiles.class
+			.getSimpleName();
+	public static final String ReviewPackageInfoStep = ReviewPackageInfo.class
+			.getSimpleName();
+	public static final String GeneratePackageStep = GeneratePackage.class
+			.getSimpleName();
+
 	// Mappings
 	public static final Map<Integer, String> STEPS_METHODS;
 	public static final Map<Integer, String> STEPS_DESCRIPTIONS;
 	public static final Map<String, String> PACKAGE_LICENSES;
 	public static final Map<String, String> PACKAGE_CLASSES;
 	public static final Map<String, String> BUNDLE_MODE_DESCRIPTIONS;
+	public static final Map<String, String> FIELDS_CANONICAL_NAME;
+	public static final Map<String, String> FIELDS_FORMAT_EXPLANATION;
 
 	// Static initializer
 	static {
 		STEPS_METHODS = new HashMap<Integer, String>();
-		STEPS_METHODS.put(1, "Splash");
-		STEPS_METHODS.put(2, "SetBundleMode");
-		STEPS_METHODS.put(3, "SetAuthorInfo");
-		STEPS_METHODS.put(4, "SetPackageInfo");
-		STEPS_METHODS.put(5, "SetPackageSources");
-		STEPS_METHODS.put(6, "EditPackageFiles");
-		STEPS_METHODS.put(7, "ReviewPackageInfo");
-		STEPS_METHODS.put(8, "GeneratePackage");
+		STEPS_METHODS.put(1, SplashStep);
+		STEPS_METHODS.put(2, SetBundleModeStep);
+		STEPS_METHODS.put(3, SetAuthorInfoStep);
+		STEPS_METHODS.put(4, SetPackageInfoStep);
+		STEPS_METHODS.put(5, SetPackageSourcesStep);
+		STEPS_METHODS.put(6, EditPackageFilesStep);
+		STEPS_METHODS.put(7, ReviewPackageInfoStep);
+		STEPS_METHODS.put(8, GeneratePackageStep);
 
 		STEPS_DESCRIPTIONS = new HashMap<Integer, String>();
 		STEPS_DESCRIPTIONS.put(1, "");
@@ -160,6 +184,7 @@ public final class Constants {
 		PACKAGE_CLASSES.put("Multiple binary", "m");
 		PACKAGE_CLASSES.put("Library", "l");
 
+		// Explanation of each bundle mode
 		BUNDLE_MODE_DESCRIPTIONS = new HashMap<String, String>();
 		BUNDLE_MODE_DESCRIPTIONS.put(BUNDLE_MODE_SIMPLE,
 				"Automated, but must define location of sources");
@@ -167,6 +192,22 @@ public final class Constants {
 				"Control every file used for bundling the package");
 		BUNDLE_MODE_DESCRIPTIONS.put(BUNDLE_MODE_ADVANCED,
 				"Copy bundle files from location");
+
+		// Validation of fields (must be synchronized!)
+		FIELDS_CANONICAL_NAME = new HashMap<String, String>();
+		FIELDS_CANONICAL_NAME.put("PACKAGE_NAME", "package name");
+		FIELDS_CANONICAL_NAME.put("PACKAGE_VERSION", "package version");
+		FIELDS_CANONICAL_NAME.put("MAINTAINER_EMAIL", "e-mail");
+
+		FIELDS_FORMAT_EXPLANATION = new HashMap<String, String>();
+		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_NAME",
+				"must consist only of lower case letters (a-z), digits (0-9), plus (+) and minus (-) signs, and periods (.). They must be at least two characters long and must start with an alphanumeric character");
+		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_VERSION",
+				"is restricted to the format x.y[-revision], where all fields are digits");
+		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_SHORT_DESCRIPTION",
+				"must be 60 characters at most");
+		FIELDS_FORMAT_EXPLANATION.put("MAINTAINER_EMAIL",
+				"must be a valid e-mail address");
 	}
 
 	public static final int STEPS_METHODS_LENGTH = STEPS_METHODS.size();

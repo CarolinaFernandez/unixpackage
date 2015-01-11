@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 
 import com.github.unixpackage.data.Constants;
 import com.github.unixpackage.data.Variables;
+import com.github.unixpackage.utils.Listeners;
 import com.github.unixpackage.utils.StepLoader;
 
 @SuppressWarnings("serial")
@@ -104,6 +105,7 @@ public class CommonStep extends CommonPanel {
 		// Execute when button is pressed. Override per step
 		this.saveDataIntoVariables();
 		this.computeLinkedSteps();
+		
 		// Depending on the type of event, identify previous/next steps
 		Class<CommonStep> step;
 		if (e.getActionCommand() == "Previous") {
@@ -113,6 +115,9 @@ public class CommonStep extends CommonPanel {
 		}
 		// Calls to the navigation panel method with the given step
 		this.addNavigationPanel(step);
+		
+		// Bind input verifiers to text fields
+		Listeners.bindInputFields(this);
 	}
 
 	private void nextStep(ActionEvent e) {
@@ -205,12 +210,7 @@ public class CommonStep extends CommonPanel {
 			// Variables.set("PACKAGE_TYPE",
 			// component.getName().split("_PACKAGE")[0]); // Retrieve first part
 			// of the value
-			Variables.set("PACKAGE_TYPE", component.getName().split("_")[1]); // Retrieve
-																				// relevant
-																				// info
-																				// from,
-																				// e.g.
-																				// _DEB_PACKAGE
+			Variables.set("PACKAGE_TYPE", component.getName().split("_")[1]); // Retrieve relevant info from, e.g. _DEB_PACKAGE
 		}
 	}
 
