@@ -56,24 +56,14 @@ public class StepLoader {
 		 */
 		if (StepLoader.currentStep < Constants.STEPS_METHODS.size()) {
 			switch (StepLoader.currentStep) {
-			// Advanced mode may skip to step #7 if there is no signing involved
-			case 2:
-				if (!Variables.isNull("BUNDLE_MODE")
-						&& Variables.get("BUNDLE_MODE").equals(
-								Constants.BUNDLE_MODE_ADVANCED)
-						&& (!(Boolean) Variables.get("PACKAGE_SIGN"))) {
-					return getStep((Constants.STEPS_METHODS.get(7)));
-				}
-				break;
-			// Advanced mode & signing must go through step #3, then skip to #7
-			case 3:
-				if (!Variables.isNull("BUNDLE_MODE")
-						&& Variables.get("BUNDLE_MODE").equals(
-								Constants.BUNDLE_MODE_ADVANCED)
-						&& ((Boolean) Variables.get("PACKAGE_SIGN"))) {
-					return getStep((Constants.STEPS_METHODS.get(7)));
-				}
-				break;
+			// Advanced mode (either when signing the package or not) skips to step #7
+			case 4:
+					if (!Variables.isNull("BUNDLE_MODE")
+							&& Variables.get("BUNDLE_MODE").equals(
+									Constants.BUNDLE_MODE_ADVANCED)) {
+						return getStep((Constants.STEPS_METHODS.get(7)));
+					}
+					break;
 			case 5:
 				if (!Variables.isNull("BUNDLE_MODE")
 						&& Variables.get("BUNDLE_MODE").equals(
@@ -105,12 +95,8 @@ public class StepLoader {
 				} else if (!Variables.isNull("BUNDLE_MODE")
 						&& Variables.get("BUNDLE_MODE").equals(
 								Constants.BUNDLE_MODE_ADVANCED)) {
-					if (!(Boolean) Variables.get("PACKAGE_SIGN")) {
-						return getStep((Constants.STEPS_METHODS.get(2)));
-						// Advanced mode & signing must go back to step #3
-					} else {
-						return getStep((Constants.STEPS_METHODS.get(3)));
-					}
+					// Advanced mode & signing must go back to step #4
+					return getStep((Constants.STEPS_METHODS.get(4)));
 				}
 				break;
 			}

@@ -81,22 +81,22 @@ public class GeneratePackage extends CommonStep {
 		HashMap<String, String> argumentList = new HashMap<String, String>();
 
 		argumentList.put("-y", null);
-
+		argumentList.put("-s", Variables.PACKAGE_NAME);
+		argumentList.put("-v", Variables.PACKAGE_VERSION);
+		// Translate to something understandable by the script
+		argumentList.put("-l",
+				Constants.PACKAGE_LICENSES.get(Variables.PACKAGE_LICENSE));
+		// Translate to something understandable by the script
+		argumentList.put("-C",
+				Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
+		argumentList.put("-p", Variables.PACKAGE_NAME);
+		
 		// In simple and manual modes, the majority of the arguments are passed
 		if (Variables.isNull("BUNDLE_MODE")
 				|| !Variables.BUNDLE_MODE
 						.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-			argumentList.put("-s", Variables.PACKAGE_NAME);
-			argumentList.put("-v", Variables.PACKAGE_VERSION);
 			argumentList.put("-n", Variables.MAINTAINER_NAME);
 			argumentList.put("-e", Variables.MAINTAINER_EMAIL);
-			// Translate to something understandable by the script
-			argumentList.put("-l",
-					Constants.PACKAGE_LICENSES.get(Variables.PACKAGE_LICENSE));
-			// Translate to something understandable by the script
-			argumentList.put("-C",
-					Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
-			argumentList.put("-p", Variables.PACKAGE_NAME);
 		}
 
 		// In advanced mode, a path is passed to copy the user's scripts from
@@ -131,6 +131,8 @@ public class GeneratePackage extends CommonStep {
 
 		commandList = commandListValidated;
 
+		// TODO REMOVE
+		System.out.println("commands: " + commandList);
 		return commandList;
 	}
 }

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -14,7 +15,16 @@ public class Shell {
 
 	protected static Process proc;
 
-	public static void execute(List<String> commandList) {
+	public static StringBuilder execute(String commands) {
+		List<String> commandList = new ArrayList<String>();
+		for (String command : commands.split(" ")) {
+			commandList.add(command);
+		}
+		return execute(commandList);
+	}
+	
+	public static StringBuilder execute(List<String> commandList) {
+		StringBuilder lines = new StringBuilder();
 		try {
 			// Use ProcessBuilder rather than Runtime.exec
 			ProcessBuilder pb = new ProcessBuilder(commandList);
@@ -26,37 +36,12 @@ public class Shell {
 					proc.getInputStream()));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
+				lines.append(line);
 				System.out.println(line);
 			}
-
-			// Read the output from the command
-			// System.out.println("Here is the standard output of the command:\n");
-			// while (out != null) {
-			// System.out.println(out);
-			// }
-
-			// Read any errors from the attempted command
-			// System.out.println("Here is the standard error of the command (if any):\n");
-			// while (error != null) {
-			// System.out.println(error);
-			// }
-
-			/*
-			 * // Ugly way to run from console... proc =
-			 * Runtime.getRuntime().exec(commandList.toString()); BufferedReader
-			 * input = new BufferedReader(new
-			 * InputStreamReader(proc.getInputStream())); BufferedReader error =
-			 * new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-			 * // Read the output from the command
-			 * System.out.println("Here is the standard output of the command:\n"
-			 * ); while ((s = input.readLine()) != null) {
-			 * System.out.println(s); } // Read any errors from the attempted
-			 * command System.out.println(
-			 * "Here is the standard error of the command (if any):\n"); while
-			 * ((s = error.readLine()) != null) { System.out.println(s); }
-			 */
 		} catch (Exception e) {
 		}
+		return lines;
 	}
 
 	public static boolean generateTempFiles() {

@@ -86,24 +86,6 @@ public class SetBundleMode extends CommonStep {
 		this.add(new JLabel());
 		this.add(new JLabel());
 
-		// Sign with GPG
-		JLabel signGPGLabel = new JLabel("Sign package with GPG?");
-		JCheckBox signGPG = new JCheckBox();
-		signGPG.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
-		signGPGLabel.setLabelFor(signGPG);
-		// Set name of variable where the field should be saved in
-		signGPG.setName("PACKAGE_SIGN");
-		// TODO Fill in CommonStep
-		if (!Variables.isNull(signGPG.getName())) {
-			signGPG.setSelected((Boolean) Variables.get(signGPG.getName()));
-		}
-		this.add(signGPGLabel);
-		this.add(signGPG);
-
-		// New row
-		this.add(new JLabel());
-		this.add(new JLabel());
-
 		// Description
 		JLabel bundleChoiceDescription = new JLabel(
 				"Choose the bundling mode:", JLabel.TRAILING);
@@ -112,12 +94,7 @@ public class SetBundleMode extends CommonStep {
 		// Choose bundle mode
 		final JRadioButton bundleSimple = new JRadioButton();
 		bundleSimple.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
-		bundleSimple.setText(Constants.BUNDLE_MODE_SIMPLE + " mode"); // Able to
-																		// interpret
-																		// HTML
-																		// for
-																		// multi-line
-																		// text
+		bundleSimple.setText(Constants.BUNDLE_MODE_SIMPLE + " mode");
 		bundleSimple.setToolTipText(Constants.BUNDLE_MODE_DESCRIPTIONS
 				.get(Constants.BUNDLE_MODE_SIMPLE));
 		bundleSimple.setName("BUNDLE_MODE_SIMPLE");
@@ -177,7 +154,7 @@ public class SetBundleMode extends CommonStep {
 		// New row
 		this.add(new JLabel());
 		this.add(new JLabel());
-
+		
 		// Description of following action
 		final JLabel addSourceFilesPathLabel = new JLabel(
 				"Chosen source of files:", JLabel.TRAILING);
@@ -224,6 +201,24 @@ public class SetBundleMode extends CommonStep {
 		this.add(addSourceFilesPathLabel);
 		this.add(addSourceFilesPath);
 
+		// New row
+		this.add(new JLabel());
+		this.add(new JLabel());
+		
+		// Sign with GPG
+		JLabel signGPGLabel = new JLabel("Sign package with GPG?");
+		JCheckBox signGPG = new JCheckBox();
+		signGPG.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
+		signGPGLabel.setLabelFor(signGPG);
+		// Set name of variable where the field should be saved in
+		signGPG.setName("PACKAGE_SIGN");
+		// TODO Fill in CommonStep
+		if (!Variables.isNull(signGPG.getName())) {
+			signGPG.setSelected((Boolean) Variables.get(signGPG.getName()));
+		}
+		this.add(signGPGLabel);
+		this.add(signGPG);
+		
 		// One per radio button
 		bundleSimple.addChangeListener(new ChangeListener() {
 			@Override
@@ -233,6 +228,7 @@ public class SetBundleMode extends CommonStep {
 							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
 									.get(Constants.BUNDLE_MODE_SIMPLE));
 					Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_SIMPLE);
+//					Variables.set("BUNDLE_MODE_ADVANCED_PATH", "");
 					// Disabling importing package files
 					addSourceFiles.setVisible(false);
 					addSourceFilesPathLabel.setVisible(false);
@@ -248,6 +244,7 @@ public class SetBundleMode extends CommonStep {
 							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
 									.get(Constants.BUNDLE_MODE_MANUAL));
 					Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_MANUAL);
+//					Variables.set("BUNDLE_MODE_ADVANCED_PATH", "");
 					// Disabling importing package files
 					addSourceFiles.setVisible(false);
 					addSourceFilesPathLabel.setVisible(false);
