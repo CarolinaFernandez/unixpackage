@@ -8,9 +8,9 @@ BUILD_DIR = build
 JAR_PKG = $(BIN_DIR)/unixpackage.jar
 
 # Set your entry point(s) of your java app:
-ENTRY_POINT = $(SRC_DIR)/com/github/unixpackages/MainApp.java
-ENTRY_POINT_JAVA = com.github.unixpackages.MainApp
-ENTRY_POINT_CLASS = $(BUILD_DIR)/com/github/unixpackages/MainApp.class
+ENTRY_POINT = $(SRC_DIR)/com/github/unixpackage/MainApp.java
+ENTRY_POINT_JAVA = com.github.unixpackage.MainApp
+ENTRY_POINT_CLASS = $(BUILD_DIR)/com/github/unixpackage/MainApp.class
 
 # Java, flags and classpath
 JAVA = java
@@ -21,8 +21,9 @@ CLASSPATH = $(SRC_DIR):$(BUILD_DIR):media:packages:script:$(LIB_DIR)/commons-io-
 
 build: 		
 		mkdir -p $(BUILD_DIR)
-		find $(SRC_DIR) -iname *.java > $(BUILD_DIR)/sources.txt
-		$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) @$(BUILD_DIR)/sources.txt -encoding UTF-8
+		find $(SRC_DIR) -iname *.java > sources.txt
+		$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) @sources.txt -encoding UTF-8
+		rm sources.txt
 		#$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) -sourcepath $(SRC_DIR) $(ENTRY_POINT) $(JFLAGS)
 		cp -Rp media $(BUILD_DIR)
 		cp -Rp script $(BUILD_DIR)

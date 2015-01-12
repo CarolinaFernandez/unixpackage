@@ -28,7 +28,7 @@ case "$1" in
     configure)
         # Move file to /usr/sbin and change permissions
         if [ -f $sbin_unixpackage.sbin ]; then
-            mv $sbin_unixpackage.sbin $sbin_unixpackage
+            mv ${sbin_unixpackage}.sbin $sbin_unixpackage
             chmod +x $sbin_unixpackage
         fi
         # Alias for binary and init script

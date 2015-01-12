@@ -1,2 +1,2 @@
-Main-Class: com.github.unixpackages.MainApp
+Main-Class: com.github.unixpackage.MainApp
 
