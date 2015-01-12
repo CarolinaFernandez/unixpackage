@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Binary for unixpackage
+# sourced by /usr/sbin/unixpackage
+# installed at /usr/sbin/unixpackage by the maintainer scripts
+
+NAME="unixpackage"
+
+# Location of the library
+DAEMON_LOCATION="/usr/lib/$NAME/$NAME.jar"
+
+. /etc/default/$NAME
+
+# Run it
+java -jar $DAEMON_OPTS $DAEMON_LOCATION
