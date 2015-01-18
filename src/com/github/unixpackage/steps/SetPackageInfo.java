@@ -63,24 +63,24 @@ public class SetPackageInfo extends CommonStep {
 		packageVersionField.setColumns(Constants.TEXTFIELD_COLUMNS_MAX);		
 		this.add(packageVersionField);
 		
-		// License
-		JLabel licenseLabel = new JLabel("License:", JLabel.TRAILING);
-		DefaultComboBoxModel licensesList = new DefaultComboBoxModel();
-		for (String license : Constants.PACKAGE_LICENSES.keySet()) {
-			licensesList.addElement(license);
+		// Licence
+		JLabel licenceLabel = new JLabel("Licence:", JLabel.TRAILING);
+		DefaultComboBoxModel licencesList = new DefaultComboBoxModel();
+		for (String licence : Constants.PACKAGE_LICENCES.keySet()) {
+			licencesList.addElement(licence);
 		}
-		JComboBox licensesListBox = new JComboBox(licensesList);
-		licenseLabel.setLabelFor(licensesListBox);
-		licensesListBox.setToolTipText("Choose a license for your package");
+		JComboBox licencesListBox = new JComboBox(licencesList);
+		licenceLabel.setLabelFor(licencesListBox);
+		licencesListBox.setToolTipText("Choose a licence for your package");
 		// Set name of variable where the field should be saved in
-		licensesListBox.setName("PACKAGE_LICENSE");
+		licencesListBox.setName("PACKAGE_LICENCE");
 		// TODO Fill in CommonStep
-		if (!Variables.isNull(licensesListBox.getName())) {
-			licensesListBox.setSelectedItem(Variables.get(licensesListBox
+		if (!Variables.isNull(licencesListBox.getName())) {
+			licencesListBox.setSelectedItem(Variables.get(licencesListBox
 					.getName()));
 		}
-		this.add(licenseLabel);
-		this.add(licensesListBox);
+		this.add(licenceLabel);
+		this.add(licencesListBox);
 
 		// Class
 		JLabel classLabel = new JLabel("Class:", JLabel.TRAILING);

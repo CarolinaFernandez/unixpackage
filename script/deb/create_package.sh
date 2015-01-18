@@ -16,7 +16,7 @@
 source_path=""
 name=""
 email=""
-license=""
+copyright=""
 package_name=""
 package_description=""
 package_short_description=""
@@ -37,7 +37,7 @@ package_version_re='^[0-9]+([.][0-9]+)(-[0-9]+)?$'
 
 # Required parameters for simple/manual executions
 # In advanced mode, pre-configured debian files are retrieved from another location
-required_arguments_dh=('$package_name' '$package_version' '$package_class' '$name' '$email' '$license' '$source_path')
+required_arguments_dh=('$package_name' '$package_version' '$package_class' '$name' '$email' '$copyright' '$source_path')
 required_arguments_sign=('$name' '$email')
 # Helps installing dependencies
 dpkg_dependencies=('dh-make' 'lintian')
@@ -94,7 +94,6 @@ function install_dependencies()
 
 function parse_arguments()
 {
-  echo ">>> arguments: $#"
   path_to_script=$(dirname $0)
   # Not every argument contains data (sometimes, one is enough to parse)
   while [[ $# > 0 ]]; do
@@ -102,21 +101,16 @@ function parse_arguments()
     shift
 
     case $key in
-    -y|--yes)
+    -b|--batch)
         interactive=false
         ;;
-    -s|--source)
-        source_path="$1"
+    -c|--copyright)
+        copyright="$1"
         shift
         ;;
-    -D|--description-long)
-        # Read first argument w/o setting spaces on it
-        package_description="$1"
+    -C|--class)
+        package_class="$1"
         shift
-        while [[ $1 != -* ]]; do
-          package_description="$package_description $1"
-          shift
-        done
         ;;
     -d|--description-short)
         # Read first argument w/o setting spaces on it
@@ -127,14 +121,17 @@ function parse_arguments()
           shift
         done
         ;;
-    -t|--templates)
-        # Only one path allowed
-        debian_files_location="$1"
+    -D|--description-long)
+        # Read first argument w/o setting spaces on it
+        package_description="$1"
         shift
+        while [[ $1 != -* ]]; do
+          package_description="$package_description $1"
+          shift
+        done
         ;;
-    -w|--website)
-        # Only one URL allowed
-        package_website="$1"
+    -e|--email)
+        email="$1"
         shift
         ;;
     -n|--name)
@@ -146,29 +143,31 @@ function parse_arguments()
           shift
         done
         ;;
-    -e|--email)
-        email="$1"
-        shift
-        ;;
-    -l|--license)
-        license="$1"
-        shift
-        ;;
-    -C|--class)
-        package_class="$1"
-        shift
-        ;;
-    -p|--packagename)
+    -p|--package-name)
         package_name="$1"
+        shift
+        ;;
+    -s|--source)
+        source_path="$1"
+        shift
+        ;;
+    -S|--sign)
+        sign_package=true
+        create_gpg_key=true
+        ;;
+    -t|--templates)
+        # Only one path allowed
+        debian_files_location="$1"
         shift
         ;;
     -v|--version)
         package_version="$1"
         shift
         ;;
-    -S|--sign)
-        sign_package=true
-        create_gpg_key=true
+    -w|--website)
+        # Only one URL allowed
+        package_website="$1"
+        shift
         ;;
     *)
         ;;
@@ -381,7 +380,7 @@ function perform_dh_make()
 
   # Common parameters
   # Use "yes" to run in batch mode
-  dh_make_params="--yes $native_package -$package_class -c $license -e $email -p ${package_name}_${package_version}"
+  dh_make_params="--yes $native_package -$package_class -c $copyright -e $email -p ${package_name}_${package_version}"
 
   # Use templates if the user provides them
   if [[ -d $debian_files_location ]]; then
@@ -415,7 +414,7 @@ breakline 1
 echo "> Fetching parameters..."
 parse_arguments $@
 
-# XXX
+cat $debian_files_location/debian/control
 if [[ -f $debian_files_location/debian/control ]]; then
   if [[ -z $package_name ]]; then
     package_name=$(grep --only-matching --perl-regex "(?<=^Package: ).*" $debian_files_location/debian/control)
@@ -441,10 +440,7 @@ breakline 1
 echo "> Creating sources..."
 #create_debian_folder
 mkdir -p $path_to_package
-
-#XXX
-echo "ls -la $path_to_package/debian"
-ls -la $path_to_package/debian
+$path_to_package/debian
 
 breakline 1
 if [[ $interactive == true ]]; then 
@@ -464,17 +460,16 @@ breakline 2
 perform_dh_make
 
 # Replace with RegEx
+ls -la $path_to_package
+ls -la $path_to_package/debian
 if [[ -f $path_to_package/debian/control ]]; then
-  echo "XXX PACKAGE WEBSITE: $package_website"
-  echo "XXX SED ON FILE: $path_to_package/debian/control"
-  cat $path_to_package/debian/control
   # Using different separator (URL usually has slashes)
   #sed -i "s/^\(Description: *\).*\$/\1$package_short_description/" $debian_files_location/debian/control
   sed -i "s}<insert up to 60 chars description>}$package_short_description}" $path_to_package/debian/control
   sed -i "s}<insert long description, indented with spaces>}$package_description}" $path_to_package/debian/control
   sed -i "s}<insert the upstream URL, if relevant>}$website}" $path_to_package/debian/control
 else
-  error "E: file $debian_files_location/debian/control is needed when using templates"
+  error "E: file $path_to_package/debian/control is needed when using templates"
 fi
 
 # Copy user files that were not copied along with the templates (e.g. "install" file)

@@ -29,7 +29,7 @@ build:
 		cp -Rp script $(BUILD_DIR)
 		cp -Rp packages $(BUILD_DIR)
 		cp -p README.md $(BUILD_DIR)
-		cp -p LICENSE.txt $(BUILD_DIR)
+		cp -p LICENCE.txt $(BUILD_DIR)
 		test -d $(BUILD_DIR) || echo "Error: $(BUILD_DIR) directory is not found"
 
 run-class: 	

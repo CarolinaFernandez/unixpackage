@@ -77,9 +77,9 @@ public class ReviewPackageInfo extends CommonStep {
 		this.add(l);
 		numRows++;
 
-		l = new JLabel("License: ", JLabel.TRAILING);
+		l = new JLabel("Licence: ", JLabel.TRAILING);
 		this.add(l);
-		l = new JLabel(Variables.PACKAGE_LICENSE);
+		l = new JLabel(Variables.PACKAGE_LICENCE);
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		this.add(l);
 		numRows++;

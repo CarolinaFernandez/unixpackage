@@ -3,17 +3,14 @@ package com.github.unixpackage.steps;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-//import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
 
 import com.github.unixpackage.components.CommonStep;
+import com.github.unixpackage.data.Arguments;
 import com.github.unixpackage.data.Constants;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.utils.Shell;
@@ -24,7 +21,7 @@ public class GeneratePackage extends CommonStep {
 
 	// private static final Logger log =
 	// Logger.getLogger(GeneratePackage.class.getCanonicalName());
-
+	
 	public GeneratePackage() {
 		// Clear screen first
 		this.removeAll();
@@ -45,20 +42,7 @@ public class GeneratePackage extends CommonStep {
 		JButton addSourcePath = new JButton("Generate");
 		addSourcePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String command = "bash";
-				// Default is "DEB"
-				String scriptLocation = Constants.TMP_SCRIPT_DEBIAN_PATH;
-				if (Variables.PACKAGE_TYPE.equals("RPM")) {
-					scriptLocation = Constants.TMP_SCRIPT_REDHAT_PATH;
-				}
-				List<String> commandList = generateCommandForDebianPackages();
-				commandList.add(0, command);
-				commandList.add(1, scriptLocation);
-				// Run script in non-interactive mode by passing all required
-				// arguments
-				Shell.execute(commandList);
-				// Open browser in directory where the package is created
-//				Shell.execute("xdg-open /");
+					GeneratePackage.generateDebianPackage();
 			}
 		});
 		this.add(addSourcePath);
@@ -67,8 +51,7 @@ public class GeneratePackage extends CommonStep {
 		this.add(new JLabel());
 
 		// Final information
-		JLabel outputLabel = new JLabel(
-				"You can find the output of the script in the console");
+		JLabel outputLabel = new JLabel("You can find the output of the script in the console");
 		this.add(outputLabel);
 
 		// Lay out the panel
@@ -76,68 +59,20 @@ public class GeneratePackage extends CommonStep {
 				6, 6, // initX, initY
 				6, 6); // xPad, yPad
 	}
-
-	public List<String> generateCommandForDebianPackages() {
-		List<String> commandList = new ArrayList<String>();
-		List<String> commandListValidated = new ArrayList<String>();
-		HashMap<String, String> argumentList = new HashMap<String, String>();
-
-		argumentList.put("-y", null);
-		argumentList.put("-s", Variables.PACKAGE_NAME);
-		argumentList.put("-w", Variables.PACKAGE_WEBSITE);
-		argumentList.put("-v", Variables.PACKAGE_VERSION);
-		// Translate to something understandable by the script
-		argumentList.put("-l",
-				Constants.PACKAGE_LICENSES.get(Variables.PACKAGE_LICENSE));
-		// Translate to something understandable by the script
-		argumentList.put("-C",
-				Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
-		argumentList.put("-p", Variables.PACKAGE_NAME);
-		argumentList.put("-d", Variables.PACKAGE_SHORT_DESCRIPTION);
-		argumentList.put("-D", Variables.PACKAGE_DESCRIPTION);
-		
-		// In simple and manual modes, the majority of the arguments are passed
-		if (Variables.isNull("BUNDLE_MODE")
-				|| !Variables.BUNDLE_MODE
-						.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-			argumentList.put("-n", Variables.MAINTAINER_NAME);
-			argumentList.put("-e", Variables.MAINTAINER_EMAIL);
+	
+	public static StringBuilder generateDebianPackage() {
+		List<String> commandList = Arguments.generateArgumentsForDebianPackage();
+		String command = "bash";
+		commandList.add(0, command);
+		// Default is "DEB"
+		String scriptLocation = Constants.TMP_SCRIPT_DEBIAN_PATH;
+		if (Variables.PACKAGE_TYPE.equals("RPM")) {
+			scriptLocation = Constants.TMP_SCRIPT_REDHAT_PATH;
 		}
-
-		// In advanced mode, a path is passed to copy the user's templates from
-		if (!Variables.isNull("BUNDLE_MODE")
-				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-			argumentList.put("-t", Variables.BUNDLE_MODE_ADVANCED_PATH);
-		}
-
-		// Notify if package is to be signed
-		if (Variables.PACKAGE_SIGN) {
-			argumentList.put("-S", null);
-			if (!argumentList.containsKey("-n")) {
-				argumentList.put("-n", Variables.MAINTAINER_NAME);
-			}
-			if (!argumentList.containsKey("-e")) {
-				argumentList.put("-e", Variables.MAINTAINER_EMAIL);
-			}
-		}
-
-		for (Entry<String, String> entry : argumentList.entrySet()) {
-			commandListValidated.add(entry.getKey());
-			// Check arguments that are not "-y" or "-S"
-			if (entry.getKey().matches("-(\\w?[^yS]){1}")) {
-				if (entry.getValue() != null) {
-					commandListValidated.add(entry.getValue());
-				} else {
-					// If value is null, entry shall not be added
-					commandListValidated.remove(entry.getKey());
-				}
-			}
-		}
-
-		commandList = commandListValidated;
-
-		// TODO REMOVE
-		System.out.println("commands: " + commandList);
-		return commandList;
+		commandList.add(1, scriptLocation);
+		// Run script in non-interactive mode by passing all required arguments
+		return Shell.execute(commandList);
+		// Open browser in directory where the package is created
+//		Shell.execute("xdg-open /");
 	}
 }

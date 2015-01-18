@@ -77,7 +77,7 @@ public class Files {
 		return foundFolder;
 	}
 	
-	public boolean copyFile(final File toCopy, final File destFile) {
+	public static boolean copyFile(final File toCopy, final File destFile) {
 		try {
 			return copyStream(new FileInputStream(toCopy),
 					new FileOutputStream(destFile));
@@ -87,11 +87,11 @@ public class Files {
 		return false;
 	}
 
-	private boolean copyFilesRecursively(final File toCopy, final File destDir) {
+	private static boolean copyFilesRecursively(final File toCopy, final File destDir) {
 		assert destDir.isDirectory();
 
 		if (!toCopy.isDirectory()) {
-			return copyFile(toCopy, new File(destDir, toCopy.getName()));
+			return Files.copyFile(toCopy, new File(destDir, toCopy.getName()));
 		} else {
 			final File newDestDir = new File(destDir, toCopy.getName());
 			if (!newDestDir.exists() && !newDestDir.mkdir()) {
@@ -106,31 +106,31 @@ public class Files {
 		return true;
 	}
 
-	public void copyJarResourcesRecursively(File destination,
+	public static void copyJarResourcesRecursively(File destination,
 			JarURLConnection jarConnection) throws IOException {
 		JarFile jarFile = jarConnection.getJarFile();
 		ArrayList<JarEntry> jarEntries = Collections.list(jarFile.entries());
 		for (JarEntry entry : jarEntries) {
 			if (entry.getName().startsWith(jarConnection.getEntryName())) {
-				String fileName = removeStart(entry.getName(),
+				String fileName = Files.removeStart(entry.getName(),
 						jarConnection.getEntryName());
 				if (!entry.isDirectory()) {
 					InputStream entryInputStream = null;
 					try {
 						entryInputStream = jarFile.getInputStream(entry);
-						copyStream(entryInputStream, new File(destination,
+						Files.copyStream(entryInputStream, new File(destination,
 								fileName));
 					} finally {
-						safeClose(entryInputStream);
+						Files.safeClose(entryInputStream);
 					}
 				} else {
-					ensureDirectoryExists(new File(destination, fileName));
+					Files.ensureDirectoryExists(new File(destination, fileName));
 				}
 			}
 		}
 	}
 
-	public boolean copyFolderIntoTempFolder(String source, String destination) {
+	public static boolean copyFolderIntoTempFolder(String source, String destination) {
 		boolean result = false;
 
 		Locations loc = new Locations();
@@ -151,7 +151,7 @@ public class Files {
 		// }
 
 		try {
-			copyResourcesRecursively(new URL(sourceDir.toString()), destDir);
+			Files.copyResourcesRecursively(new URL(sourceDir.toString()), destDir);
 		} catch (IOException e1) {
 			System.out.println("E: Cannot copy into folder!");
 			e1.printStackTrace();
@@ -161,7 +161,7 @@ public class Files {
 		return result;
 	}
 
-	public boolean copyPackageSourcesIntoTempFolder() {
+	public static boolean copyPackageSourcesIntoTempFolder() {
 		Locations loc = new Locations();
 		String validatedSource = loc
 				.getAbsolutePath(Constants.ROOT_PACKAGE_FILES_PATH);
@@ -169,12 +169,11 @@ public class Files {
 		if (validatedSource.startsWith("jar:")) {
 			validatedDestination = Constants.TMP_PACKAGE_FILES_PATH;
 		}
-
-		return copyFolderIntoTempFolder(Constants.ROOT_PACKAGE_FILES_PATH,
+		return Files.copyFolderIntoTempFolder(Constants.ROOT_PACKAGE_FILES_PATH,
 				validatedDestination);
 	}
 
-	public boolean copyScriptSourcesIntoTempFolder() {
+	public static boolean copyScriptSourcesIntoTempFolder() {
 		Locations loc = new Locations();
 		String validatedSource = loc
 				.getAbsolutePath(Constants.ROOT_SCRIPT_FILES_PATH);
@@ -187,15 +186,15 @@ public class Files {
 				validatedDestination);
 	}
 
-	public void copyResourcesRecursively(URL originUrl, File destination)
+	public static void copyResourcesRecursively(URL originUrl, File destination)
 			throws Exception {
 		URLConnection urlConnection = originUrl.openConnection();
 
 		if (urlConnection instanceof JarURLConnection) {
-			copyJarResourcesRecursively(destination,
+			Files.copyJarResourcesRecursively(destination,
 					(JarURLConnection) urlConnection);
 		} else if (urlConnection instanceof FileURLConnection) {
-			copyFilesRecursively(new File(originUrl.getPath()), destination);
+			Files.copyFilesRecursively(new File(originUrl.getPath()), destination);
 		} else {
 			throw new Exception("URLConnection["
 					+ urlConnection.getClass().getSimpleName()
@@ -203,16 +202,16 @@ public class Files {
 		}
 	}
 
-	private boolean copyStream(final InputStream is, final File f) {
+	private static boolean copyStream(final InputStream is, final File f) {
 		try {
-			return copyStream(is, new FileOutputStream(f));
+			return Files.copyStream(is, new FileOutputStream(f));
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
 
-	private boolean copyStream(final InputStream is, final OutputStream os) {
+	private static boolean copyStream(final InputStream is, final OutputStream os) {
 		try {
 			final byte[] buf = new byte[1024];
 
@@ -229,17 +228,17 @@ public class Files {
 		return false;
 	}
 
-	private boolean ensureDirectoryExists(final File f) {
+	private static boolean ensureDirectoryExists(final File f) {
 		return f.exists() || f.mkdir();
 	}
 
 	// StringUtils method
-	public boolean isEmpty(CharSequence cs) {
+	public static boolean isEmpty(CharSequence cs) {
 		return cs == null || cs.length() == 0;
 	}
 
 	// StringUtils method
-	public String removeStart(String str, String remove) {
+	public static String removeStart(String str, String remove) {
 		if (isEmpty(str) || isEmpty(remove)) {
 			return str;
 		}
@@ -249,7 +248,7 @@ public class Files {
 		return str;
 	}
 
-	private void safeClose(InputStream is) {
+	private static void safeClose(InputStream is) {
 		try {
 			is.close();
 		} catch (IOException e) {

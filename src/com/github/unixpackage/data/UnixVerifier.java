@@ -15,23 +15,6 @@ import javax.swing.JTextField;
 import com.github.unixpackage.components.CommonStep;
 
 public class UnixVerifier extends InputVerifier {
-
-	// RegExp for e-mail
-	private static final Pattern rfc2822 = Pattern.compile(
-	        "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
-	);
-	// RegExp for package name
-	private static final Pattern packageNameRE = Pattern.compile(
-	        "^[a-z]{2,}([a-z]|[0-9]|[+]|[-]|[.])*?$"
-	);
-	// RegExp for package website
-	private static final Pattern packageWebsiteRE = Pattern.compile(
-			"^([a-z]*[://])?([a-zA-Z0-9]|[-_./#?&%$=])*?$"
-			);
-	// RegExp for package version
-	private static final Pattern packageVersionRE = Pattern.compile(
-			"^[0-9]+([.][0-9]+)(-[0-9]+)?$"
-	);
 	
 	private JLabel findLabelForComponent(Component component) {
 		JLabel foundLabel = null;
@@ -46,18 +29,44 @@ public class UnixVerifier extends InputVerifier {
 		return foundLabel;
 	}
 	
-	private void indicateErrorCondition(Component component) {
+	private static String indicateErrorCondition(String variableName) {
+		return getFieldErrorExplanation(variableName);
+	}
+	
+	private void indicateErrorConditionGUI(Component component) {
 		JLabel foundLabel = this.findLabelForComponent(component);
 		if (foundLabel != null) {
 			foundLabel.setForeground(Color.RED);
 		}
 	}
 	
-	private void indicateNormalCondition(Component component) {
+	private void indicateNormalConditionGUI(Component component) {
 		JLabel foundLabel = this.findLabelForComponent(component);
 		if (foundLabel != null) {
 			foundLabel.setForeground(Color.BLACK);
 		}
+	}
+	
+	/**
+	 * Verify a single variable, depending on its name
+	 */
+	public static boolean verify(String variableName, String variableData) {
+		Boolean variableContentVerified = true;
+		System.out.println("033[0;32m&&&& VERIFIER (" + variableName + ":" + variableData + ")\033[0m");
+		Pattern variableVerifier = Constants.VARIABLES_REGEXPS.get(variableName);
+		// Only try to verify when the pattern is available
+		if (variableVerifier != null) {
+			System.out.println("&&&& VERIFIER Pattern: " + variableVerifier);
+			if (!variableVerifier.matcher(variableData).matches()) {
+				variableContentVerified = false;
+			}
+		}
+		// TODO Leave this print
+		if (!variableContentVerified && !Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
+			System.out.println("Error: " + UnixVerifier.indicateErrorCondition(variableName));
+		}
+		System.out.println("&&&& VERIFIER Result: " + variableContentVerified);
+		return variableContentVerified;
 	}
 	
 	@Override
@@ -78,32 +87,13 @@ public class UnixVerifier extends InputVerifier {
 
 		try {
 			fieldName = input.getName();
-			if (fieldName.equals("PACKAGE_NAME")) {
-				if (!packageNameRE.matcher(text).matches()) {
-					throw new Exception();
-				}
-			} else if (fieldName.equals("PACKAGE_SHORT_DESCRIPTION")) {
-				if (text.length() > Constants.PACKAGE_SHORT_DESCRIPTION_MAX_LENGTH) {
-					throw new Exception();
-				}
-			} else if (fieldName.equals("PACKAGE_WEBSITE")) {
-				if (text.length() > 0) {
-					if (!packageWebsiteRE.matcher(text).matches()) {
-						throw new Exception();
-					}
-				}
-			} else if (fieldName.equals("PACKAGE_VERSION")) {
-				if (!packageVersionRE.matcher(text).matches()) {
-					throw new Exception();
-				}
-			} else if (fieldName.equals("MAINTAINER_EMAIL")) {
-				if (!rfc2822.matcher(text).matches()) {
-					throw new Exception();
-				}
+			if (!UnixVerifier.verify(fieldName, text)) {
+				throw new Exception();
 			}
-			this.indicateNormalCondition(input);
+			this.indicateNormalConditionGUI(input);
 		} catch (Exception e) {
-			this.indicateErrorCondition(input);
+			System.out.println("BATCH MODE????? " + Variables.get("BATCH_MODE"));
+			this.indicateErrorConditionGUI(input);
 			return false;
 		}
 
@@ -123,23 +113,32 @@ public class UnixVerifier extends InputVerifier {
 	public boolean shouldYieldFocus(JComponent input) {
 		boolean valid = verify(input);
 		if (!valid) {
-			String inputCanonicalName = Constants.FIELDS_CANONICAL_NAME.get(input.getName());
-			if (inputCanonicalName == null) {
-				inputCanonicalName = input.getName();
-			}
-			String inputFormatExplanation = Constants.FIELDS_FORMAT_EXPLANATION.get(input.getName());
-			if (inputFormatExplanation == null) {
-				inputFormatExplanation = "";
-			} else {
-				// Formatting nuisances
-				inputFormatExplanation = ": " + inputFormatExplanation;
-			}
-			// Parse output to fit on the message dialog
-			inputFormatExplanation = inputCanonicalName + " is invalid" + inputFormatExplanation;
+			String inputFormatExplanation = getFieldErrorExplanation(input.getName());
+			// Adapt to comply to the size of the message dialog
 			inputFormatExplanation = inputFormatExplanation.replaceAll("(.{" + Constants.VALIDATION_FORMAT_EXPLANATION_MAX_LENGTH + "})", "$1\n");
 			JOptionPane.showMessageDialog(null, inputFormatExplanation);
 		}
 
 		return valid;
+	}
+
+	/**
+	 *  Get explanation of the error for a given variable.
+	 */
+	private static String getFieldErrorExplanation(String variableName) {
+		String inputCanonicalName = Constants.FIELDS_CANONICAL_NAME.get(variableName);
+		if (inputCanonicalName == null) {
+			inputCanonicalName = variableName;
+		}
+		String inputFormatExplanation = Constants.FIELDS_FORMAT_EXPLANATION.get(variableName);
+		if (inputFormatExplanation == null) {
+			inputFormatExplanation = "";
+		} else {
+			// Formatting nuisances
+			inputFormatExplanation = ": " + inputFormatExplanation;
+		}
+		// Parse output to fit on the message dialog
+		inputFormatExplanation = inputCanonicalName + " is invalid" + inputFormatExplanation;
+		return inputFormatExplanation;
 	}
 }

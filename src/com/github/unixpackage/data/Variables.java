@@ -8,6 +8,8 @@ public class Variables {
 	/**
 	 * Information set by user
 	 */
+	// Batch mode (default is false)
+	public static Boolean BATCH_MODE = false;
 	public static Boolean _GPG_KEY_EXISTS = false;
 	public static String MAINTAINER_EMAIL;
 	public static String MAINTAINER_NAME;
@@ -17,7 +19,7 @@ public class Variables {
 	public static String PACKAGE_WEBSITE;
 	public static String PACKAGE_VERSION;
 	public static String _PACKAGE_INSTALL_PATH;
-	public static String PACKAGE_LICENSE;
+	public static String PACKAGE_LICENCE;
 	public static String PACKAGE_CLASS;
 	public static Boolean PACKAGE_SIGN;
 	public static ArrayList<ArrayList<String>> PACKAGE_SOURCE_INSTALL_PAIRS;
@@ -32,7 +34,7 @@ public class Variables {
 	public static String _BUNDLE_MODE_MANUAL;
 	public static String _BUNDLE_MODE_ADVANCED;
 	public static String BUNDLE_MODE_ADVANCED_PATH;
-
+	
 	public static Object get(String key) {
 		Object value = null;
 		try {
