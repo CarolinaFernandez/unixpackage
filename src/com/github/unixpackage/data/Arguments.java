@@ -51,8 +51,13 @@ public class Arguments {
 
 				System.out.println("*** ARGUMENT VARIABLE: " + variableName);
 				// Place value of argument in its related variable
+				// No variable has an initial value on the first run, so ignore that
 				if (argumentWithValue && variableName != null && variableName != "") {
-					variableData = Variables.get(variableName).toString();
+					try {
+						variableData = Variables.get(variableName).toString();
+					} catch (Exception e) {
+						variableData = "";
+					}
 					Field variableField = Variables.class.getDeclaredField(variableName);
 					System.out.println("type of variable: " + variableField.getType().getSimpleName());
 					if (variableField.getType().getSimpleName().equals("String")) {
@@ -90,12 +95,16 @@ public class Arguments {
 		String aggregatedArgument = "";
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].matches(Arguments.ARGUMENT_RE.toString())) {
-				// In case of implicit or explicit need of help, show it
+				// In case help is implicitly or explicitly requested, show it
 				if (!(Constants.ARGUMENTS_ACCEPTED.containsKey(args[i]) || Constants.ARGUMENTS_ACCEPTED.containsValue(args[i]))) {
 					Shell.outputHelpInformation();
 					System.exit(1);
 				} else if (args[i].equals(Constants.ARGUMENT_HELP) || args[i].equals(Constants.ARGUMENT_HELP_LONG)) {
 					Shell.outputHelpInformation();
+					System.exit(0);
+				// Show package version if explicitly requested
+				} else if (args[i].equals(Constants.ARGUMENT_VERSION) || args[i].equals(Constants.ARGUMENT_VERSION_LONG)) {
+					Shell.outputVersionInformation();
 					System.exit(0);
 				}
 				if (!aggregatedArgument.equals("")) {
@@ -119,7 +128,7 @@ public class Arguments {
 		argumentList.put(Constants.ARGUMENT_BATCH, null);
 		argumentList.put(Constants.ARGUMENT_SOURCE, Variables.PACKAGE_NAME);
 		argumentList.put(Constants.ARGUMENT_WEBSITE, Variables.PACKAGE_WEBSITE);
-		argumentList.put(Constants.ARGUMENT_VERSION, Variables.PACKAGE_VERSION);
+		argumentList.put(Constants.ARGUMENT_PACKAGE_VERSION, Variables.PACKAGE_VERSION);
 		// Translate to something understandable by the script
 		if (Constants.PACKAGE_LICENCES.containsKey(Variables.PACKAGE_LICENCE)) {
 			argumentList.put(Constants.ARGUMENT_COPYRIGHT,

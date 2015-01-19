@@ -66,7 +66,7 @@ public class GeneratePackage extends CommonStep {
 		commandList.add(0, command);
 		// Default is "DEB"
 		String scriptLocation = Constants.TMP_SCRIPT_DEBIAN_PATH;
-		if (Variables.PACKAGE_TYPE.equals("RPM")) {
+		if (!Variables.isNull("PACKAGE_TYPE") && Variables.PACKAGE_TYPE.equals("RPM")) {
 			scriptLocation = Constants.TMP_SCRIPT_REDHAT_PATH;
 		}
 		commandList.add(1, scriptLocation);

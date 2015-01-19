@@ -40,7 +40,7 @@ package_version_re='^[0-9]+([.][0-9]+)(-[0-9]+)?$'
 required_arguments_dh=('$package_name' '$package_version' '$package_class' '$name' '$email' '$copyright' '$source_path')
 required_arguments_sign=('$name' '$email')
 # Helps installing dependencies
-dpkg_dependencies=('dh-make' 'lintian')
+dpkg_dependencies=('dh-make' 'lintian' 'gzip')
 
 
 # Internal variables
@@ -94,6 +94,7 @@ function install_dependencies()
 
 function parse_arguments()
 {
+  echo "XXX args: $@"
   path_to_script=$(dirname $0)
   # Not every argument contains data (sometimes, one is enough to parse)
   while [[ $# > 0 ]]; do
@@ -158,9 +159,10 @@ function parse_arguments()
     -t|--templates)
         # Only one path allowed
         debian_files_location="$1"
+        echo "XXX debian files location: $debian_files_location"
         shift
         ;;
-    -v|--version)
+    -V|--package-version)
         package_version="$1"
         shift
         ;;
@@ -392,7 +394,8 @@ function perform_dh_make()
     echo "ls -la $PWD (dh-make)"
     ls -la $PWD
   echo "/usr/bin/dh_make $dh_make_params"
-  /usr/bin/dh_make $dh_make_params || error "Could not dh_make with ${package_name}_${package_version}.tar.gz"
+  dh_make $dh_make_params || error "Could not dh_make with ${package_name}_${package_version}.tar.gz"
+  #dh_installman || error "Could not dh_installman for ${package_name}_${package_version} package"
 
   echo "path_to_package: $path_to_package"
   echo "PWD: $PWD"
@@ -423,7 +426,7 @@ if [[ -f $debian_files_location/debian/control ]]; then
     package_version=$(grep --only-matching --perl-regex "(?<=^Version: ).*" $debian_files_location/debian/control)
   fi
 else
-  error "E: file $debian_files_location/debian/control is needed when using templates"
+  error "E: file $debian_files_location/debian/control is needed when using templates. Consider passing the template parameter"
 fi
 # Recompute output location
 path_to_package=$root_script/${package_name}_${package_version}

@@ -60,55 +60,56 @@ public class Shell {
 		+ "Usage: unixpackage [mode] [arguments]\n"
 		+ "\n"
 		+ " Main modes of operation (pick one):\n"
-		+ "  %M1%, %M1l%                         Print help information\n"
-		+ "  %M2%, %M2l%                        Run process in background\n"
+		+ "  %M1%, %M1l%                        Run process in background\n"
+		+ "  %M2%, %M2l%                         Print help information\n"
+		+ "  %M3%, %M3l%                      Print version\n"
 		+ "\n"
-		+ " Arguments (all required for batch mode):\n"
+		+ " Arguments (required in batch mode - when no config file is available):\n"
 		+ "  %R1%, %R1l% <name>                  Full name of the package maintainer\n"
-		+ "  %R2%, %R2l% <address>              E-mail of the package maintainer\n"
-		+ "  %R3%, %R3l% <url>                URL of the software's upstream homepage\n"
-		+ "  %R4%, %R4l% <class>                Package class (s|i|k|l|m|n)\n"
-		+ "  %R5%, %R5l% <type>             Use <type> of licence in copyright file\n"
+		+ "  %R2%, %R2l% <address>              E-mail address of the package maintainer\n"
+		+ "  %R3%, %R3l% <class>                Package class (s|i|k|l|m|n)\n"
+		+ "  %R4%, %R4l% <type>             Use <type> of licence in copyright file\n"
         + "                                     (apache|artistic|bsd|gpl|gpl2|gpl3|lgpl|lgpl2|\n"
         + "                                     lgpl3|mit)\n"
-		+ "  %R6%, %R6l% <name>          Package name (better use lowercase, digits,\n"
-        + "                                     dashes\n"
-		+ "  %R7%, %R7l%                      Version of the package\n"
+		+ "  %R5%, %R5l% <name>          Package name (better use lowercase, digits,\n"
+        + "                                     dashes)\n"
+		+ "  %R6%, %R6l% <version>    Version of the package\n"
 		+ "\n"
-		+ " Arguments (optional):\n"
+		+ " Arguments (optional - provide extra information or operations):\n"
 		+ "  %O1%, %O1l% <dir>                 Source directory (???)\n"
 		+ "  %O2%, %O2l%                         Sign package. This will use name and email to look\n"
 		+ "                                     for a matching GPG key on the system.\n"
 		+ "  %O3%, %O3l% <text>     Description of the package (up to 60 characters)\n"
 		+ "  %O4%, %O4l% <text>      Detailed description of the package\n"
-		+ "  %O5%, %O5l% <dir>              Use customizing templates in <dir> for dh_make\n"
+		+ "  %O5%, %O5l% <url>                URL of the software upstream homepage\n"
+		+ "  %O6%, %O6l% <dir>              Use customizing templates in <dir> for dh_make\n"
 		+ "\n"
-		+ " Example:\n"
+		+ " Examples:\n"
 		+ "  unixpackage %M2% %R1% Jane Doe %R2% jane.doe@trivi.al %R4% m %R5% lgpl3 -S \\\n"
 		+ "  %O3% Trivial package %O4% Trivial package that does trivial stuff \\\n"
 		+ "  %O5% /root/path/for/deb/templates %O1% trivialpackage %R6% trivialpackage \\\n"
 		+ "  %R7% 0.1 %R3% http://trivial.package.com\n";
 		
 		// Replace proper arguments into place holders
-		helpOutput = helpOutput.replace("%M1%", Constants.ARGUMENT_HELP);
-		helpOutput = helpOutput.replace("%M1l%", Constants.ARGUMENT_HELP_LONG);
-		helpOutput = helpOutput.replace("%M2%", Constants.ARGUMENT_BATCH);
-		helpOutput = helpOutput.replace("%M2l%", Constants.ARGUMENT_BATCH_LONG);
+		helpOutput = helpOutput.replace("%M1%", Constants.ARGUMENT_BATCH);
+		helpOutput = helpOutput.replace("%M1l%", Constants.ARGUMENT_BATCH_LONG);
+		helpOutput = helpOutput.replace("%M2%", Constants.ARGUMENT_HELP);
+		helpOutput = helpOutput.replace("%M2l%", Constants.ARGUMENT_HELP_LONG);
+		helpOutput = helpOutput.replace("%M3%", Constants.ARGUMENT_VERSION);
+		helpOutput = helpOutput.replace("%M3l%", Constants.ARGUMENT_VERSION_LONG);
 		
 		helpOutput = helpOutput.replace("%R1%", Constants.ARGUMENT_NAME);
 		helpOutput = helpOutput.replace("%R1l%", Constants.ARGUMENT_NAME_LONG);
 		helpOutput = helpOutput.replace("%R2%", Constants.ARGUMENT_EMAIL);
 		helpOutput = helpOutput.replace("%R2l%", Constants.ARGUMENT_EMAIL_LONG);
-		helpOutput = helpOutput.replace("%R3%", Constants.ARGUMENT_WEBSITE);
-		helpOutput = helpOutput.replace("%R3l%", Constants.ARGUMENT_WEBSITE_LONG);
-		helpOutput = helpOutput.replace("%R4%", Constants.ARGUMENT_CLASS);
-		helpOutput = helpOutput.replace("%R4l%", Constants.ARGUMENT_CLASS_LONG);
-		helpOutput = helpOutput.replace("%R5%", Constants.ARGUMENT_COPYRIGHT);
-		helpOutput = helpOutput.replace("%R5l%", Constants.ARGUMENT_COPYRIGHT_LONG);
-		helpOutput = helpOutput.replace("%R6%", Constants.ARGUMENT_PACKAGE_NAME);
-		helpOutput = helpOutput.replace("%R6l%", Constants.ARGUMENT_PACKAGE_NAME_LONG);
-		helpOutput = helpOutput.replace("%R7%", Constants.ARGUMENT_VERSION);
-		helpOutput = helpOutput.replace("%R7l%", Constants.ARGUMENT_VERSION_LONG);
+		helpOutput = helpOutput.replace("%R3%", Constants.ARGUMENT_CLASS);
+		helpOutput = helpOutput.replace("%R3l%", Constants.ARGUMENT_CLASS_LONG);
+		helpOutput = helpOutput.replace("%R4%", Constants.ARGUMENT_COPYRIGHT);
+		helpOutput = helpOutput.replace("%R4l%", Constants.ARGUMENT_COPYRIGHT_LONG);
+		helpOutput = helpOutput.replace("%R5%", Constants.ARGUMENT_PACKAGE_NAME);
+		helpOutput = helpOutput.replace("%R5l%", Constants.ARGUMENT_PACKAGE_NAME_LONG);
+		helpOutput = helpOutput.replace("%R6%", Constants.ARGUMENT_PACKAGE_VERSION);
+		helpOutput = helpOutput.replace("%R6l%", Constants.ARGUMENT_PACKAGE_VERSION_LONG);
 
 		helpOutput = helpOutput.replace("%O1%", Constants.ARGUMENT_SOURCE);
 		helpOutput = helpOutput.replace("%O1l%", Constants.ARGUMENT_SOURCE_LONG);
@@ -118,10 +119,16 @@ public class Shell {
 		helpOutput = helpOutput.replace("%O3l%", Constants.ARGUMENT_DESCRIPTION_SHORT_LONG);
 		helpOutput = helpOutput.replace("%O4%", Constants.ARGUMENT_DESCRIPTION);
 		helpOutput = helpOutput.replace("%O4l%", Constants.ARGUMENT_DESCRIPTION_LONG);
-		helpOutput = helpOutput.replace("%O5%", Constants.ARGUMENT_TEMPLATES);
-		helpOutput = helpOutput.replace("%O5l%", Constants.ARGUMENT_TEMPLATES_LONG);
+		helpOutput = helpOutput.replace("%O5%", Constants.ARGUMENT_WEBSITE);
+		helpOutput = helpOutput.replace("%O5l%", Constants.ARGUMENT_WEBSITE_LONG);
+		helpOutput = helpOutput.replace("%O6%", Constants.ARGUMENT_TEMPLATES);
+		helpOutput = helpOutput.replace("%O6l%", Constants.ARGUMENT_TEMPLATES_LONG);
 		
 		System.out.println(helpOutput);
+	}
+	
+	public static void outputVersionInformation() {
+		System.out.println(Constants.APP_VERSION);
 	}
 
 	public static boolean preProcess() {

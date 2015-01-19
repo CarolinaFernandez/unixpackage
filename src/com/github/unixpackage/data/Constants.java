@@ -113,6 +113,8 @@ public final class Constants {
 	// Arguments names
 	public static final String ARGUMENT_HELP = "-h";
 	public static final String ARGUMENT_HELP_LONG = "--help";
+	public static final String ARGUMENT_VERSION = "-v";
+	public static final String ARGUMENT_VERSION_LONG = "--version";
 	public static final String ARGUMENT_BATCH = "-b";
 	public static final String ARGUMENT_BATCH_LONG = "--batch";
 	public static final String ARGUMENT_SOURCE = "-s";
@@ -135,8 +137,8 @@ public final class Constants {
 	public static final String ARGUMENT_CLASS_LONG = "--class";
 	public static final String ARGUMENT_PACKAGE_NAME = "-p";
 	public static final String ARGUMENT_PACKAGE_NAME_LONG = "--package-name";
-	public static final String ARGUMENT_VERSION = "-v";
-	public static final String ARGUMENT_VERSION_LONG = "--version";
+	public static final String ARGUMENT_PACKAGE_VERSION = "-V";
+	public static final String ARGUMENT_PACKAGE_VERSION_LONG = "--package-version";
 	public static final String ARGUMENT_SIGN = "-S";
 	public static final String ARGUMENT_SIGN_LONG = "--sign";
 	
@@ -299,7 +301,7 @@ public final class Constants {
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_COPYRIGHT, Constants.ARGUMENT_COPYRIGHT_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_CLASS, Constants.ARGUMENT_CLASS_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_NAME, Constants.ARGUMENT_PACKAGE_NAME_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_VERSION, Constants.ARGUMENT_VERSION_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_VERSION, Constants.ARGUMENT_PACKAGE_VERSION_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_SIGN, Constants.ARGUMENT_SIGN_LONG);
 		
 		// Mapping of input arguments and their associated variables
@@ -315,7 +317,7 @@ public final class Constants {
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_COPYRIGHT, "PACKAGE_LICENCE");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_CLASS, "PACKAGE_CLASS");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_NAME, "PACKAGE_NAME");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_VERSION, "PACKAGE_VERSION");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_VERSION, "PACKAGE_VERSION");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_SIGN, "PACKAGE_SIGN");
 		
 		// RegExps (e.g. for validation)

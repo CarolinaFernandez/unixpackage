@@ -36,7 +36,7 @@ public class UnixPreferences {
 		if (!Variables.isNull(key)) {
 			// Extra checks for variables depending on each other
 			if (key.equals("BUNDLE_MODE_ADVANCED_PATH")) {
-				if (Variables.get("BUNDLE_MODE").equals(
+				if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals(
 						Constants.BUNDLE_MODE_ADVANCED)) {
 					props.setProperty(key, value.toString());
 				}

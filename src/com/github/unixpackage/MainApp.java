@@ -4,6 +4,7 @@ package com.github.unixpackage;
 
 import com.github.unixpackage.components.CommonFrame;
 import com.github.unixpackage.data.Arguments;
+import com.github.unixpackage.data.Constants;
 import com.github.unixpackage.data.UnixPreferences;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.steps.GeneratePackage;
@@ -20,10 +21,13 @@ public class MainApp {
 		
 		// When in batch mode, exit with error if some argument
 		// was not correctly parsed
-		if (Variables.BATCH_MODE != null && Variables.BATCH_MODE) {
+		if (!Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
 			if (!argumentsCorrectlyParsed) {
+				System.out.println("ERRORS PARSING");
 				System.exit(1);
 			}
+			// Preconditions
+			Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
 			// Generate files before preparing packages
 			Shell.generateTempFiles();
 			GeneratePackage.generateDebianPackage();
