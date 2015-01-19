@@ -1,2 +1,3 @@
 bin/unixpackage.jar usr/lib/unixpackage
 debian/unixpackage.sbin usr/sbin
+debian/unixpackage.8 usr/share/man/man8

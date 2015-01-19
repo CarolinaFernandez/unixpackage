@@ -5,11 +5,14 @@
 
 set -e
 
-NAME="unixpackage"
+NAME=unixpackage
+NAME_SHORT=upkg
+LEVEL=8
 initd_unixpackage=/etc/init.d/$NAME
 initd_upkg=/usr/sbin/upkg
 sbin_unixpackage=/usr/sbin/$NAME
 sbin_upkg=/usr/sbin/upkg
+man_unixpackage=/usr/share/man/man8
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -35,6 +38,11 @@ case "$1" in
         if [ -f $sbin_unixpackage ]; then
           ln -s $sbin_unixpackage $sbin_upkg
           chmod +x $sbin_upkg
+        fi
+        # Move manpage to proper location and create alias
+        if [ -f $man_unixpackage/$NAME.$LEVEL ]; then
+            gzip $man_unixpackage$LEVEL/$NAME.$LEVEL
+            ln -s $man_unixpackage$LEVEL/$NAME.$LEVEL.gz $man_unixpackage$LEVEL/$NAME_SHORT.$LEVEL.gz
         fi
     ;;
 

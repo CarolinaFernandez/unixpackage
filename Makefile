@@ -25,21 +25,21 @@ build:
 		$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) @sources.txt -encoding UTF-8
 		rm sources.txt
 		#$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) -sourcepath $(SRC_DIR) $(ENTRY_POINT) $(JFLAGS)
-		cp -Rp media $(BUILD_DIR)
-		cp -Rp script $(BUILD_DIR)
-		cp -Rp packages $(BUILD_DIR)
-		cp -p README.md $(BUILD_DIR)
-		cp -p LICENCE.txt $(BUILD_DIR)
+		cp -Rup media $(BUILD_DIR)
+		cp -Rup script $(BUILD_DIR)
+		cp -Rup packages $(BUILD_DIR)
+		cp -up README.md $(BUILD_DIR)
+		cp -up LICENCE.txt $(BUILD_DIR)
 		test -d $(BUILD_DIR) || echo "Error: $(BUILD_DIR) directory is not found"
 
 run-class: 	
 		$(JAVA) -cp $(CLASSPATH) $(ENTRY_POINT_JAVA)
 
 jar:		
-		cp -p $(LIB_DIR)/commons-io-1.2.jar $(BUILD_DIR)/
+		cp -up $(LIB_DIR)/commons-io-1.2.jar $(BUILD_DIR)/
 		# Extract contents of dependencies under BUILD_DIR
 		$(JAR) xf $(BUILD_DIR)/commons-io-1.2.jar org -C $(BUILD_DIR)/ .
-		mv org $(BUILD_DIR)/
+		mv -un org $(BUILD_DIR)/
 		$(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C $(BUILD_DIR) .
 		#$(JAR) cvfe $(JAR_PKG) $(ENTRY_POINT_CLASS) src -C $(BUILD_DIR) .
 

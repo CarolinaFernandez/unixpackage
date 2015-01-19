@@ -5,11 +5,14 @@
 
 set -e
 
-NAME="unixpackage"
+NAME=unixpackage
+NAME_SHORT=upkg
+LEVEL=8
 initd_unixpackage=/etc/init.d/$NAME
 initd_upkg=/usr/sbin/upkg
 sbin_unixpackage=/usr/sbin/$NAME
 sbin_upkg=/usr/sbin/upkg
+man_unixpackage=/usr/share/man/man8
 
 # summary of how this script can be called:
 #        * <postrm> `remove'
@@ -28,11 +31,16 @@ sbin_upkg=/usr/sbin/upkg
 case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
         # Remove aliases
-        if [ -L $sbin_upkg ]; then
+        if [ -f $sbin_upkg ]; then
             rm $sbin_upkg
         fi
         if [ -L $initd_upkg ]; then
             rm $initd_upkg
+        fi
+        # Remove manpage and alias
+        if [ -f $man_unixpackage/$NAMEi.$LEVEL.gz ]; then
+            rm $man_unixpackage$LEVEL/$NAME.$LEVEL.gz
+            rm $man_unixpackage$LEVEL/$NAME_SHORT.$LEVEL.gz
         fi
     ;;
 

@@ -11,5 +11,5 @@ DAEMON_LOCATION="/usr/lib/$NAME/$NAME.jar"
 
 . /etc/default/$NAME
 
-# Run it
-java -jar $DAEMON_OPTS $DAEMON_LOCATION
+# Run it (with arguments)
+java -jar $DAEMON_OPTS $DAEMON_LOCATION $@

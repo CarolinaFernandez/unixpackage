@@ -1,0 +1,158 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" (C) Copyright 2015 Carolina Fernandez <cfermart@gmail.com>,
+.\"
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+
+.TH UNIXPACKAGE 8 "January  18, 2015"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+
+.SH NAME
+unixpackage, upkg \- create a unix package
+
+.SH SYNOPSIS
+.B unixpackage
+.RI [ options ] " files" ...
+
+
+.SH DESCRIPTION
+The 
+.IR unixpackage
+command allows to generate a UNIX package easily either through both command-line and graphical interfaces.
+
+The command can be used either in 
+.IR GUI
+and
+.IR batch
+modes. The former triggers a graphical interface that allows to input a set of values through a number of steps and forms and choose between the 
+.IR simple
+,
+.IR manual
+and
+.IR advanced
+modes.
+The workflow is as follows:
+.IP \fB1.\fP 3
+Upon loading the program, the preferences file is initially loaded and then the arguments passed by console are parsed. Arguments passed to the program have higher priority than previous preferences.
+.IP \fB2.\fP 3
+Program determines the active operation mode, i.e. whether it is being run in batch mode or using the graphical interface. If the program is running as batch, the environment is initialised in the first step. Otherwise, the graphical interface is launched and the steps of the initialisation are distributed among the related steps.
+.IP \fB3.\fP 3
+Input data -either by console or GUI- is validated against a given set of parameters. If something fails, exit the program with error and do not save current input data in the configuration file located at the caller's personal home.
+.IP \fB4.\fP 3
+If parse and validaton steps were successful, load the local steps.
+.IP \fB5.\fP 3
+In the end, check that temporal files are copied and execute the packaging script. Show output via the coonsole for detailed data and final location of the package.
+
+
+.SH OPERATION MODES
+The \fIsimple\fP mode generates the files automatically and there is no further control over them. The \fImanual\fP mode extends the simple mode by allowing the user to modify the package files before the packaging takes place. The \fIadvanced\fP mode expects some knowledge about the format of the packaging files, as this mode requires template files to be passed for the packaging. \fINote\fP that the batch mode works only in the advanced mode.
+
+
+.SH OPTIONS
+Main operation modes. One must be picked.
+.TP
+.B \-b, \-\-batch
+Run process in background.
+.TP
+.B \-h, \-\-help
+Print help information.
+.TP
+.B \-v, \-\-version
+Print version.
+
+.TP
+Arguments (required in batch mode).
+.TP
+\fB\-n, \-\-name\fP \fIname\fP
+Full name of the package maintainer.
+.TP
+\fB\-e, \-\-email\fP \fIaddress\fP
+E-mail address of the package maintainer.
+.TP
+\fB\-C, \-\-class\fP \fIclass\fP
+Package class (s|i|k|l|m|n).
+.TP
+\fB\-c, \-\-copyright\fP \fItype\fP
+.br
+Use type of licence in copyright file (apache|artistic|bsd|gpl|gpl2|gpl3|lgpl|lgpl2|lgpl3|mit).
+.TP
+\fB\-p, \-\-package\-name\fP \fIname\fP
+Package name (better use lowercase, digits, dashes).
+.TP
+\fB\-V, \-\-package\-version\fP \fIversion\fP
+Version of the package.
+
+
+.TP
+Arguments (optional - provide extra information or operations).
+.TP
+\fB\-s, \-\-source\fP \fIdir\fP
+Source directory of the package.
+.TP
+.B -S, \-\-sign
+Sign package. This will use name and email to look for a matching GPG key on the system.
+.TP
+\fB\-d, \-\-description\-short\fP \fIshort_description\fP
+Description of the package (up to 60 characters).
+.TP
+\fB\-D, \-\-description\-long\fP \fIextended_description\fP
+Detailed description of the package.
+.TP
+\fB\-w, \-\-website\fP \fIurl\fP
+URL of the software upstream homepage.
+.TP
+\fB\-t, \-\-templates\fP \fIdir\fP
+Use customizing templates in dir for dh_make.
+
+
+.SH FILES
+.TP
+\fI~/.upkg/upkg.properties\fP
+PrIferences of a given run are stored and loaded from here.
+.TP
+\fI/usr/lib/unixpackage/unixpackage.jar\fP
+Internal library, in charge of returning the expected functionality.
+.TP
+\fI/usr/sbin/unixpackage\fP, \fI/usr/sbin/upkg\fP
+Binary to run the internal libraries.
+.TP
+\fI/etc/default/unixpackage\fP
+Configuration file for this package, used by the binary.
+.TP
+\fI/usr/share/man/man8/unixpackage.8.gz\fP
+Man pages for this package, available only to administrators.
+
+
+.SH EXAMPLES
+.TP
+When running the application for the first name, every required argument must be passed.
+
+.TP.TP
+unixpackage -b -n Jane Doe -e jane.doe@trivi.al -C m -c lgpl3 -t /root/path/for/deb/templates -s trivialpackage -p trivialpackage -V 0.1
+.TP
+Once the properties files is set, the simple batch mode can be used.
+
+.TP.TP
+unixpackage -b
+.TP
+The package can be signed when both name and emal are provided (i.e. in the properties file or through the arguments).
+
+.TP.TP
+unixpackage -b -n Jane Doe -e jane.doe@trivi.al -S
+
+
+
+.SH SEE ALSO
+\fBdh_make\fP (8), \fBdpkg-buildpackage\fP (1).

@@ -2,8 +2,8 @@ Version: [[version]]
 Standards-Version: 3.9.3
 Maintainer: Carolina Fernandez <cfermart@gmail.com>
 Build-Depends: debhelper (>= 8.0.0)
-Depends: dh-make, lintian, rng-tools, rsync
-Section: devel
+Depends: dh-make, lintian, gzip, rng-tools, rsync
+Section: admin
 Priority: optional
 Homepage: http://carolinafernandez.github.io/unixpackage
 Source: unixpackage
