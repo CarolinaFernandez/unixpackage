@@ -40,17 +40,12 @@ public class ReviewPackageInfo extends CommonStep {
 		numRows++;
 
 		// Author info
-		l = new JLabel("Maintainer name: ", JLabel.TRAILING);
+		l = new JLabel("Maintainer: ", JLabel.TRAILING);
 		this.add(l);
-		l = new JLabel(Variables.MAINTAINER_NAME);
+		String maintainerData = Variables.MAINTAINER_NAME + " (" + Variables.MAINTAINER_EMAIL + ")";
+		l = new JLabel(maintainerData);
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
-		this.add(l);
-		numRows++;
-
-		l = new JLabel("Maintainer e-mail: ", JLabel.TRAILING);
-		this.add(l);
-		l = new JLabel(Variables.MAINTAINER_EMAIL);
-		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
+		l.setToolTipText(maintainerData);
 		this.add(l);
 		numRows++;
 
@@ -86,7 +81,14 @@ public class ReviewPackageInfo extends CommonStep {
 
 		l = new JLabel("Class: ", JLabel.TRAILING);
 		this.add(l);
-		l = new JLabel(Variables.PACKAGE_CLASS);
+		l = new JLabel(Variables.PACKAGE_CLASS + " (" + Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS) + ")");
+		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
+		this.add(l);
+		numRows++;
+		
+		l = new JLabel("Section, Priority: ", JLabel.TRAILING);
+		this.add(l);
+		l = new JLabel(Variables.PACKAGE_SECTION + ", " + Variables.PACKAGE_PRIORITY);
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		this.add(l);
 		numRows++;

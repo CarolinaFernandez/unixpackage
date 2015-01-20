@@ -61,7 +61,7 @@ The \fIsimple\fP mode generates the files automatically and there is no further 
 
 
 .SH OPTIONS
-Main operation modes. One must be picked.
+\fBMain operation modes.\fP Exclusive, only one must be chosen.
 .TP
 .B \-b, \-\-batch
 Run process in background.
@@ -73,7 +73,7 @@ Print help information.
 Print version.
 
 .TP
-Arguments (required in batch mode).
+\fBRequired arguments.\fP Needed when in batch mode.
 .TP
 \fB\-n, \-\-name\fP \fIname\fP
 Full name of the package maintainer.
@@ -96,7 +96,7 @@ Version of the package.
 
 
 .TP
-Arguments (optional - provide extra information or operations).
+\fBOptional arguments.\fP Provide extra information or operations.
 .TP
 \fB\-s, \-\-source\fP \fIdir\fP
 Source directory of the package.
@@ -110,6 +110,12 @@ Description of the package (up to 60 characters).
 \fB\-D, \-\-description\-long\fP \fIextended_description\fP
 Detailed description of the package.
 .TP
+\fB\-s, \-\-section\fP \fIsection\fP
+Section to which the package belongs (admin|cli-mono|comm|database|debug|devel|doc|editors|education|electronics|embedded|fonts|games|gnome|gnu-r|gnustep|graphics|hamradio|haskell|httpd|interpreters|introspection|java|kde|kernel|libdevel|libs|lisp|localization|mail|math|metapackages|misc|net|news|ocaml|oldlibs|otherosfs|perl|php|python|ruby|science|shells|sound|tasks|tex|text|utils|vcs|video|web|x11|xfce|zope).
+.TP
+\fB\-P, \-\-priority\fP \fIlevel\fP
+Level of priority used for this package (required|important|standard|optional|extra).
+.TP
 \fB\-w, \-\-website\fP \fIurl\fP
 URL of the software upstream homepage.
 .TP
@@ -120,7 +126,7 @@ Use customizing templates in dir for dh_make.
 .SH FILES
 .TP
 \fI~/.upkg/upkg.properties\fP
-PrIferences of a given run are stored and loaded from here.
+Preferences of a given run are stored and loaded from here.
 .TP
 \fI/usr/lib/unixpackage/unixpackage.jar\fP
 Internal library, in charge of returning the expected functionality.
@@ -138,20 +144,24 @@ Man pages for this package, available only to administrators.
 .SH EXAMPLES
 .TP
 When running the application for the first name, every required argument must be passed.
-
+.sp 2
 .TP.TP
-unixpackage -b -n Jane Doe -e jane.doe@trivi.al -C m -c lgpl3 -t /root/path/for/deb/templates -s trivialpackage -p trivialpackage -V 0.1
+unixpackage -b -n Jane Doe -e jane.doe@trivi.al -C m -c lgpl3 -p trivialpackage -V 0.1
 .TP
 Once the properties files is set, the simple batch mode can be used.
-
+.sp 2
 .TP.TP
 unixpackage -b
 .TP
 The package can be signed when both name and emal are provided (i.e. in the properties file or through the arguments).
-
+.sp 2
 .TP.TP
 unixpackage -b -n Jane Doe -e jane.doe@trivi.al -S
-
+.TP
+Templates can be used to provide your own control information, rules to install and corresponding files, scripts to manage installation and removal of the package, etc.
+.sp 2
+.TP.TP
+unixpackage -b -n Jane Doe -e jane.doe@trivi.al -C m -c lgpl3 -p trivialpackage -V 0.1 -t /root/path/for/deb/templates
 
 
 .SH SEE ALSO

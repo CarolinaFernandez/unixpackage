@@ -102,6 +102,44 @@ public class SetPackageInfo extends CommonStep {
 		this.add(classLabel);
 		this.add(classesListBox);
 
+		// Section
+		JLabel sectionLabel = new JLabel("Section:", JLabel.TRAILING);
+		DefaultComboBoxModel sectionsList = new DefaultComboBoxModel();
+		for (String section : Constants.PACKAGE_SECTIONS) {
+			sectionsList.addElement(section);
+		}
+		JComboBox sectionsListBox = new JComboBox(sectionsList);
+		sectionLabel.setLabelFor(sectionsListBox);
+		sectionsListBox.setToolTipText("Choose the section more related to your package");
+		// Set name of variable where the field should be saved in
+		sectionsListBox.setName("PACKAGE_SECTION");
+		// TODO Fill in CommonStep
+		if (!Variables.isNull(sectionsListBox.getName())) {
+			sectionsListBox.setSelectedItem(Variables.get(sectionsListBox
+					.getName()));
+		}
+		this.add(sectionLabel);
+		this.add(sectionsListBox);
+		
+		// Priority
+		JLabel priorityLabel = new JLabel("Priority:", JLabel.TRAILING);
+		DefaultComboBoxModel prioritiesList = new DefaultComboBoxModel();
+		for (String priority : Constants.PACKAGE_PRIORITIES) {
+			prioritiesList.addElement(priority);
+		}
+		JComboBox prioritiesListBox = new JComboBox(prioritiesList);
+		priorityLabel.setLabelFor(prioritiesListBox);
+		prioritiesListBox.setToolTipText("Set a suitable priority");
+		// Set name of variable where the field should be saved in
+		prioritiesListBox.setName("PACKAGE_PRIORITY");
+		// TODO Fill in CommonStep
+		if (!Variables.isNull(prioritiesListBox.getName())) {
+			prioritiesListBox.setSelectedItem(Variables.get(prioritiesListBox
+					.getName()));
+		}
+		this.add(priorityLabel);
+		this.add(prioritiesListBox);
+		
 		// New row
 		this.add(new JLabel());
 		this.add(new JLabel());
@@ -118,7 +156,7 @@ public class SetPackageInfo extends CommonStep {
 		}
 
 		// Lay out the panel
-		SpringUtilities.makeCompactGrid(this, numPairs + 4, 2, // rows, cols
+		SpringUtilities.makeCompactGrid(this, numPairs + 6, 2, // rows, cols
 				6, 6, // initX, initY
 				6, 6); // xPad, yPad
 	}

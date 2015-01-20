@@ -21,9 +21,10 @@ public class Variables {
 	public static String _PACKAGE_INSTALL_PATH;
 	public static String PACKAGE_LICENCE;
 	public static String PACKAGE_CLASS;
+	public static String PACKAGE_SECTION;
+	public static String PACKAGE_PRIORITY;
 	public static Boolean PACKAGE_SIGN;
 	public static ArrayList<ArrayList<String>> PACKAGE_SOURCE_INSTALL_PAIRS;
-	public static String _PACKAGE_SOURCE_PATH;
 	// Can be "DEB" or "RPM"
 	public static String PACKAGE_TYPE;
 	public static String _DEB_PACKAGE;

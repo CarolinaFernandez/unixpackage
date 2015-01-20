@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -135,6 +137,10 @@ public final class Constants {
 	public static final String ARGUMENT_COPYRIGHT_LONG = "--copyright";
 	public static final String ARGUMENT_CLASS = "-C";
 	public static final String ARGUMENT_CLASS_LONG = "--class";
+	public static final String ARGUMENT_PACKAGE_SECTION = "-s";
+	public static final String ARGUMENT_PACKAGE_SECTION_LONG = "--section";
+	public static final String ARGUMENT_PACKAGE_PRIORITY = "-P";
+	public static final String ARGUMENT_PACKAGE_PRIORITY_LONG = "--priority";
 	public static final String ARGUMENT_PACKAGE_NAME = "-p";
 	public static final String ARGUMENT_PACKAGE_NAME_LONG = "--package-name";
 	public static final String ARGUMENT_PACKAGE_VERSION = "-V";
@@ -201,6 +207,18 @@ public final class Constants {
 	public static final Pattern RE_PACKAGE_SHORT_DESCRIPTION = Pattern.compile(
 			"^.{1,%SUB%}$".replace("%SUB%", new Integer(Constants.PACKAGE_SHORT_DESCRIPTION_MAX_LENGTH).toString())
 	);
+	// RegExp for package section
+	public static final Pattern RE_PACKAGE_SECTION = Pattern.compile(
+			"^(admin|cli-mono|comm|database|debug|devel|doc|editors|education|electronics|embedded|" +
+			"fonts|games|gnome|gnu-r|gnustep|graphics|hamradio|haskell|httpd|interpreters|introspection|" +
+			"java|kde|kernel|libdevel|libs|lisp|localization|mail|math|metapackages|misc|net|news|ocaml|" +
+			"oldlibs|otherosfs|perl|php|python|ruby|science|shells|sound|tasks|tex|text|utils|vcs|video|" +
+			"web|x11|xfce|zope)$"
+	);
+	// RegExp for package priority
+	public static final Pattern RE_PACKAGE_PRIORITY = Pattern.compile(
+			"^(required|important|standard|optional|extra)$"
+	);
 	// RegExp for package (short) description
 	public static final Pattern BUNDLE_MODE_ADVANCED_PATH = Pattern.compile(
 			"^(([a-zA-Z]:)?(\\/[a-zA-Z0-9_+-]*)\\/?)+$"
@@ -211,6 +229,8 @@ public final class Constants {
 	public static final Map<Integer, String> STEPS_DESCRIPTIONS;
 	public static final Map<String, String> PACKAGE_LICENCES;
 	public static final Map<String, String> PACKAGE_CLASSES;
+	public static final ArrayList<String> PACKAGE_SECTIONS;
+	public static final ArrayList<String> PACKAGE_PRIORITIES;
 	public static final Map<String, String> BUNDLE_MODE_DESCRIPTIONS;
 	public static final Map<String, String> FIELDS_CANONICAL_NAME;
 	public static final Map<String, String> FIELDS_FORMAT_EXPLANATION;
@@ -259,6 +279,10 @@ public final class Constants {
 		PACKAGE_CLASSES.put("Multiple binary", "m");
 		PACKAGE_CLASSES.put("Library", "l");
 
+		PACKAGE_SECTIONS = new ArrayList<String>(Arrays.asList(RE_PACKAGE_SECTION.toString().replace("(","").replace(")","").replace("^","").replace("$","").split("\\|")));
+
+		PACKAGE_PRIORITIES = new ArrayList<String>(Arrays.asList(RE_PACKAGE_PRIORITY.toString().replace("(","").replace(")","").replace("^","").replace("$","").split("\\|")));
+
 		// Explanation of each bundle mode
 		BUNDLE_MODE_DESCRIPTIONS = new HashMap<String, String>();
 		BUNDLE_MODE_DESCRIPTIONS.put(BUNDLE_MODE_SIMPLE,
@@ -274,6 +298,9 @@ public final class Constants {
 		FIELDS_CANONICAL_NAME.put("PACKAGE_SHORT_DESCRIPTION", "package short description");
 		FIELDS_CANONICAL_NAME.put("PACKAGE_WEBSITE", "package website");
 		FIELDS_CANONICAL_NAME.put("PACKAGE_VERSION", "package version");
+		FIELDS_CANONICAL_NAME.put("PACKAGE_LICENCE", "package licence");
+		FIELDS_CANONICAL_NAME.put("PACKAGE_SECTION", "package section");
+		FIELDS_CANONICAL_NAME.put("PACKAGE_PRIORITY", "package priority");
 		FIELDS_CANONICAL_NAME.put("MAINTAINER_EMAIL", "e-mail");
 
 		FIELDS_FORMAT_EXPLANATION = new HashMap<String, String>();
@@ -291,7 +318,7 @@ public final class Constants {
 		// Creating register of available parameters
 		ARGUMENTS_ACCEPTED = new HashMap<String, String>();
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_BATCH, Constants.ARGUMENT_BATCH_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_SOURCE, Constants.ARGUMENT_SOURCE_LONG);
+//		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_SOURCE, Constants.ARGUMENT_SOURCE_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_DESCRIPTION_SHORT, Constants.ARGUMENT_DESCRIPTION_SHORT_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_DESCRIPTION, Constants.ARGUMENT_DESCRIPTION_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_TEMPLATES, Constants.ARGUMENT_TEMPLATES_LONG);
@@ -300,6 +327,8 @@ public final class Constants {
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_EMAIL, Constants.ARGUMENT_EMAIL_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_COPYRIGHT, Constants.ARGUMENT_COPYRIGHT_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_CLASS, Constants.ARGUMENT_CLASS_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_SECTION, Constants.ARGUMENT_PACKAGE_SECTION_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_PRIORITY, Constants.ARGUMENT_PACKAGE_PRIORITY_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_NAME, Constants.ARGUMENT_PACKAGE_NAME_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_VERSION, Constants.ARGUMENT_PACKAGE_VERSION_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_SIGN, Constants.ARGUMENT_SIGN_LONG);
@@ -307,7 +336,7 @@ public final class Constants {
 		// Mapping of input arguments and their associated variables
 		ARGUMENTS_VARIABLES = new HashMap<String, String>();
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_BATCH, "BATCH_MODE");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_SOURCE, "");
+//		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_SOURCE, "");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_DESCRIPTION_SHORT, "PACKAGE_SHORT_DESCRIPTION");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_DESCRIPTION, "PACKAGE_DESCRIPTION");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_TEMPLATES, "BUNDLE_MODE_ADVANCED_PATH");
@@ -316,6 +345,8 @@ public final class Constants {
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_EMAIL, "MAINTAINER_EMAIL");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_COPYRIGHT, "PACKAGE_LICENCE");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_CLASS, "PACKAGE_CLASS");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_SECTION, "PACKAGE_SECTION");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_PRIORITY, "PACKAGE_PRIORITY");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_NAME, "PACKAGE_NAME");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_VERSION, "PACKAGE_VERSION");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_SIGN, "PACKAGE_SIGN");
@@ -326,6 +357,8 @@ public final class Constants {
 		VARIABLES_REGEXPS.put("PACKAGE_NAME", Constants.RE_PACKAGE_NAME);
 		VARIABLES_REGEXPS.put("PACKAGE_LICENCE", Constants.RE_PACKAGE_LICENCE);
 		VARIABLES_REGEXPS.put("PACKAGE_CLASS", Constants.RE_PACKAGE_CLASS);
+		VARIABLES_REGEXPS.put("PACKAGE_SECTION", Constants.RE_PACKAGE_SECTION);
+		VARIABLES_REGEXPS.put("PACKAGE_PRIORITY", Constants.RE_PACKAGE_PRIORITY);
 		VARIABLES_REGEXPS.put("PACKAGE_SHORT_DESCRIPTION", Constants.RE_PACKAGE_SHORT_DESCRIPTION);
 		VARIABLES_REGEXPS.put("PACKAGE_WEBSITE", Constants.RE_PACKAGE_WEBSITE);
 		VARIABLES_REGEXPS.put("PACKAGE_VERSION", Constants.RE_PACKAGE_VERSION);

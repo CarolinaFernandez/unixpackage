@@ -13,7 +13,6 @@
 
 ########### Load variables
 # Arguments
-source_path=""
 name=""
 email=""
 copyright=""
@@ -22,6 +21,8 @@ package_description=""
 package_short_description=""
 package_version=""
 package_website=""
+package_section=""
+package_priority=""
 package_class=""
 debian_files_location=""
 sign_package=false
@@ -37,7 +38,7 @@ package_version_re='^[0-9]+([.][0-9]+)(-[0-9]+)?$'
 
 # Required parameters for simple/manual executions
 # In advanced mode, pre-configured debian files are retrieved from another location
-required_arguments_dh=('$package_name' '$package_version' '$package_class' '$name' '$email' '$copyright' '$source_path')
+required_arguments_dh=('$package_name' '$package_version' '$package_class' '$name' '$email' '$copyright')
 required_arguments_sign=('$name' '$email')
 # Helps installing dependencies
 dpkg_dependencies=('dh-make' 'lintian' 'gzip')
@@ -148,8 +149,12 @@ function parse_arguments()
         package_name="$1"
         shift
         ;;
-    -s|--source)
-        source_path="$1"
+    -P|--priority)
+        package_priority="$1"
+        shift
+        ;;
+    -s|--section)
+        package_section="$1"
         shift
         ;;
     -S|--sign)
@@ -253,9 +258,6 @@ function clean_debianized()
 
 function do_clean_debianized()
 {
-#  if [[ -d $path_to_package/debian ]]; then
-#    rm -r $path_to_package/debian;
-#  fi
   if [[ -f $path_to_package.orig.tar.gz ]]; then
     rm $path_to_package.orig.tar.gz;
   fi
@@ -266,88 +268,6 @@ function do_clean_debianized()
     rm build-stamp;
   fi
 }
-
-#function create_debian_folder()
-#{
-#  # If a source for debian files is passed, take into account for the directory
-##  if [[ ! -z $debian_files_location ]]; then
-##    path_to_package=$root_script/unix_package__${current_date}
-##  fi
-#
-##  if [[ -z $debian_files_location && ! -d $path_to_package/debian ]]; then
-#  if [[ ! -d $path_to_package/debian ]]; then
-#    echo "CREATING $path_to_package/debian"
-#    mkdir -p $path_to_package/debian
-#  fi
-#}
-
-#function copy_samples()
-#{
-#  if [[ ! -d $root_script/create_deb/debian ]]; then
-#    mkdir -p $root_script/create_deb/debian
-#  fi
-#  cp -Rp $root_package/* $root_script/create_deb/debian/ || error "Could not copy sample files into $root_script/create_deb/debian/";
-#}
-
-#function do_copy_samples()
-#{
-#  if [[ -d $root_script/create_deb/debian ]]; then
-#    rm -r $root_script/create_deb/debian || error "Could not remove automatically generated files under $root_script/create_deb/debian/";
-#  fi;
-#  copy_samples;
-#}
-
-#function copy_edit_samples()
-#{
-#  if [[ $interactive == true ]]; then
-#    while true; do
-#      read -p "> Do you want to edit the medatada (press 'y') or to use sample files (press 'n')?: " meta
-#      case $meta in
-#        [Yy]* ) nautilus $root_script/create_deb/debian || error "Could not open debian/ folder. Try to get there by yourself";
-#                while true; do
-#                  read -p "> Get some time to modify the metadata (files under $root_script/create_deb/debian) and press 'y' when finished: " mod;
-#                  case $mod in
-#                            [Yy]* ) break;;
-#                            * ) echo "Please answer 'Y' when finished.";;
-#                        esac;
-#                    done;
-#                    break;;
-#            [Nn]* ) do_copy_samples;
-#                    break;;
-#            * ) echo "Please answer 'Y' or 'N'.";;
-#        esac
-#    done
-#  else
-#    echo "DEbiAN FILES LOCATION!!!!!!!!! >> $debian_files_location"
-#    if [[ ! -z $debian_files_location ]]; then
-#      do_copy_user_samples
-#    else
-#      do_copy_samples
-#      # Symlink so as to dh_install finds the source at fallback
-#      ln -s  $root_script/$source_path $root_script/create_deb/debian/$source_path || error "Could not link the $source_path code from debian/"
-#    fi
-#  fi
-#}
-
-#function do_copy_user_samples()
-#{
-#  if [[ -d $debian_files_location ]]; then
-#    # Remove pre-generated files under the script folder
-#    #if [[ -d $path_to_package/debian ]]; then
-#    #  rm -r $path_to_package/debian/*
-#    #else
-#    #  mkdir -p $path_to_package/debian
-#    #fi
-#    # And use the user samples for it
-#    #cp -Rp $debian_files_location/* $path_to_package/debian/ || error "Could not copy user's sample files into $path_to_package/debian/"
-#    echo "ls -la $debian_files_location/"
-#    ls -la $debian_files_location/
-#    echo "ls -la $path_to_package/debian/"
-#    ls -la $path_to_package/debian/
-#    echo "rsync -avzh $debian_files_location/ $path_to_package/debian/"
-#    rsync -avzh $debian_files_location/ $path_to_package/debian/ || error "Could not copy user's sample files into $path_to_package/debian/"
-#  fi
-#}
 
 function move_to_output()
 {
@@ -417,6 +337,7 @@ breakline 1
 echo "> Fetching parameters..."
 parse_arguments $@
 
+# Script can be run without passing the templates (rather uninteresting, though)
 cat $debian_files_location/debian/control
 if [[ -f $debian_files_location/debian/control ]]; then
   if [[ -z $package_name ]]; then
@@ -425,8 +346,8 @@ if [[ -f $debian_files_location/debian/control ]]; then
   if [[ -z $package_version ]]; then
     package_version=$(grep --only-matching --perl-regex "(?<=^Version: ).*" $debian_files_location/debian/control)
   fi
-else
-  error "E: file $debian_files_location/debian/control is needed when using templates. Consider passing the template parameter"
+#else
+#  error "E: file $debian_files_location/debian/control is needed when using templates. Consider passing the template parameter"
 fi
 # Recompute output location
 path_to_package=$root_script/${package_name}_${package_version}
@@ -452,13 +373,6 @@ fi
 
 create_dir=$PWD
 
-## Replace with RegEx
-#if [[ -f $path_to_package/debian/control ]]; then
-#  sed -i "s/^\(Version: *\).*\$/\1$package_version/" $debian_files_location/debian/control
-#else
-#  error "E: file $debian_files_location/debian/control is needed when using templates"
-#fi
-
 breakline 2
 perform_dh_make
 
@@ -467,10 +381,21 @@ ls -la $path_to_package
 ls -la $path_to_package/debian
 if [[ -f $path_to_package/debian/control ]]; then
   # Using different separator (URL usually has slashes)
-  #sed -i "s/^\(Description: *\).*\$/\1$package_short_description/" $debian_files_location/debian/control
-  sed -i "s}<insert up to 60 chars description>}$package_short_description}" $path_to_package/debian/control
-  sed -i "s}<insert long description, indented with spaces>}$package_description}" $path_to_package/debian/control
-  sed -i "s}<insert the upstream URL, if relevant>}$website}" $path_to_package/debian/control
+  if [ ! -z $package_short_description ]; then
+    sed -i "s}<insert up to 60 chars description>}$package_short_description}" $path_to_package/debian/control
+  fi
+  if [ ! -z $package_description ]; then
+    sed -i "s}<insert long description, indented with spaces>}$package_description}" $path_to_package/debian/control
+  fi
+  if [ ! -z $website ]; then
+    sed -i "s}<insert the upstream URL, if relevant>}$website}" $path_to_package/debian/control
+  fi
+  if [ ! -z $package_section ]; then
+    sed -i "s}^\(Section: *\).*\$}\1$package_section}" $debian_files_location/debian/control
+  fi
+  if [ ! -z $package_priority ]; then
+    sed -i "s}^\(Priority: *\).*\$}\1$package_priority}" $debian_files_location/debian/control
+  fi
 else
   error "E: file $path_to_package/debian/control is needed when using templates"
 fi

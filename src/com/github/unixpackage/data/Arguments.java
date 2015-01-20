@@ -126,7 +126,7 @@ public class Arguments {
 		HashMap<String, String> argumentList = new HashMap<String, String>();
 
 		argumentList.put(Constants.ARGUMENT_BATCH, null);
-		argumentList.put(Constants.ARGUMENT_SOURCE, Variables.PACKAGE_NAME);
+//		argumentList.put(Constants.ARGUMENT_SOURCE, Variables.PACKAGE_NAME);
 		argumentList.put(Constants.ARGUMENT_WEBSITE, Variables.PACKAGE_WEBSITE);
 		argumentList.put(Constants.ARGUMENT_PACKAGE_VERSION, Variables.PACKAGE_VERSION);
 		// Translate to something understandable by the script
@@ -146,29 +146,33 @@ public class Arguments {
 			// Class in its short version
 			argumentList.put(Constants.ARGUMENT_CLASS, Variables.PACKAGE_CLASS);		
 		}
+		argumentList.put(Constants.ARGUMENT_PACKAGE_SECTION, Variables.PACKAGE_SECTION);
+		argumentList.put(Constants.ARGUMENT_PACKAGE_PRIORITY, Variables.PACKAGE_PRIORITY);
 		argumentList.put(Constants.ARGUMENT_PACKAGE_NAME, Variables.PACKAGE_NAME);
 		argumentList.put(Constants.ARGUMENT_DESCRIPTION_SHORT, Variables.PACKAGE_SHORT_DESCRIPTION);
 		argumentList.put(Constants.ARGUMENT_DESCRIPTION, Variables.PACKAGE_DESCRIPTION);
 		
 		// In simple and manual modes, the majority of the arguments are passed
-		if (Variables.isNull("BUNDLE_MODE")
-				|| !Variables.BUNDLE_MODE
-						.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+//		if (Variables.isNull("BUNDLE_MODE")
+//				|| !Variables.BUNDLE_MODE
+//						.equals(Constants.BUNDLE_MODE_ADVANCED)) {
 			argumentList.put(Constants.ARGUMENT_NAME, Variables.MAINTAINER_NAME);
 			argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
-		}
+//		}
 
 		// In advanced mode, a path is passed to copy the user's templates from
 		if (!Variables.isNull("BUNDLE_MODE")
 				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+//			argumentList.put(Constants.ARGUMENT_NAME, Variables.MAINTAINER_NAME);
+//			argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
 			argumentList.put(Constants.ARGUMENT_TEMPLATES, Variables.BUNDLE_MODE_ADVANCED_PATH);
 		}
 
 		// Notify if package is to be signed
 		if (!Variables.isNull("PACKAGE_SIGN") && Variables.PACKAGE_SIGN) {
 			argumentList.put(Constants.ARGUMENT_SIGN, null);
-			argumentList.put(Constants.ARGUMENT_NAME, Variables.MAINTAINER_NAME);
-			argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
+//			argumentList.put(Constants.ARGUMENT_NAME, Variables.MAINTAINER_NAME);
+//			argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
 		}
 
 		for (Entry<String, String> entry : argumentList.entrySet()) {
