@@ -2,6 +2,7 @@ package com.github.unixpackage.data;
 
 import java.lang.String;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Variables {
 
@@ -35,6 +36,11 @@ public class Variables {
 	public static String _BUNDLE_MODE_MANUAL;
 	public static String _BUNDLE_MODE_ADVANCED;
 	public static String BUNDLE_MODE_ADVANCED_PATH;
+	// Package files to be edited
+	public static ArrayList<ArrayList<String>> _PACKAGE_CONTENT_FILES;
+	public static HashMap<String,String> _PACKAGE_CONTENT_FILES_HASH;
+	public static HashMap<String,String> _PACKAGE_CONTENT_FILES_MODIFIED_HASH;
+	public static HashMap<String,String> _PACKAGE_CONTENT_FILES_EDITION_STATUS;
 	
 	public static Object get(String key) {
 		Object value = null;

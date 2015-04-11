@@ -4,21 +4,28 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import javax.swing.JFileChooser;
 
+import org.apache.commons.io.IOUtils;
+
 import com.github.unixpackage.data.Constants;
 import com.github.unixpackage.data.Variables;
+import com.github.unixpackage.steps.GeneratePackage;
 
 import sun.net.www.protocol.file.FileURLConnection;
 
@@ -47,32 +54,43 @@ public class Files {
 		return chosenPath;
 	}
 
+	public static boolean isFolder(final String location, final String folderName) {
+		File folder = new File(location);
+		System.out.println("*** folderName: " + folderName);
+		System.out.println("*** folderName (File): " + folder.getName());
+		System.out.println("*** folderName (equals?): " + folder.getName().equals(folderName));
+		return folder.getName().equals(folderName);
+	}
+	
 	public static boolean containsFolder(String location, final String folderName) {
-	    /*
-		File dir = new File(location);
-	    File[] contentsDirectory = dir.listFiles(new FilenameFilter() {
-	        @Override
-	        public boolean accept(File dir, String name) {
-	            return name.matches(folderName);
-	        }
-	    });
-	    */
-	    
 		File locationPath = new File(location);
+		// Filter directories inside a given location
+		String[] locationFilesNames = locationPath.list(new FilenameFilter() {
+		  @Override
+		  public boolean accept(File current, String name) {
+		    return new File(current, name).isDirectory();
+		  }
+		});
+		ArrayList<String> locationFiles = new ArrayList<String>();
+		if (locationFilesNames != null) {
+			locationFiles = new ArrayList<String>(Arrays.asList(locationFilesNames));
+		}
+		// Call the searching method
+		return containsFolder(location, folderName, locationFiles);
+	}
+	
+	public static boolean containsFolder(String location, final String folderName, ArrayList<String> locationFiles) {
 		boolean foundFolder = false;
-		String[] contentsDirectory = locationPath.list();
-		if (contentsDirectory != null) {
-			for (String content : contentsDirectory) {
-				File currentPath = new File(location + "/" + content);
-				if (content.equals(folderName)) {
-					foundFolder = true;
-					break;
-				} else {
-					if (currentPath.isDirectory()) {
-						return containsFolder(currentPath.getAbsolutePath(), folderName);
-					}
-				}
-			}
+		for (String contentString : locationFiles) {
+	    	File contentFile = new File(contentString);
+        	if (contentFile.getName().equals(folderName)) {
+        		foundFolder = true;
+        		break;
+        	} else {
+        		// If current location is not appropriate, remove and continue
+        		locationFiles.remove(0);
+        		return containsFolder(contentFile.getAbsolutePath(), folderName, locationFiles);
+        	}
 		}
 		return foundFolder;
 	}
@@ -138,9 +156,6 @@ public class Files {
 		File sourceDir = new File(validatedSource);
 
 		File destDir = new File(destination);
-		// if (destDir.exists()) {
-		// return true;
-		// } else {
 		try {
 			// Create first all intermediate directories as needed
 			destDir.mkdirs();
@@ -148,7 +163,6 @@ public class Files {
 		} catch (SecurityException se) {
 			result = false;
 		}
-		// }
 
 		try {
 			Files.copyResourcesRecursively(new URL(sourceDir.toString()), destDir);
@@ -172,7 +186,62 @@ public class Files {
 		return Files.copyFolderIntoTempFolder(Constants.ROOT_PACKAGE_FILES_PATH,
 				validatedDestination);
 	}
+	
+	public static boolean generatePackageSourcesInTempFolder() {
+		// Generate package files first
+		GeneratePackage.generateDebianFiles();
+		String packageFilesPath = "/deb/" + Variables.PACKAGE_NAME + "_" + Variables.PACKAGE_VERSION + "/debian";
+		String validatedSource = Constants.TMP_SCRIPT_FILES_PATH + packageFilesPath;
+		String validatedDestination = Constants.TMP_PACKAGE_DEBIAN_FILES_PATH;
+		// Default is "DEB"
+		if (!Variables.isNull("PACKAGE_TYPE") && Variables.PACKAGE_TYPE.equals("RPM")) {
+			validatedDestination = Constants.TMP_PACKAGE_REDHAT_FILES_PATH;
+		}
+		System.out.println("GENERATE PACKAGE SOURCES,GENERATE SOURCES... ->" + validatedDestination);
+		return Files.copyFolderIntoTempFolder(validatedSource,
+				validatedDestination);
+	}
 
+	public static boolean isPackageSourcesOnDisk() {
+		boolean packageSourcesOnDisk = false;
+		File packageSourcesPath = new File(Files.getAbsolutePathPackageFile(""));
+		System.out.println("...... isPackageSourcesOnDisk.checking paakage sources: " + packageSourcesPath);
+		if (packageSourcesPath.isDirectory()) {
+			packageSourcesOnDisk = true;
+		}
+		return packageSourcesOnDisk;
+	}
+	
+	public static File[] getPackageSourcesFiles() {
+		File[] packageSourcesFiles = null;
+		File packageSourcesPath = new File(Files.getAbsolutePathPackageFile(""));
+		if (packageSourcesPath.isDirectory()) {
+			packageSourcesFiles = packageSourcesPath.listFiles();
+		}
+		return packageSourcesFiles;
+	}
+	
+	/**
+	 * Compute location of generated package files in order to show them.
+	 * @param file
+	 * @return
+	 */
+	public static String getAbsolutePathPackageFile(String file) {
+		String absolutePathFile = "";
+		// Default is "DEB"
+		if (Variables.PACKAGE_TYPE.equals("RPM")) {
+//			absolutePathFile = Constants.TMP_PACKAGE_REDHAT_FILES_PATH;
+			absolutePathFile = Constants.ROOT_TMP_PACKAGE_FILES_PATH + "/" + Constants.TMP_SCRIPT_REDHAT_FILES_PATH + "/" + Variables.PACKAGE_NAME + "_" + Variables.PACKAGE_VERSION + "/" + Constants.BUNDLE_TYPE_RPM_FOLDER;
+		} else {
+//			absolutePathFile = Constants.TMP_PACKAGE_DEBIAN_FILES_PATH;
+			absolutePathFile = Constants.ROOT_TMP_PACKAGE_FILES_PATH + "/" + Constants.TMP_SCRIPT_DEBIAN_FILES_PATH + "/" + Variables.PACKAGE_NAME + "_" + Variables.PACKAGE_VERSION + "/" + Constants.BUNDLE_TYPE_DEB_FOLDER;
+		}
+		if (!file.equals("")) {
+			absolutePathFile = absolutePathFile + "/" + file;
+		}
+		return absolutePathFile;
+	}
+	
 	public static boolean copyScriptSourcesIntoTempFolder() {
 		Locations loc = new Locations();
 		String validatedSource = loc
@@ -181,7 +250,7 @@ public class Files {
 		if (validatedSource.startsWith("jar:")) {
 			validatedDestination = Constants.TMP_SCRIPT_FILES_PATH;
 		}
-
+		System.out.println(">> copyScriptSourcesIntoTempFolder: [" + Constants.ROOT_SCRIPT_FILES_PATH + "] -> [" + validatedDestination + "]");
 		return copyFolderIntoTempFolder(Constants.ROOT_SCRIPT_FILES_PATH,
 				validatedDestination);
 	}
@@ -232,6 +301,39 @@ public class Files {
 		return f.exists() || f.mkdir();
 	}
 
+	public static String getHash(String file) {
+		return getHash(new File(file));
+	}
+	
+	public static String getHash(File file) {
+		FileInputStream fis;
+		MessageDigest md = null;
+		String fileHash = null;
+		StringBuffer hexString = new StringBuffer();
+		try {
+			fis = new FileInputStream(file);
+			md = MessageDigest.getInstance(Constants.MESSAGE_DIGEST);
+			byte[] bytesOfMessage = IOUtils.toByteArray(fis);
+			fis.close();
+			byte[] fileBytes = md.digest(bytesOfMessage);
+	        for (int i = 0; i < fileBytes.length; i++) {
+	            if ((0xff & fileBytes[i]) < 0x10) {
+	                hexString.append("0"
+	                        + Integer.toHexString((0xFF & fileBytes[i])));
+	            } else {
+	                hexString.append(Integer.toHexString(0xFF & fileBytes[i]));
+	            }
+	        }
+	        fileHash = hexString.toString();
+		} catch (NoSuchAlgorithmException e) {
+			System.out.println("Error: could not generate hash due to digest algorithm problem");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("Error: could not generate hash due to I/O error on file (" + file + ")");
+		}
+		return fileHash;
+	}
+	
 	// StringUtils method
 	public static boolean isEmpty(CharSequence cs) {
 		return cs == null || cs.length() == 0;

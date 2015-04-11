@@ -50,7 +50,10 @@ public class TablePanel extends DefaultTableModel {
 		mainPanel.add(scrollpane, BorderLayout.CENTER);
 		mainPanel.add(btnPanel, BorderLayout.PAGE_END);
 		// Determine size
-		mainPanel.setPreferredSize(Constants.FILECHOOSER_DIMENSION);
+		mainPanel.setPreferredSize(Constants.TABLE_DIMENSION);
+		mainPanel.setFocusTraversalKeysEnabled(true);
+		mainPanel.setFocusTraversalPolicyProvider(true);
+		mainPanel.setRequestFocusEnabled(true);
 	}
 
 	private static Object[][] convertDoubleArrayListToDoubleVector(

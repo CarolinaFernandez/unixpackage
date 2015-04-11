@@ -120,6 +120,16 @@ public class Arguments {
 		return arguments;
 	}
 	
+	public static List<String> generateArgumentsForDebianFiles() {
+		List<String> commandList = Arguments.generateArgumentsForDebianPackage();
+		// Generate Debian files only (dh_make) and do not remove sample (.ex) files
+		commandList.add(Constants.ARGUMENT_NO_BUILD);
+		// Remove verbose argument
+		commandList.remove(Constants.ARGUMENT_VERBOSE);
+		commandList.remove(Constants.ARGUMENT_VERBOSE_LONG);
+		return commandList;
+	}
+	
 	public static List<String> generateArgumentsForDebianPackage() {
 		List<String> commandList = new ArrayList<String>();
 		List<String> commandListValidated = new ArrayList<String>();
@@ -165,6 +175,7 @@ public class Arguments {
 				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
 //			argumentList.put(Constants.ARGUMENT_NAME, Variables.MAINTAINER_NAME);
 //			argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
+			System.out.println("Variables.BUNDLE_MODE_ADVANCED_PATH: " + Variables.BUNDLE_MODE_ADVANCED_PATH);
 			argumentList.put(Constants.ARGUMENT_TEMPLATES, Variables.BUNDLE_MODE_ADVANCED_PATH);
 		}
 
@@ -175,11 +186,14 @@ public class Arguments {
 //			argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
 		}
 
+		// Verbosity
+		argumentList.put(Constants.ARGUMENT_VERBOSE_LONG, null);
+		
 		for (Entry<String, String> entry : argumentList.entrySet()) {
 			commandListValidated.add(entry.getKey());
-			// Check arguments that are not "-d" or "-S" and thus
-			// are eligible for having a second argument
-			if (entry.getKey().matches("-(\\w?[^bS]){1}")) {
+			// Check arguments not eligible for a 2nd argument
+			if (entry.getKey().matches("-(\\w?[^bSvmM]){1}")) {
+				System.out.println("+++ adding key -- " + entry);
 				if (entry.getValue() != null) {
 					commandListValidated.add(entry.getValue());
 				} else {
@@ -188,9 +202,8 @@ public class Arguments {
 				}
 			}
 		}
-		
 		commandList = commandListValidated;
-
+//		System.out.println("*** [V] Validated commandList: " + commandList);
 		return commandList;
 	}
 	

@@ -20,13 +20,14 @@ public class Shell {
 		for (String command : commands.split(" ")) {
 			commandList.add(command);
 		}
-		return execute(commandList);
+		return Shell.execute(commandList);
 	}
 	
 	public static StringBuilder execute(List<String> commandList) {
 		StringBuilder lines = new StringBuilder();
 		try {
 			// Use ProcessBuilder rather than Runtime.exec
+			System.out.println(">>> execute.commandlist: " + commandList);
 			ProcessBuilder pb = new ProcessBuilder(commandList);
 			pb.directory(new File(Constants.ROOT_TMP_PACKAGE_FILES_PATH));
 			proc = pb.start();
@@ -34,23 +35,28 @@ public class Shell {
 			// Read the output from the command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					proc.getInputStream()));
+			System.out.println(">>> execute.result: " + reader.readLine());
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				lines.append(line);
 				System.out.println(line);
 			}
+			proc.destroy();
 		} catch (Exception e) {
 			System.out.println("Error: could not invoke bash script. Details: " + e);
 		}
 		return lines;
 	}
 
-	public static boolean generateTempFiles() {
-		boolean result = false;
-		result = Files.copyPackageSourcesIntoTempFolder();
-		result &= Files.copyScriptSourcesIntoTempFolder();
-		return result;
-	}
+//	public static boolean generateTempFiles() {
+//		boolean result = false;
+//		result = Files.copyScriptSourcesIntoTempFolder();
+//		if (Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+//			//result &= Files.copyPackageSourcesIntoTempFolder();
+//			result &= Files.generatePackageSourcesInTempFolder();
+//		}
+//		return result;
+//	}
 	
 	public static void outputHelpInformation() {
 		String helpOutput = "unixpackage - create a UNIX package, version " + Constants.APP_VERSION + "\n"
@@ -142,10 +148,6 @@ public class Shell {
 	
 	public static void outputVersionInformation() {
 		System.out.println(Constants.APP_VERSION);
-	}
-
-	public static boolean preProcess() {
-		return Shell.generateTempFiles();
 	}
 
 	public static boolean cleanTempFiles() {

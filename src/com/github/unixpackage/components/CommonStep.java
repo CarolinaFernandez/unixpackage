@@ -208,9 +208,6 @@ public class CommonStep extends CommonPanel {
 		boolean radioSelected = radioPackages.isSelected();
 		if (radioSelected) {
 			// Custom processing... Not really nice
-			// Variables.set("PACKAGE_TYPE",
-			// component.getName().split("_PACKAGE")[0]); // Retrieve first part
-			// of the value
 			Variables.set("PACKAGE_TYPE", component.getName().split("_")[1]); // Retrieve relevant info from, e.g. _DEB_PACKAGE
 		}
 	}

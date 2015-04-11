@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.github.unixpackage.components.CommonStep;
 import com.github.unixpackage.data.Constants;
 import com.github.unixpackage.data.Variables;
+//import com.github.unixpackage.steps.GeneratePackage;
 
 public class StepLoader {
 
@@ -162,7 +163,8 @@ public class StepLoader {
 		if (stepNumber == 1) {
 			// Load file data into variables upon start
 			Listeners.onLoad();
-			result = Shell.preProcess();
+//			result = Shell.generateTempFiles();
+			result = Files.copyScriptSourcesIntoTempFolder();
 			// In case of failure, revert program to original state and exit
 			if (!result) {
 				try {
@@ -176,6 +178,13 @@ public class StepLoader {
 					System.exit(0);
 				}
 			}
+		// EditPackageFiles step
+		} else if (stepNumber == 5) {
+			if (!Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+				Files.generatePackageSourcesInTempFolder();
+			}
+		} else if (stepNumber == 6) {
+			Files.generatePackageSourcesInTempFolder();
 		}
 	}
 }

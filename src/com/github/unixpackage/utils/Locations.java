@@ -8,22 +8,25 @@ import com.github.unixpackage.MainApp;
 public class Locations {
 
 	public String getAbsolutePath(String path) {
-
 		File pathDir;
 		String checkedPath = null;
 
 		try {
-			// Execute on normal file system, first
+			// Execute on local file system, first
 			pathDir = new File(getClass().getClassLoader().getResource(path)
 					.toString());
 		} catch (Exception e) {
-			// Otherwise, look within jar file
-			pathDir = new File("jar:" + getAbsolutePathOfJarFile() + "!/"
-					+ path);
+			try {
+				// Otherwise, look within jar file
+				pathDir = new File("jar:" + getAbsolutePathOfJarFile() + "!/"
+						+ path);
+			} catch (Exception e2) {
+				// Finally, try with normal file system
+				pathDir = new File("file:" + path);
+			}
 		}
-
+		
 		checkedPath = pathDir.toString() + "/";
-
 		return checkedPath;
 	}
 

@@ -8,7 +8,8 @@ import com.github.unixpackage.data.Constants;
 import com.github.unixpackage.data.UnixPreferences;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.steps.GeneratePackage;
-import com.github.unixpackage.utils.Shell;
+import com.github.unixpackage.utils.Files;
+//import com.github.unixpackage.utils.Shell;
 import com.github.unixpackage.utils.StepLoader;
 
 import javax.swing.JPanel;
@@ -29,7 +30,8 @@ public class MainApp {
 			// Preconditions
 			Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
 			// Generate files before preparing packages
-			Shell.generateTempFiles();
+//			Shell.generateTempFiles();
+			Files.copyScriptSourcesIntoTempFolder();
 			GeneratePackage.generateDebianPackage();
 			// Save input data to disk once data has been validated
 			UnixPreferences prefs = new UnixPreferences();

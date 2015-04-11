@@ -177,15 +177,19 @@ public class SetBundleMode extends CommonStep {
 							.equals(Constants.BUNDLE_TYPE_RPM)) {
 						bundleTypeFolder = Constants.BUNDLE_TYPE_RPM_FOLDER;
 					}
-					while (!sourcePath.isEmpty() && !Files.containsFolder(sourcePath, bundleTypeFolder)) {
+					while (!sourcePath.isEmpty() && 
+							!(Files.isFolder(sourcePath, bundleTypeFolder) || 
+							Files.containsFolder(sourcePath, bundleTypeFolder))) {
 						JOptionPane.showMessageDialog(null,
-								"The chosen folder does not contain a '"
+								"The chosen path is not (or does not contain) a '"
 										+ bundleTypeFolder + "' folder."
-										+ "\n" + "Please choose another");
+										+ "\n" + "Please choose an appropriate folder");
 						sourcePath = Files.choosePath();
 					}
 					try {
+						System.out.println(".... settingBundleMode start: " + sourcePath);
 						Variables.set("BUNDLE_MODE_ADVANCED_PATH", sourcePath);
+						System.out.println(".... settingBundleMode end: " + Variables.get("BUNDLE_MODE_ADVANCED_PATH"));
 						addSourceFilesPathLabel.setVisible(true);
 						addSourceFilesPath
 								.setText(Variables.BUNDLE_MODE_ADVANCED_PATH);
@@ -199,7 +203,8 @@ public class SetBundleMode extends CommonStep {
 					SetBundleMode.setDefaultBundleMode(bundleManual);
 				}
 			}
-		});
+			}
+		);
 
 		// Define visibility for fields related to Advanced mode
 		if (Variables.isNull("BUNDLE_MODE")

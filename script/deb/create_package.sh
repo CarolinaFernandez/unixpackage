@@ -28,7 +28,13 @@ debian_files_location=""
 sign_package=false
 # Default: interactive. May be disabled via parameters
 interactive=true
+# If true, prints output messages
+verbose=false
 
+# If true, generates Debian sources only (avoid Debian package)
+no_build=false
+# If true, generates Debian packages only (skip Debian sources)
+build=false
 
 # Regular expressions to validate
 package_name_re='^[a-z]{2,}([a-z]|[0-9]|[+]|[-]|[.])*?$'
@@ -66,23 +72,29 @@ output_path=$(readlink -m $root_script/../../../unix_package_output__${current_d
 # Aux functions
 function breakline()
 {
-    i=$1
-    while [[ $i -gt 0 ]]; do
-        i=$((i-1))
-        echo ""
-    done
+  i=$1
+  while [[ $i -gt 0 ]]; do
+    i=$((i-1))
+    echo_v ""
+  done
+}
+
+function echo_v()
+{
+  if [[ $verbose == true ]]; then
+  echo $@
+  fi
 }
 
 function install_dependencies()
 {
   # Install this package prior to sign any package
   if [[ $sign_package == true ]]; then
-    dpkg_dependencies=('${dpkg_dependencies[@]}' 'rng-tools')
-    #apt-get install -y rng-tools
+    dpkg_dependencies=(${dpkg_dependencies[@]} 'rng-tools')
   fi
   # Install this package prior to rsync any folder
   if [[ ! -z $debian_files_location ]]; then
-    dpkg_dependencies=('${dpkg_dependencies[@]}' 'rsync')
+    dpkg_dependencies=(${dpkg_dependencies[@]} 'rsync')
   fi
   for dpkg_dependency in ${dpkg_dependencies[@]}; do
     dependency_exists=$(dpkg -l | grep "$dpkg_dependency")
@@ -95,90 +107,97 @@ function install_dependencies()
 
 function parse_arguments()
 {
-  echo "XXX args: $@"
   path_to_script=$(dirname $0)
   # Not every argument contains data (sometimes, one is enough to parse)
   while [[ $# > 0 ]]; do
-    key="$1"
-    shift
+  key="$1"
+  shift
 
-    case $key in
-    -b|--batch)
-        interactive=false
-        ;;
-    -c|--copyright)
-        copyright="$1"
-        shift
-        ;;
-    -C|--class)
-        package_class="$1"
-        shift
-        ;;
-    -d|--description-short)
-        # Read first argument w/o setting spaces on it
-        package_short_description="$1"
-        shift
-        while [[ $1 != -* ]]; do
-          package_short_description="$package_short_description $1"
-          shift
-        done
-        ;;
-    -D|--description-long)
-        # Read first argument w/o setting spaces on it
-        package_description="$1"
-        shift
-        while [[ $1 != -* ]]; do
-          package_description="$package_description $1"
-          shift
-        done
-        ;;
-    -e|--email)
-        email="$1"
-        shift
-        ;;
-    -n|--name)
-        # Read first argument w/o setting spaces on it
-        name="$1"
-        shift
-        while [[ $1 != -* ]]; do
-          name="$name $1"
-          shift
-        done
-        ;;
-    -p|--package-name)
-        package_name="$1"
-        shift
-        ;;
-    -P|--priority)
-        package_priority="$1"
-        shift
-        ;;
-    -s|--section)
-        package_section="$1"
-        shift
-        ;;
-    -S|--sign)
-        sign_package=true
-        create_gpg_key=true
-        ;;
-    -t|--templates)
-        # Only one path allowed
-        debian_files_location="$1"
-        echo "XXX debian files location: $debian_files_location"
-        shift
-        ;;
-    -V|--package-version)
-        package_version="$1"
-        shift
-        ;;
-    -w|--website)
-        # Only one URL allowed
-        package_website="$1"
-        shift
-        ;;
-    *)
-        ;;
-    esac
+  case $key in
+  -b|--batch)
+    interactive=false
+    ;;
+  -c|--copyright)
+    copyright="$1"
+    shift
+    ;;
+  -C|--class)
+    package_class="$1"
+    shift
+    ;;
+  -d|--description-short)
+    # Read first argument w/o setting spaces on it
+    package_short_description="$1"
+    shift
+    while [[ $1 != -* ]]; do
+      package_short_description="$package_short_description $1"
+      shift
+    done
+    ;;
+  -D|--description-long)
+    # Read first argument w/o setting spaces on it
+    package_description="$1"
+    shift
+    while [[ $1 != -* ]]; do
+      package_description="$package_description $1"
+      shift
+    done
+    ;;
+  -e|--email)
+    email="$1"
+    shift
+    ;;
+  -n|--name)
+    # Read first argument w/o setting spaces on it
+    name="$1"
+    shift
+    while [[ $1 != -* ]]; do
+      name="$name $1"
+      shift
+    done
+    ;;
+  -m|--no-build)
+    no_build=true;
+    ;;
+  -M|--build)
+    build=true;
+    ;;
+  -p|--package-name)
+    package_name="$1"
+    shift
+    ;;
+  -P|--priority)
+    package_priority="$1"
+    shift
+    ;;
+  -s|--section)
+    package_section="$1"
+    shift
+    ;;
+  -S|--sign)
+    sign_package=true
+    create_gpg_key=true
+    ;;
+  -t|--templates)
+    # Only one path allowed
+    debian_files_location="$1"
+    shift
+    ;;
+  -v|--verbose)
+    verbose=true
+    ;;
+  -V|--package-version)
+    package_version="$1"
+    shift
+    ;;
+  -w|--website)
+    # Only one URL allowed
+    package_website="$1"
+    shift
+    ;;
+  *)
+    ;;
+  esac
   done
 }
 
@@ -193,6 +212,11 @@ function validate_parameters()
         error "E: Argument '$required_argument_dh' is required for dh-make"
       fi
     done
+  else
+    # Correction: use parent folder if the user chose the debian folder itself
+    if [[ $(basename $debian_files_location) =~ ^debian.* ]]; then
+      debian_files_location="$(dirname "$debian_files_location")"
+    fi
   fi
   # When signing the package, though, name and e-mail are required
   if [[ $sign_package == true ]]; then
@@ -208,7 +232,7 @@ function validate_parameters()
 function validate_package_name()
 {
   if ! [[ $package_name =~ $package_name_re ]]; then
-    echo "E: Package name '$package_name' is not correct"
+  echo_v "E: Package name '$package_name' is not correct"
   fi
 }
 
@@ -216,7 +240,7 @@ function validate_package_name()
 function validate_package_website()
 {
   if ! [[ $package_website =~ $package_website_re ]]; then
-    echo "E: Package name '$package_website' is not correct"
+  echo_v "E: Package name '$package_website' is not correct"
   fi
 }
 
@@ -224,34 +248,34 @@ function validate_package_website()
 function validate_package_version()
 {
   if ! [[ $package_version =~ $package_version_re ]]; then
-    error "E: Package version '$package_version' is not correct"
+  error "E: Package version '$package_version' is not correct"
   fi
 }
 
 # Exit on failure
 function error()
 {
-    echo $1
-    clean_debianized || echo "Could not remove temporary files for 'debian'ization"
-    exit
+  echo_v $1
+  clean_debianized || echo_v "Could not remove temporary files for 'debian'ization"
+  exit
 }
 
 function clean_debianized()
 {
   breakline 1
-  echo "> Cleaning the house..."
+  echo_v "> Cleaning the house..."
   if [[ $interactive == true ]]; then
-    while true; do
-      read -p "> Do you want to remove temporary files created for the 'debian'ization?: " yn
-      case $yn in
-        [Yy]* ) do_clean_debianized
-                break;;
-        [Nn]* ) break;;
-        * ) echo "Please answer 'Y' or 'N'.";;
-      esac
-    done
+  while true; do
+    read -p "> Do you want to remove temporary files created for the 'debian'ization?: " yn
+    case $yn in
+    [Yy]* ) do_clean_debianized
+        break;;
+    [Nn]* ) break;;
+    * ) echo_v "Please answer 'Y' or 'N'.";;
+    esac
+  done
   else
-    do_clean_debianized
+  do_clean_debianized
   fi
   breakline 1
 }
@@ -259,31 +283,31 @@ function clean_debianized()
 function do_clean_debianized()
 {
   if [[ -f $path_to_package.orig.tar.gz ]]; then
-    rm $path_to_package.orig.tar.gz;
+  rm $path_to_package.orig.tar.gz;
   fi
   if [[ -f $path_to_package*.dsc ]]; then
-    rm $path_to_package*.dsc;
+  rm $path_to_package*.dsc;
   fi
   if [[ -f build-stamp ]]; then
-    rm build-stamp;
+  rm build-stamp;
   fi
 }
 
 function move_to_output()
 {
   if [[ ! -d $output_path ]]; then
-    mkdir -p $output_path
+  mkdir -p $output_path
   fi
   mv $root_script/*.deb $output_path/
   mv $root_script/*.dsc $output_path/
   mv $root_script/*.changes $output_path/
-  echo ">> The output is located under $output_path/"
+  echo_v ">> The output is located under $output_path/"
 }
 
 function perform_dh_make()
 {
-  echo "> Generating ${package_name}_${package_version}.tar.gz..."
-  tar --ignore-failed-read -pczf ${package_name}_${package_version}.tar.gz ${package_name}_${package_version} --exclude='create_deb' || echo "Could not create ${package_name}_${package_version}.tar.gz"
+  echo_v "> Generating ${package_name}_${package_version}.tar.gz..."
+  tar --ignore-failed-read -pczf ${package_name}_${package_version}.tar.gz ${package_name}_${package_version} --exclude='create_deb' || echo_v "Could not create ${package_name}_${package_version}.tar.gz"
 
   cd $path_to_package
 
@@ -292,7 +316,7 @@ function perform_dh_make()
 
   # Use native (-n) to avoid having a revision appended to the version
   if [[ $package_version != *"-"* ]]; then
-    native_package="-n"
+  native_package="-n"
   fi
 
   # Enforce package basic details
@@ -311,31 +335,37 @@ function perform_dh_make()
     dh_make_params="$dh_make_params -f $path_to_package.tar.gz"
   fi
 
-    echo "ls -la $PWD (dh-make)"
-    ls -la $PWD
-  echo "/usr/bin/dh_make $dh_make_params"
+  echo_v "ls -la $PWD (dh-make)"
+  ls -la $PWD
+  echo_v "..... AFTER CHECKING CONTENT OF $PWD FOR DH-MAKE"
+  echo_v "/usr/bin/dh_make $dh_make_params"
   dh_make $dh_make_params || error "Could not dh_make with ${package_name}_${package_version}.tar.gz"
   #dh_installman || error "Could not dh_installman for ${package_name}_${package_version} package"
 
-  echo "path_to_package: $path_to_package"
-  echo "PWD: $PWD"
-  echo "cat debian/control"
+  echo_v "path_to_package: $path_to_package"
+  echo_v "PWD: $PWD"
+  echo_v "cat debian/control"
+  echo "DAMN FOLDER: $PWD"
   cat debian/control
-  echo "ls -la debian"
+  echo_v "ls -la debian"
   ls -la debian
 
   rm $path_to_package.tar.gz || error "Could not delete ${package_name}_${package_version}.tar.gz"
-    echo "ls -la $PWD/debian (dh-make)"
-    ls -la $PWD/debian
+  echo_v "ls -la $PWD/debian (dh-make)"
+  ls -la $PWD/debian
 }
 
 breakline 1
-echo "  ********** DEBIAN GENERATOR: START **********"
+echo_v "  ********** DEBIAN GENERATOR: START **********"
 cd $path_to_script
 
 breakline 1
-echo "> Fetching parameters..."
+echo_v "> Fetching parameters..."
 parse_arguments $@
+
+breakline 1
+echo_v "> Validating parameters..."
+validate_parameters
 
 # Script can be run without passing the templates (rather uninteresting, though)
 cat $debian_files_location/debian/control
@@ -352,98 +382,107 @@ fi
 # Recompute output location
 path_to_package=$root_script/${package_name}_${package_version}
 
-breakline 1
-echo "> Validating parameters..."
-validate_parameters
+#breakline 1
+#echo_v "> Validating parameters..."
+#validate_parameters
 
 breakline 1
-echo "> Installing dependencies..."
+echo_v "> Installing dependencies..."
 install_dependencies
 
-breakline 1
-echo "> Creating sources..."
-#create_debian_folder
-mkdir -p $path_to_package
-$path_to_package/debian
-
-breakline 1
-if [[ $interactive == true ]]; then 
-  echo "*NOTE* If you want to SIGN this package please see that the name and e-mail you use are already part of one of your GPG signatures. If this were not the case you will have the chance to generate it later."
+if [[ $no_build == true ]]; then
+  breakline 1
+  echo_v "> Creating sources..."
+  #create_debian_folder
+  mkdir -p $path_to_package
+  #$path_to_package/debian
+  
+  breakline 1
+  if [[ $interactive == true ]]; then 
+    echo_v "*NOTE* If you want to SIGN this package please see that the name and e-mail you use are already part of one of your GPG signatures. If this were not the case you will have the chance to generate it later."
+  fi
+  
+  create_dir=$PWD
+  
+  breakline 2
+  perform_dh_make
+  
+  # Replace with RegEx
+  ls -la $path_to_package
+  ls -la $path_to_package/debian
+  if [[ -f $path_to_package/debian/control ]]; then
+    # Using different separator (URL usually has slashes)
+    if [ ! -z $package_short_description ]; then
+      sed -i "s}<insert up to 60 chars description>}$package_short_description}" $path_to_package/debian/control
+    fi
+    if [ ! -z $package_description ]; then
+      sed -i "s}<insert long description, indented with spaces>}$package_description}" $path_to_package/debian/control
+    fi
+    if [ ! -z $website ]; then
+      sed -i "s}<insert the upstream URL, if relevant>}$website}" $path_to_package/debian/control
+    fi
+    if [ ! -z $package_section ]; then
+      sed -i "s}^\(Section: *\).*\$}\1$package_section}" $debian_files_location/debian/control
+    fi
+    if [ ! -z $package_priority ]; then
+      sed -i "s}^\(Priority: *\).*\$}\1$package_priority}" $debian_files_location/debian/control
+    fi
+  else
+    error "E: file $path_to_package/debian/control is needed when using templates"
+  fi
+  
+  if [[ ! -z $debian_files_location ]]; then
+    # Copy user files that were not copied along with the templates (e.g. "install" file)
+    rsync -av --exclude="debian" $debian_files_location $path_to_package
+    # Copy debian templates
+    debian_files_location_sources=$(find $debian_files_location -regextype sed -regex ".*debian$" -type d)
+    rsync -av $debian_files_location_sources/* $path_to_package/debian
+  fi
 fi
-
-create_dir=$PWD
-
-breakline 2
-perform_dh_make
-
-# Replace with RegEx
-ls -la $path_to_package
-ls -la $path_to_package/debian
-if [[ -f $path_to_package/debian/control ]]; then
-  # Using different separator (URL usually has slashes)
-  if [ ! -z $package_short_description ]; then
-    sed -i "s}<insert up to 60 chars description>}$package_short_description}" $path_to_package/debian/control
-  fi
-  if [ ! -z $package_description ]; then
-    sed -i "s}<insert long description, indented with spaces>}$package_description}" $path_to_package/debian/control
-  fi
-  if [ ! -z $website ]; then
-    sed -i "s}<insert the upstream URL, if relevant>}$website}" $path_to_package/debian/control
-  fi
-  if [ ! -z $package_section ]; then
-    sed -i "s}^\(Section: *\).*\$}\1$package_section}" $debian_files_location/debian/control
-  fi
-  if [ ! -z $package_priority ]; then
-    sed -i "s}^\(Priority: *\).*\$}\1$package_priority}" $debian_files_location/debian/control
-  fi
-else
-  error "E: file $path_to_package/debian/control is needed when using templates"
-fi
-
-# Copy user files that were not copied along with the templates (e.g. "install" file)
-rsync -av --exclude="debian" $debian_files_location $path_to_package
-# Copy debian templates
-debian_files_location_sources=$(find $debian_files_location -regextype sed -regex ".*debian$" -type d)
-rsync -av $debian_files_location_sources/* $path_to_package/debian
 
 # Keep interesting files
-mv $path_to_package/debian/$package_name.default.ex $path_to_package/debian/$package_name.default
+if [[ -f $path_to_package/debian/$package_name.default.ex ]]; then
+  mv $path_to_package/debian/$package_name.default.ex $path_to_package/debian/$package_name.default
+fi
 
-# Clean sample files on destination
-rm $path_to_package/debian/*.ex
+#if [[ $no_build == false || $build == true ]]; then
+# Clean sample files on destination (when not performing just the dh_make process)
+rm -f $path_to_package/debian/*.ex
+#fi
 
-breakline 2
-echo "> Checking keys for package signing..."
-if [[ $interactive == true ]]; then
-  read -p "> Do you want to sign the package? (y/n) [y]: " sign_package
-  case $sign_package in
+if [[ $no_build == true ]]; then
+  breakline 2
+  echo_v "> Checking keys for package signing..."
+  if [[ $interactive == true ]]; then
+    read -p "> Do you want to sign the package? (y/n) [y]: " sign_package
+    case $sign_package in
     [Yy]* ) gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
-            if [[ -z $gpg_key_exists ]]; then
-                breakline 2
-                while [[ ! $create_gpg_key ]]; do
-                    read -p "> Do you want to create a GPG key to sign the package? (y/n) [y]: " create_gpg_key
-                    case $create_gpg_key in
-                        [Yy]* ) /usr/bin/gpg --gen-key;
-                                break;;
-                        [Nn]* ) sign_package=false;
-                                break;;
-                            * ) echo "Please answer 'Y' or 'N'.";;
-                    esac
-                done
-            fi;
-            break;;
-         *) sign_package=false;
-#            break;;
-  esac
-else
-  if [[ $sign_package == true ]]; then
-    test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools start
-    gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
-    # Look for key. If it does not exist, create
-    if [[ -z $gpg_key_exists ]]; then
-      breakline 2
-      echo ">> Generating key for $name <$email>..."
-      gpg --batch --gen-key <<EOF
+      if [[ -z $gpg_key_exists ]]; then
+        breakline 2
+          while [[ ! $create_gpg_key ]]; do
+            read -p "> Do you want to create a GPG key to sign the package? (y/n) [y]: " create_gpg_key
+            case $create_gpg_key in
+              [Yy]* ) /usr/bin/gpg --gen-key;
+                break;;
+              [Nn]* ) sign_package=false;
+                break;;
+              * ) echo_v "Please answer 'Y' or 'N'.";;
+            esac
+          done
+        fi;
+        break;;
+       *) sign_package=false;
+#        break;;
+    esac
+  else
+    if [[ $sign_package == true ]]; then
+      test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools start
+      gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
+      # Look for key. If it does not exist, create
+      if [[ -z $gpg_key_exists ]]; then
+        breakline 2
+        echo_v ">> Generating key for $name <$email>..."
+        gpg --batch --gen-key <<EOF
         Key-Type: DSA
         Key-Length: 2048
         Subkey-Type: ELG-E
@@ -454,10 +493,15 @@ else
         Name-Email: $email
         #Passphrase: unixpackage
 EOF
-      test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools stop
-      #gpg --list-keys
+        test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools stop
+        #gpg --list-keys
+      fi
     fi
   fi
+fi
+
+if [[ $no_build == true ]]; then
+  exit 0
 fi
 
 breakline 2
@@ -465,40 +509,40 @@ breakline 2
 cd $path_to_package
 export DH_COMPAT=5
 #XXX
-echo "ls -la $PWD/debian (dpkg-buildpackage)"
+echo_v "ls -la $PWD/debian (dpkg-buildpackage)"
 ls -la $PWD/debian
-
+  
 if [[ $sign_package == true ]]; then
-    echo "> Performing (signed) dpkg-buildpackage..."
-    /usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $path_to_package"
+  echo_v "> Performing (signed) dpkg-buildpackage..."
+  /usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $path_to_package"
 else
-    echo "> Performing (unsigned) dpkg-buildpackage..."
-    /usr/bin/dpkg-buildpackage -F -us -uc || error "Could not dpkg-buildpackage (unsigned) on $path_to_package"
+  echo_v "> Performing (unsigned) dpkg-buildpackage..."
+  /usr/bin/dpkg-buildpackage -F -us -uc || error "Could not dpkg-buildpackage (unsigned) on $path_to_package"
 fi
 
 breakline 1
 generated_deb_file_location=$(find $root_script/ -name "*.deb" | head -1)
 generated_deb_file_name=$(basename $generated_deb_file_location)
 generated_deb_desc_location=$(find $root_script/ -name "*.dsc" | head -1)
-echo "> Review final info for package $generated_deb_file_name..."
+echo_v "> Review final info for package $generated_deb_file_name..."
 /usr/bin/dpkg --info $generated_deb_file_location || error "Could not show info for debian package"
 
 breakline 1
-echo "> Please check the correctness of the package..."
+echo_v "> Please check the correctness of the package..."
 /usr/bin/lintian $generated_deb_file_location #|| error "Could not show info about the correctness of the .deb file"
 /usr/bin/lintian $generated_deb_desc_location #|| error "Coult not show info about the correctness of the .dsc file"
 
 if [[ ! -z $debian_files_location ]]; then
   breakline 1
-  echo "*NOTE* In case the Debian package was not properly generated, consider checking the \"install\" file at the directory $debian_files_location, and ensure the paths are relative to its parent folder."
+  echo_v "*NOTE* In case the Debian package was not properly generated, consider checking the \"install\" file at the directory $debian_files_location, and ensure the paths are relative to its parent folder."
 fi
 
 breakline 1
-echo "> Ending package generation..."
+echo_v "> Ending package generation..."
 move_to_output
 
 # Cleaning temporary files
 clean_debianized
 
 breakline 1
-echo "  ********** DEBIAN GENERATOR: END **********"
+echo_v "  ********** DEBIAN GENERATOR: END **********"

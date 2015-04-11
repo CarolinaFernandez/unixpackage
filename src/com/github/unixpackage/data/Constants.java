@@ -35,6 +35,9 @@ public final class Constants {
 	public static final String APP_ICON = ROOT_MEDIA + "/cat-in-a-box.ico";
 	public static final String APP_IMAGE = ROOT_MEDIA + "/cat-in-a-box.png";
 
+	public final static String EDITING_PROGRAM = "gedit";
+	public final static String MESSAGE_DIGEST = "MD5";
+	
 	public static final String ROOT_FILES_PATH = ".";
 
 	// Package files
@@ -60,10 +63,12 @@ public final class Constants {
 
 	// Script files
 	public static final String ROOT_SCRIPT_FILES_PATH = "script";
-	public static final String DEBIAN_SCRIPT_PATH = ROOT_SCRIPT_FILES_PATH
-			+ "/deb/create_package.sh";
-	public static final String REDHAT_SCRIPT_PATH = ROOT_SCRIPT_FILES_PATH
-			+ "/rpm/create_package.sh";
+	public static final String TMP_SCRIPT_DEBIAN_FILES_PATH = ROOT_SCRIPT_FILES_PATH + "/deb";
+	public static final String TMP_SCRIPT_REDHAT_FILES_PATH = ROOT_SCRIPT_FILES_PATH + "/rpm";
+	public static final String DEBIAN_SCRIPT_PATH = TMP_SCRIPT_DEBIAN_FILES_PATH
+			+ "/create_package.sh";
+	public static final String REDHAT_SCRIPT_PATH = TMP_SCRIPT_REDHAT_FILES_PATH
+			+ "/create_package.sh";
 
 	public static final String TMP_SCRIPT_FILES_PATH = ROOT_TMP_PACKAGE_FILES_PATH
 			+ "/" + ROOT_SCRIPT_FILES_PATH;
@@ -111,7 +116,10 @@ public final class Constants {
 	public static final Dimension FILECHOOSER_DIMENSION = new Dimension(
 			CONTENT_DIMENSION.width,
 			(int) (CONTENT_DIMENSION.height - 2 * STEPTITLE_DIMENSION.height));
-
+	public static final Dimension TABLE_DIMENSION = new Dimension(
+			CONTENT_DIMENSION.width,
+			(int) (CONTENT_DIMENSION.height - 5 * STEPTITLE_DIMENSION.height));
+	
 	// Arguments names
 	public static final String ARGUMENT_HELP = "-h";
 	public static final String ARGUMENT_HELP_LONG = "--help";
@@ -147,7 +155,13 @@ public final class Constants {
 	public static final String ARGUMENT_PACKAGE_VERSION_LONG = "--package-version";
 	public static final String ARGUMENT_SIGN = "-S";
 	public static final String ARGUMENT_SIGN_LONG = "--sign";
-	
+	public static final String ARGUMENT_VERBOSE = "-v";
+	public static final String ARGUMENT_VERBOSE_LONG = "--verbose";
+	public static final String ARGUMENT_BUILD = "-m";
+	public static final String ARGUMENT_BUILD_LONG = "--build";
+	public static final String ARGUMENT_NO_BUILD = "-M";
+	public static final String ARGUMENT_NO_BUILD_LONG = "--no-build";
+
 	// Values for the bundle modes
 	public static final String BUNDLE_MODE_SIMPLE = "Simple";
 	public static final String BUNDLE_MODE_MANUAL = "Manual";
