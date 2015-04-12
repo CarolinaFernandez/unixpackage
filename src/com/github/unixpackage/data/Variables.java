@@ -72,28 +72,33 @@ public class Variables {
 					.getCanonicalName();
 			if (ArrayList.class.getCanonicalName().equals(variableType)) {
 				ArrayList<ArrayList<String>> valueModified = new ArrayList<ArrayList<String>>();
-				// Remove enclosing brackets first
-				value = value.substring(1, value.length() - 1);
-				ArrayList<String> pairValue = new ArrayList<String>();
-				// Split pairs
-				if (value.indexOf("],") >= 0) {
-					for (String splittedValue : value.split("],")) {
-						// Then clean and add to array
-						splittedValue = splittedValue.replace("[", "").replace(
-								"]", "");
-						String[] splittedValuePair = splittedValue.split(",");
+				if (value.length() > 2) {
+					// Remove enclosing brackets first
+					value = value.substring(1, value.length() - 1);
+					ArrayList<String> pairValue = new ArrayList<String>();
+					// Split pairs
+					if (value.indexOf("],") >= 0) {
+						for (String splittedValue : value.split("],")) {
+							// Then clean and add to array
+							splittedValue = splittedValue.replace("[", "").replace(
+									"]", "");
+							String[] splittedValuePair = splittedValue.split(",");
+							pairValue = new ArrayList<String>();
+							pairValue.add(splittedValuePair[0].trim());
+							pairValue.add(splittedValuePair[1].trim());
+							valueModified.add(pairValue);
+						}
+					} else {
+						value = value.substring(1, value.length()-1);
+						value = value.replace("[", "").replace("]", "");
+						String[] splittedValuePair = value.split(",");
 						pairValue = new ArrayList<String>();
 						pairValue.add(splittedValuePair[0].trim());
 						pairValue.add(splittedValuePair[1].trim());
 						valueModified.add(pairValue);
 					}
 				} else {
-					value = value.substring(1, value.length() - 1);
-					value = value.replace("[", "").replace("]", "");
-					String[] splittedValuePair = value.split(",");
-					pairValue = new ArrayList<String>();
-					pairValue.add(splittedValuePair[0].trim());
-					pairValue.add(splittedValuePair[1].trim());
+					ArrayList<String> pairValue = new ArrayList<String>();
 					valueModified.add(pairValue);
 				}
 				Variables.class.getField(key).set(e, valueModified);

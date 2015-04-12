@@ -40,6 +40,8 @@ public class UnixPreferences {
 						Constants.BUNDLE_MODE_ADVANCED)) {
 					props.setProperty(key, value.toString());
 				}
+			} else if (key.equals("PACKAGE_SOURCE_INSTALL_PAIRS")) {
+				props.setProperty(key, "");
 			} else {
 				props.setProperty(key, value.toString());
 			}
@@ -56,7 +58,10 @@ public class UnixPreferences {
 			for (Entry<Object, Object> property : props.entrySet()) {
 				String fieldName = property.getKey().toString();
 				String fieldValue = property.getValue().toString();
+				System.out.println("read [" + fieldName + "] -> " + fieldValue);
 				if (Variables.isNull(fieldName) && (fieldValue != null)) {
+					// Remove external brackets
+					fieldValue = fieldValue.replace("[", "").replace("]", "");
 					Variables.set(fieldName, fieldValue);
 				}
 			}
@@ -75,7 +80,7 @@ public class UnixPreferences {
 			}
 			File properties = new File(Constants.APP_PREFERENCES_FILE_PATH);
 			OutputStream out = new FileOutputStream(properties);
-			props.store(out, "UNIX package information");
+			props.store(out, " UNIX package information\n# File generated automatically. Do not change.\n");
 		} catch (Exception e) {
 			// Nothing happens if the file is not saved
 		}
