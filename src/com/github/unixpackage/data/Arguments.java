@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import com.github.unixpackage.utils.Shell;
+import com.github.unixpackage.utils.StepLoader;
 
 public class Arguments {
 	
@@ -120,13 +121,32 @@ public class Arguments {
 		return arguments;
 	}
 	
+	public static String generateFileStringForDebianFiles() {
+		StringBuilder fileString = new StringBuilder();
+		for (ArrayList<String> sourceInstallPair : Variables.PACKAGE_SOURCE_INSTALL_PAIRS) {
+			if (sourceInstallPair.size() == 2) {
+				fileString.append(sourceInstallPair.get(0) + ":" + sourceInstallPair.get(1) + " ");
+			}
+		}
+		// Remove last space
+		if (fileString.length() >= 1) {
+			fileString.deleteCharAt(fileString.length()-1);
+		}
+		return fileString.toString();
+	}
+	
 	public static List<String> generateArgumentsForDebianFiles() {
 		List<String> commandList = Arguments.generateArgumentsForDebianPackage();
 		// Generate Debian files only (dh_make) and do not remove sample (.ex) files
-		commandList.add(Constants.ARGUMENT_NO_BUILD);
+		// In advanced mode, a path is passed to copy the user's templates from
+		if (!Variables.isNull("BUNDLE_MODE")
+				&& !Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+			commandList.add(Constants.ARGUMENT_NO_BUILD);
+		}
 		// Remove verbose argument
 		commandList.remove(Constants.ARGUMENT_VERBOSE);
 		commandList.remove(Constants.ARGUMENT_VERBOSE_LONG);
+		// Should also remove Constants.ARGUMENT_FILE and what follows...
 		return commandList;
 	}
 	
@@ -134,7 +154,19 @@ public class Arguments {
 		List<String> commandList = new ArrayList<String>();
 		List<String> commandListValidated = new ArrayList<String>();
 		HashMap<String, String> argumentList = new HashMap<String, String>();
-
+		// Both simple and manual modes carry a first source generation and a final build
+		if (!Variables.isNull("BUNDLE_MODE")
+				&& !Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+			if (StepLoader.currentStep == Constants.STEPS_METHODS_LENGTH) {
+				// Do a build only during the last step (source files generated previously)
+				argumentList.put(Constants.ARGUMENT_BUILD, null);
+			}
+			// Add user's files to the package
+			String sourceFiles = generateFileStringForDebianFiles();
+			if (sourceFiles.length() > 0) {
+				argumentList.put(Constants.ARGUMENT_FILES, sourceFiles);
+			}
+		}
 		argumentList.put(Constants.ARGUMENT_BATCH, null);
 //		argumentList.put(Constants.ARGUMENT_SOURCE, Variables.PACKAGE_NAME);
 		argumentList.put(Constants.ARGUMENT_WEBSITE, Variables.PACKAGE_WEBSITE);

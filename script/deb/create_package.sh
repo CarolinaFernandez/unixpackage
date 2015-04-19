@@ -64,9 +64,9 @@ root_script=$(cd $(dirname $0); pwd -P; cd $base_path)
 root_package=$(readlink -e $root_script/../../packages/deb)
 path_to_script=$root_script
 current_date=$(date +"%Y-%m-%d_%H-%M-%S")
-# Output and package locations (not yet existing)
-path_to_package=$root_script/${package_name}_${package_version}
-output_path=$(readlink -m $root_script/../../../unix_package_output__${current_date})
+# Output and package locations (not yet existing, to be defined later)
+path_to_package=""
+output_path=""
 
 
 # Aux functions
@@ -147,6 +147,14 @@ function parse_arguments()
     email="$1"
     shift
     ;;
+  -f|--files)
+    files="$1"
+    shift
+    while [[ $1 != -* ]]; do
+      files="$files $1"
+      shift
+    done
+    ;;
   -n|--name)
     # Read first argument w/o setting spaces on it
     name="$1"
@@ -181,6 +189,7 @@ function parse_arguments()
   -t|--templates)
     # Only one path allowed
     debian_files_location="$1"
+    debian_files_location_root=$debian_files_location
     shift
     ;;
   -v|--verbose)
@@ -213,9 +222,15 @@ function validate_parameters()
       fi
     done
   else
+    # Copy the debian folder to a temporal, appropriate location
+    if [[ -d $debian_files_location ]]; then
+      mkdir -p $path_to_package/debian_templates/
+      cp -Rp $debian_files_location $path_to_package/debian_templates/
+      debian_files_location=$path_to_package/debian_templates/debian
+    fi
     # Correction: use parent folder if the user chose the debian folder itself
     if [[ $(basename $debian_files_location) =~ ^debian.* ]]; then
-      debian_files_location="$(dirname "$debian_files_location")"
+      debian_files_location_root="$(dirname "$debian_files_location")"
     fi
   fi
   # When signing the package, though, name and e-mail are required
@@ -283,25 +298,45 @@ function clean_debianized()
 function do_clean_debianized()
 {
   if [[ -f $path_to_package.orig.tar.gz ]]; then
-  rm $path_to_package.orig.tar.gz;
+    rm $path_to_package.orig.tar.gz;
   fi
   if [[ -f $path_to_package*.dsc ]]; then
-  rm $path_to_package*.dsc;
+    rm $path_to_package*.dsc;
   fi
   if [[ -f build-stamp ]]; then
-  rm build-stamp;
+    rm build-stamp;
   fi
 }
 
 function move_to_output()
 {
   if [[ ! -d $output_path ]]; then
-  mkdir -p $output_path
+    mkdir -p $output_path
   fi
   mv $root_script/*.deb $output_path/
   mv $root_script/*.dsc $output_path/
   mv $root_script/*.changes $output_path/
   echo_v ">> The output is located under $output_path/"
+}
+
+function place_user_files_in_package()
+{
+  # Place source files in the corresponding places
+  IFS=' ' read -ra ADDR <<< "$files"
+  for file_tuple in "${ADDR[@]}"; do
+    file_tuple=(${file_tuple//:/ })
+    source_path=${file_tuple[0]}
+    source_file=$(basename $source_path)
+    destination_path=${file_tuple[1]}
+    destination_path_tmp=${destination_path:1:${#destination_path}}
+    mkdir -p $path_to_package/debian/contents/$destination_path_tmp
+    cp -p $source_path $path_to_package/debian/contents/$destination_path_tmp/$source_file
+    if [ ! -f $path_to_package/debian/install ]; then
+      touch $path_to_package/debian/install
+    fi
+    cat $path_to_package/debian/install
+    echo "debian/contents/$destination_path_tmp/$source_file $destination_path" >> $path_to_package/debian/install
+  done
 }
 
 function perform_dh_make()
@@ -316,7 +351,7 @@ function perform_dh_make()
 
   # Use native (-n) to avoid having a revision appended to the version
   if [[ $package_version != *"-"* ]]; then
-  native_package="-n"
+    native_package="-n"
   fi
 
   # Enforce package basic details
@@ -330,22 +365,21 @@ function perform_dh_make()
 
   # Use templates if the user provides them
   if [[ -d $debian_files_location ]]; then
-    dh_make_params="$dh_make_params --templates $debian_files_location"
+    dh_make_params="$dh_make_params --templates $debian_files_location_root"
   else
     dh_make_params="$dh_make_params -f $path_to_package.tar.gz"
   fi
 
   echo_v "ls -la $PWD (dh-make)"
   ls -la $PWD
-  echo_v "..... AFTER CHECKING CONTENT OF $PWD FOR DH-MAKE"
+  echo_v "..... AFTER CHECKING CONTENT???"
   echo_v "/usr/bin/dh_make $dh_make_params"
   dh_make $dh_make_params || error "Could not dh_make with ${package_name}_${package_version}.tar.gz"
   #dh_installman || error "Could not dh_installman for ${package_name}_${package_version} package"
 
   echo_v "path_to_package: $path_to_package"
   echo_v "PWD: $PWD"
-  echo_v "cat debian/control"
-  echo "DAMN FOLDER: $PWD"
+  echo_v "cat (1) debian/control"
   cat debian/control
   echo_v "ls -la debian"
   ls -la debian
@@ -368,35 +402,30 @@ echo_v "> Validating parameters..."
 validate_parameters
 
 # Script can be run without passing the templates (rather uninteresting, though)
-cat $debian_files_location/debian/control
-if [[ -f $debian_files_location/debian/control ]]; then
+cat $debian_files_location/control
+if [[ -f $debian_files_location/control ]]; then
   if [[ -z $package_name ]]; then
-    package_name=$(grep --only-matching --perl-regex "(?<=^Package: ).*" $debian_files_location/debian/control)
+    package_name=$(grep --only-matching --perl-regex "(?<=^Package: ).*" $debian_files_location/control)
   fi
   if [[ -z $package_version ]]; then
-    package_version=$(grep --only-matching --perl-regex "(?<=^Version: ).*" $debian_files_location/debian/control)
+    package_version=$(grep --only-matching --perl-regex "(?<=^Version: ).*" $debian_files_location/control)
   fi
 #else
-#  error "E: file $debian_files_location/debian/control is needed when using templates. Consider passing the template parameter"
+#  error "E: file $debian_files_location/control is needed when using templates. Consider passing the template parameter"
 fi
 # Recompute output location
 path_to_package=$root_script/${package_name}_${package_version}
-
-#breakline 1
-#echo_v "> Validating parameters..."
-#validate_parameters
+output_path=$(readlink -m $root_script/../../../unix_package_output__${current_date})
 
 breakline 1
 echo_v "> Installing dependencies..."
 install_dependencies
 
-if [[ $no_build == true ]]; then
+if [[ $no_build == true || $build == false ]]; then
   breakline 1
   echo_v "> Creating sources..."
   #create_debian_folder
-  mkdir -p $path_to_package
-  #$path_to_package/debian
-  
+  mkdir -p $path_to_package  
   breakline 1
   if [[ $interactive == true ]]; then 
     echo_v "*NOTE* If you want to SIGN this package please see that the name and e-mail you use are already part of one of your GPG signatures. If this were not the case you will have the chance to generate it later."
@@ -408,35 +437,35 @@ if [[ $no_build == true ]]; then
   perform_dh_make
   
   # Replace with RegEx
-  ls -la $path_to_package
-  ls -la $path_to_package/debian
   if [[ -f $path_to_package/debian/control ]]; then
     # Using different separator (URL usually has slashes)
-    if [ ! -z $package_short_description ]; then
+    if [[ ! -z $package_short_description ]]; then
       sed -i "s}<insert up to 60 chars description>}$package_short_description}" $path_to_package/debian/control
     fi
-    if [ ! -z $package_description ]; then
+    if [[ ! -z $package_description ]]; then
       sed -i "s}<insert long description, indented with spaces>}$package_description}" $path_to_package/debian/control
     fi
-    if [ ! -z $website ]; then
-      sed -i "s}<insert the upstream URL, if relevant>}$website}" $path_to_package/debian/control
+    if [[ ! -z $package_website ]]; then
+      sed -i "s}<insert the upstream URL, if relevant>}$package_website}" $path_to_package/debian/control
     fi
-    if [ ! -z $package_section ]; then
-      sed -i "s}^\(Section: *\).*\$}\1$package_section}" $debian_files_location/debian/control
+    if [[ ! -z $package_section ]]; then
+      sed -i "s}^\(Section: *\).*\$}\1$package_section}" $debian_files_location/control
     fi
-    if [ ! -z $package_priority ]; then
-      sed -i "s}^\(Priority: *\).*\$}\1$package_priority}" $debian_files_location/debian/control
+    if [[ ! -z $package_priority ]]; then
+      sed -i "s}^\(Priority: *\).*\$}\1$package_priority}" $debian_files_location/control
     fi
   else
     error "E: file $path_to_package/debian/control is needed when using templates"
   fi
+
+  cat $path_to_package/debian/control
   
   if [[ ! -z $debian_files_location ]]; then
     # Copy user files that were not copied along with the templates (e.g. "install" file)
     rsync -av --exclude="debian" $debian_files_location $path_to_package
     # Copy debian templates
     debian_files_location_sources=$(find $debian_files_location -regextype sed -regex ".*debian$" -type d)
-    rsync -av $debian_files_location_sources/* $path_to_package/debian
+    rsync -av $debian_files_location_sources/* $path_to_package
   fi
 fi
 
@@ -450,7 +479,7 @@ fi
 rm -f $path_to_package/debian/*.ex
 #fi
 
-if [[ $no_build == true ]]; then
+if [[ $no_build == true || $build == false ]]; then
   breakline 2
   echo_v "> Checking keys for package signing..."
   if [[ $interactive == true ]]; then
@@ -507,11 +536,10 @@ fi
 breakline 2
 # Move to proper location for dpkg-buildpackage
 cd $path_to_package
+place_user_files_in_package
+
 export DH_COMPAT=5
-#XXX
-echo_v "ls -la $PWD/debian (dpkg-buildpackage)"
-ls -la $PWD/debian
-  
+
 if [[ $sign_package == true ]]; then
   echo_v "> Performing (signed) dpkg-buildpackage..."
   /usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $path_to_package"

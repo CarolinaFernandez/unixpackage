@@ -141,6 +141,8 @@ public final class Constants {
 	public static final String ARGUMENT_NAME_LONG = "--name";
 	public static final String ARGUMENT_EMAIL = "-e";
 	public static final String ARGUMENT_EMAIL_LONG = "--email";
+	public static final String ARGUMENT_FILES = "-f";
+	public static final String ARGUMENT_FILES_LONG = "--files";
 	public static final String ARGUMENT_COPYRIGHT = "-c";
 	public static final String ARGUMENT_COPYRIGHT_LONG = "--copyright";
 	public static final String ARGUMENT_CLASS = "-C";
@@ -157,9 +159,9 @@ public final class Constants {
 	public static final String ARGUMENT_SIGN_LONG = "--sign";
 	public static final String ARGUMENT_VERBOSE = "-v";
 	public static final String ARGUMENT_VERBOSE_LONG = "--verbose";
-	public static final String ARGUMENT_BUILD = "-m";
+	public static final String ARGUMENT_BUILD = "-M";
 	public static final String ARGUMENT_BUILD_LONG = "--build";
-	public static final String ARGUMENT_NO_BUILD = "-M";
+	public static final String ARGUMENT_NO_BUILD = "-m";
 	public static final String ARGUMENT_NO_BUILD_LONG = "--no-build";
 
 	// Values for the bundle modes
