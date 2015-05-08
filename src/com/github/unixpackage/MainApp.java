@@ -9,6 +9,7 @@ import com.github.unixpackage.data.UnixPreferences;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.steps.GeneratePackage;
 import com.github.unixpackage.utils.Files;
+import com.github.unixpackage.utils.Shell;
 //import com.github.unixpackage.utils.Shell;
 import com.github.unixpackage.utils.StepLoader;
 
@@ -36,15 +37,7 @@ public class MainApp {
 			// Save input data to disk once data has been validated
 			UnixPreferences prefs = new UnixPreferences();
 			prefs.saveToFile();
-			
-			// XXX DEBUG
-//			System.out.println("---VARIABLES---");
-//			for(Field var : Variables.class.getFields()) {
-//				try {
-//					System.out.println("> " + var + ": " + Variables.get(var.getName()));
-//				} catch (Exception e) {
-//				}
-//			}
+			Shell.postProcess();
 		} else {
 			// Schedule a job for the event-dispatching thread:
 			// creating and showing this application's GUI.

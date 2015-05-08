@@ -315,7 +315,7 @@ public class EditPackageFiles extends CommonStep {
 		Object[] selectedValues = EditPackageFiles.getSelectedRows(table);
 		for (Object value : selectedValues) {
 			commandList = new ArrayList<String>();
-			commandList.add(Constants.EDITING_PROGRAM);
+			commandList.add(Constants.OPEN_COMMAND);
 			commandList.add(Files.getAbsolutePathPackageFile((String)value));
 			// Execute concurrently
 			Thread t1 = new Thread(new Runnable() {

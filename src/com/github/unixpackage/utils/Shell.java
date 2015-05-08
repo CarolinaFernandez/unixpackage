@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JTextArea;
+
 import org.apache.commons.io.FileUtils;
 
 import com.github.unixpackage.data.Constants;
@@ -23,13 +25,29 @@ public class Shell {
 		return Shell.execute(commandList);
 	}
 	
+	public static void writeContentTo(String content, Object writeTo) {
+		String className = writeTo.getClass().getName();
+		if (className.contains("JTextArea")) {
+			JTextArea writeToArea = (JTextArea) writeTo;
+			// Scrolls the text area to the end of data
+			writeToArea.setCaretPosition(writeToArea.getDocument().getLength());
+		}
+		System.out.println(content);
+	}
+	
 	public static StringBuilder execute(List<String> commandList) {
+		// If no object for output is requested, use System.out for output
+		return execute(commandList, System.out);
+	}
+	
+	public static StringBuilder execute(List<String> commandList, Object writeTo) {
 		StringBuilder lines = new StringBuilder();
 		try {
 			// Use ProcessBuilder rather than Runtime.exec
 			System.out.println(">>> execute.commandlist: " + commandList);
 			ProcessBuilder pb = new ProcessBuilder(commandList);
 			pb.directory(new File(Constants.ROOT_TMP_PACKAGE_FILES_PATH));
+			pb.redirectErrorStream(true);
 			proc = pb.start();
 
 			// Read the output from the command
@@ -38,7 +56,7 @@ public class Shell {
 			System.out.println(">>> execute.result: " + reader.readLine());
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				lines.append(line);
+				lines.append(line + "\n");
 				System.out.println(line);
 			}
 			proc.destroy();
@@ -48,16 +66,6 @@ public class Shell {
 		return lines;
 	}
 
-//	public static boolean generateTempFiles() {
-//		boolean result = false;
-//		result = Files.copyScriptSourcesIntoTempFolder();
-//		if (Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-//			//result &= Files.copyPackageSourcesIntoTempFolder();
-//			result &= Files.generatePackageSourcesInTempFolder();
-//		}
-//		return result;
-//	}
-	
 	public static void outputHelpInformation() {
 		String helpOutput = "unixpackage - create a UNIX package, version " + Constants.APP_VERSION + "\n"
 		+ "\n"

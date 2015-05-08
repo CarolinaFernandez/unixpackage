@@ -213,6 +213,10 @@ function parse_arguments()
 # Validate input to script
 function validate_parameters()
 {
+  # Recompute output location
+  path_to_package=$root_script/${package_name}_${package_version}
+  output_path=$(readlink -m $root_script/../../../unix_package_output__${current_date})
+  
   # No file location for debian means it is simple/manual mode
   # and thus no further information is needed
   if [[ -z $debian_files_location ]]; then
@@ -221,12 +225,14 @@ function validate_parameters()
         error "E: Argument '$required_argument_dh' is required for dh-make"
       fi
     done
+  # Otherwise, it is advanced mode (templates are used)
   else
     # Copy the debian folder to a temporal, appropriate location
     if [[ -d $debian_files_location ]]; then
       mkdir -p $path_to_package/debian_templates/
-      cp -Rp $debian_files_location $path_to_package/debian_templates/
+      cp -Rp $debian_files_location/* $path_to_package/debian_templates/
       debian_files_location=$path_to_package/debian_templates/debian
+      cat $debian_files_location/control
     fi
     # Correction: use parent folder if the user chose the debian folder itself
     if [[ $(basename $debian_files_location) =~ ^debian.* ]]; then
@@ -283,7 +289,7 @@ function clean_debianized()
   while true; do
     read -p "> Do you want to remove temporary files created for the 'debian'ization?: " yn
     case $yn in
-    [Yy]* ) do_clean_debianized
+    [Yy]* ) do_clean_debianized; do_clean_dh_make;
         break;;
     [Nn]* ) break;;
     * ) echo_v "Please answer 'Y' or 'N'.";;
@@ -298,13 +304,25 @@ function clean_debianized()
 function do_clean_debianized()
 {
   if [[ -f $path_to_package.orig.tar.gz ]]; then
-    rm $path_to_package.orig.tar.gz;
+    rm -f $path_to_package.orig.tar.gz;
   fi
   if [[ -f $path_to_package*.dsc ]]; then
-    rm $path_to_package*.dsc;
+    rm -f $path_to_package*.dsc;
   fi
   if [[ -f build-stamp ]]; then
-    rm build-stamp;
+    rm -f build-stamp;
+  fi
+}
+
+function do_clean_dh_make()
+{
+  find $path_to_package -name "*.tar.gz" -exec rm -f "{}" \;
+  if [[ -d $path_to_package/debian ]]; then
+    ls -la $path_to_package/debian
+    rm -rf $path_to_package/debian
+  fi
+  if [[ -d $outputh_path ]]; then
+    rm -rf $outputh_path
   fi
 }
 
@@ -340,7 +358,7 @@ function place_user_files_in_package()
 }
 
 function perform_dh_make()
-{
+{  
   echo_v "> Generating ${package_name}_${package_version}.tar.gz..."
   tar --ignore-failed-read -pczf ${package_name}_${package_version}.tar.gz ${package_name}_${package_version} --exclude='create_deb' || echo_v "Could not create ${package_name}_${package_version}.tar.gz"
 
@@ -362,27 +380,10 @@ function perform_dh_make()
   # Common parameters
   # Use "yes" to run in batch mode
   dh_make_params="--yes $native_package -$package_class -c $copyright -e $email -p ${package_name}_${package_version}"
-
-  # Use templates if the user provides them
-  if [[ -d $debian_files_location ]]; then
-    dh_make_params="$dh_make_params --templates $debian_files_location_root"
-  else
-    dh_make_params="$dh_make_params -f $path_to_package.tar.gz"
-  fi
-
-  echo_v "ls -la $PWD (dh-make)"
-  ls -la $PWD
-  echo_v "..... AFTER CHECKING CONTENT???"
+  dh_make_params="$dh_make_params -f $path_to_package.tar.gz"
   echo_v "/usr/bin/dh_make $dh_make_params"
   dh_make $dh_make_params || error "Could not dh_make with ${package_name}_${package_version}.tar.gz"
   #dh_installman || error "Could not dh_installman for ${package_name}_${package_version} package"
-
-  echo_v "path_to_package: $path_to_package"
-  echo_v "PWD: $PWD"
-  echo_v "cat (1) debian/control"
-  cat debian/control
-  echo_v "ls -la debian"
-  ls -la debian
 
   rm $path_to_package.tar.gz || error "Could not delete ${package_name}_${package_version}.tar.gz"
   echo_v "ls -la $PWD/debian (dh-make)"
@@ -413,15 +414,20 @@ if [[ -f $debian_files_location/control ]]; then
 #else
 #  error "E: file $debian_files_location/control is needed when using templates. Consider passing the template parameter"
 fi
-# Recompute output location
-path_to_package=$root_script/${package_name}_${package_version}
-output_path=$(readlink -m $root_script/../../../unix_package_output__${current_date})
 
 breakline 1
 echo_v "> Installing dependencies..."
 install_dependencies
 
+#breakline 1
+#echo_v "> Cleaning previous files (if any)..."
+#do_clean_dh_make
+
 if [[ $no_build == true || $build == false ]]; then
+#  breakline 1
+#  echo_v "> Cleaning previous files (if any)..."
+#  do_clean_dh_make
+  
   breakline 1
   echo_v "> Creating sources..."
   #create_debian_folder
@@ -461,11 +467,8 @@ if [[ $no_build == true || $build == false ]]; then
   cat $path_to_package/debian/control
   
   if [[ ! -z $debian_files_location ]]; then
-    # Copy user files that were not copied along with the templates (e.g. "install" file)
-    rsync -av --exclude="debian" $debian_files_location $path_to_package
-    # Copy debian templates
-    debian_files_location_sources=$(find $debian_files_location -regextype sed -regex ".*debian$" -type d)
-    rsync -av $debian_files_location_sources/* $path_to_package
+    rsync -av $debian_files_location/* $path_to_package/debian/
+    cat $debian_files_location/control
   fi
 fi
 

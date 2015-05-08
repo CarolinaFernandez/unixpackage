@@ -29,13 +29,16 @@ public final class Constants {
 			.getProperty("user.home") + "/." + APP_NAME;
 	public static final String APP_PREFERENCES_FILE_PATH = APP_PREFERENCES_PATH
 			+ "/" + APP_NAME + ".properties";
+	
+	// Forbidden character, will never appear as part of a path
+	public static final String FOLDER_IFS = "\\0";
 
 	// Media files
 	public static final String ROOT_MEDIA = "media";
 	public static final String APP_ICON = ROOT_MEDIA + "/cat-in-a-box.ico";
 	public static final String APP_IMAGE = ROOT_MEDIA + "/cat-in-a-box.png";
 
-	public final static String EDITING_PROGRAM = "gedit";
+	public final static String OPEN_COMMAND = "xdg-open";
 	public final static String MESSAGE_DIGEST = "MD5";
 	
 	public static final String ROOT_FILES_PATH = ".";

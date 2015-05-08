@@ -232,7 +232,7 @@ public class SetBundleMode extends CommonStep {
 
 		// Sign with GPG
 		JLabel signGPGLabel = new JLabel("Sign package with GPG?");
-		JCheckBox signGPG = new JCheckBox();
+		final JCheckBox signGPG = new JCheckBox();
 		signGPG.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		signGPGLabel.setLabelFor(signGPG);
 		// Set name of variable where the field should be saved in
@@ -243,7 +243,7 @@ public class SetBundleMode extends CommonStep {
 		}
 		this.add(signGPGLabel);
 		this.add(signGPG);
-
+		
 		// One per radio button
 		bundleSimple.addChangeListener(new ChangeListener() {
 			@Override

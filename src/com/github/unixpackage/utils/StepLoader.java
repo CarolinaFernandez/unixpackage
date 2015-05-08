@@ -7,6 +7,7 @@ import com.github.unixpackage.components.CommonStep;
 import com.github.unixpackage.data.Constants;
 import com.github.unixpackage.data.Variables;
 //import com.github.unixpackage.steps.GeneratePackage;
+import com.github.unixpackage.steps.GeneratePackage;
 
 public class StepLoader {
 
@@ -181,10 +182,10 @@ public class StepLoader {
 		// EditPackageFiles step
 		} else if (stepNumber == 5) {
 			if (!Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-				Files.generatePackageSourcesInTempFolder();
+				GeneratePackage.generateDebianFiles();
 			}
 		} else if (stepNumber == 6) {
-			Files.generatePackageSourcesInTempFolder();
+			GeneratePackage.generateDebianFiles();
 		}
 	}
 }
