@@ -1,8 +1,16 @@
 #!/bin/bash
 
 # More: http://fedoraproject.org/wiki/How_to_create_an_RPM_package
-# Other: http://linux.die.net/man/1/rpmlint
-
+# More: http://www.tldp.org/HOWTO/RPM-HOWTO/build.html
+# More: http://www.linuxuser.co.uk/tutorials/make-your-own-deb-and-rpm-packages
+# Spec header: http://www.techrepublic.com/article/making-rpms-part-1-the-spec-file-header/
+# Licenses: https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing
+# Validation: http://linux.die.net/man/1/rpmlint
+# Validation: http://www.thegeekstuff.com/2015/02/rpm-build-package-example/
+# Signing: https://iuscommunity.org/pages/CreatingAGPGKeyandSigningRPMs.html
+# Expect: http://aaronhawley.livejournal.com/10615.html
+# SRPMS: http://www.rpm.org/max-rpm/s1-rpm-miscellania-srpms.html
+# Macros: https://fedoraproject.org/wiki/Packaging:RPMMacros
 
 # *NOTE*
 # [1] Name "packagename_x.y" after your package and version
@@ -16,11 +24,15 @@ copyright=""
 package_name=""
 package_description=""
 package_short_description=""
+package_version_original=""
 package_version=""
+package_release=""
 package_website=""
 package_group=""
 package_priority=""
 package_class=""
+package_files=""
+package_install_files=""
 rpm_files_location=""
 sign_package=false
 # Default: interactive. May be disabled via parameters
@@ -36,7 +48,8 @@ build=false
 # Regular expressions to validate
 package_name_re='^[a-z]{2,}([a-z]|[0-9]|[+]|[-]|[.])*?$'
 package_website_re='^([a-z]*[://])?([a-zA-Z0-9]|[-_./#?&%$=])*?$'
-package_version_re='^[0-9]+([.][0-9]+)(-[0-9]+)?$'
+package_version_re='^[0-9]+([.][0-9]+)?$'
+package_release_re='^[0-9]+?$'
 
 
 # Required parameters for simple/manual executions
@@ -44,14 +57,17 @@ package_version_re='^[0-9]+([.][0-9]+)(-[0-9]+)?$'
 required_arguments_dh=('$package_name' '$package_version' '$package_class' '$name' '$email' '$copyright')
 required_arguments_sign=('$name' '$email')
 # Helps installing dependencies
-rpm_dependencies=('rpm-build' 'rpmlint' 'gzip')
+rpm_dependencies=('rpm-build' 'rpmlint' 'gzip' 'xdg-utils')
 # Common arguments passed to rpmbuild
 rpmbuild_params="-ba"
+# Rpmbuild to be run as normal user
+unixpackage_user="unixpackage"
+run_with_su="su $unixpackage_user"
 
 # Internal variables
 gpg_key_exists=""
 create_gpg_key=false
-
+spec_contents=""
 
 # Paths
 #path=${PWD##/*/}
@@ -61,8 +77,12 @@ root_script=$(cd $(dirname $0); pwd -P; cd $base_path)
 root_package=$(readlink -e $root_script/../../packages/rpm)
 path_to_script=$root_script
 current_date=$(date +"%Y-%m-%d_%H-%M-%S")
-# Output and package locations (not yet existing, to be defined later)
+generated_rpm_file_location=""
+generated_rpm_file_name=""
+
+# Output, spec and package locations (not yet existing, to be defined later)
 path_to_package=""
+path_to_package_spec=""
 output_path=""
 
 
@@ -87,16 +107,18 @@ function install_dependencies()
 {
   # Install this package prior to sign any package
   if [[ $sign_package == true ]]; then
-    rpm_dependencies=(${rpm_dependencies[@]} 'rng-tools')
+    rpm_dependencies=(${rpm_dependencies[@]} 'rng-tools' 'expect')
   fi
   # Install this package prior to rsync any folder
   if [[ ! -z $rpm_files_location ]]; then
     rpm_dependencies=(${rpm_dependencies[@]} 'rsync')
   fi
   for rpm_dependency in ${rpm_dependencies[@]}; do
-    dependency_exists=$(yum list | grep "$rpm_dependency")
+    #dependency_exists=$(yum list | grep "$rpm_dependency")
+    dependency_exists=$(rpm -qa | grep "$rpm_dependency")
     # If package does not exist OR it is not properly installed, do install it
-    if [[ -z $dependency_exists || $dependency_exists != *ii* ]]; then
+    #if [[ -z $dependency_exists || $dependency_exists != *installed* ]]; then
+    if [[ -z $dependency_exists ]]; then
       yum install -y $rpm_dependency
     fi
   done
@@ -154,7 +176,13 @@ function parse_arguments()
     done
     ;;
   -g|--group)
+    # Read first argument w/o setting spaces on it
     package_group="$1";
+    shift
+    while [[ $1 != -* ]]; do
+      package_group="$package_group $1"
+      shift
+    done
     ;;
   -n|--name)
     # Read first argument w/o setting spaces on it
@@ -214,6 +242,7 @@ function parse_arguments()
     ;;
   -V|--package-version)
     package_version="$1"
+    package_version_original="$package_version"
     shift
     ;;
   -w|--website)
@@ -241,12 +270,11 @@ function validate_parameters()
   else
     # Copy the rpm folder to a temporal, appropriate location
     if [[ -d $rpm_files_location ]]; then
-      mkdir -p $path_to_package/rpm_templates/
-      cp -Rp $rpm_files_location $path_to_package/rpm_templates/
-      rpm_files_location=$path_to_package/rpm_templates/rpm
+      cp -Rp $rpm_files_location $path_to_package/SPECS/
+      rpm_files_location=$path_to_package/SPECS/
     fi
-    # Correction: use parent folder if the user chose the rpm folder itself
-    if [[ $(basename $rpm_files_location) =~ ^rpm.* ]]; then
+    # Correction: use parent folder if the user chose the SPECS folder itself
+    if [[ $(basename $rpm_files_location) =~ ^SPECS.* ]]; then
       rpm_files_location_root="$(dirname "$rpm_files_location")"
     fi
   fi
@@ -284,45 +312,29 @@ function validate_package_version()
   fi
 }
 
+# Validate correct format of release version
+function validate_release_version()
+{
+  if ! [[ $package_release =~ $package_release_re ]]; then
+  error "E: Package release '$package_release' is not correct"
+  fi
+}
+
+function prepare_unprivileged_user() {
+  # Create user if needed
+  unixpackage_user_exists=$(cat /etc/group | grep "$unixpackage_user")
+  if [[ -z $unixpackage_user_exists ]]; then
+    useradd $unixpackage_user -m -s /bin/bash
+  fi
+  # Change permissions of tmp folder
+  chown $unixpackage_user:$unixpackage_user -R $path_to_package
+}
+
 # Exit on failure
 function error()
 {
   echo_v $1
-  clean_rpmized || echo_v "Could not remove temporary files for 'rpm'ization"
   exit
-}
-
-function clean_rpmized()
-{
-  breakline 1
-  echo_v "> Cleaning the house..."
-  if [[ $interactive == true ]]; then
-  while true; do
-    read -p "> Do you want to remove temporary files created for the 'rpm'ization?: " yn
-    case $yn in
-    [Yy]* ) do_clean_rpmized
-        break;;
-    [Nn]* ) break;;
-    * ) echo_v "Please answer 'Y' or 'N'.";;
-    esac
-  done
-  else
-  do_clean_rpmized
-  fi
-  breakline 1
-}
-
-function do_clean_rpmized()
-{
-  if [[ -f $path_to_package.orig.tar.gz ]]; then
-    rm $path_to_package.orig.tar.gz;
-  fi
-  if [[ -f $path_to_package*.dsc ]]; then
-    rm $path_to_package*.dsc;
-  fi
-  if [[ -f build-stamp ]]; then
-    rm build-stamp;
-  fi
 }
 
 function move_to_output()
@@ -330,9 +342,7 @@ function move_to_output()
   if [[ ! -d $output_path ]]; then
     mkdir -p $output_path
   fi
-  mv $root_script/*.deb $output_path/
-  mv $root_script/*.dsc $output_path/
-  mv $root_script/*.changes $output_path/
+  mv $generated_rpm_file_location $output_path/
   echo_v ">> The output is located under $output_path/"
 }
 
@@ -345,139 +355,190 @@ function place_user_files_in_package()
     source_path=${file_tuple[0]}
     source_file=$(basename $source_path)
     destination_path=${file_tuple[1]}
+    destination_path_dirname=$(dirname ${file_tuple[1]})
     destination_path_tmp=${destination_path:1:${#destination_path}}
-    mkdir -p $path_to_package/rpm/contents/$destination_path_tmp
-    cp -p $source_path $path_to_package/rpm/contents/$destination_path_tmp/$source_file
-    if [ ! -f $path_to_package/rpm/install ]; then
-      touch $path_to_package/rpm/install
-    fi
-    cat $path_to_package/rpm/install
-    echo "rpm/contents/$destination_path_tmp/$source_file $destination_path" >> $path_to_package/rpm/install
+
+    mkdir -p $path_to_package/SOURCES$destination_path_dirname
+    cp -p $source_path $path_to_package/SOURCES$destination_path_dirname/
+    package_files="$package_files\n$destination_path"
+    package_install_files="$package_install_files\nmkdir -p %%{buildroot}$destination_path_dirname"
+    package_install_files="$package_install_files\ncp %%{_topdir}/SOURCES$source_path %%{buildroot}$destination_path_dirname/"
   done
 }
 
 function generate_structure()
 {
-  la -la $path_to_package
-  mkdir -p $path_to_package/{RPMS,SRPMS,BUILD,SOURCES,SPECS,tmp}
-
-  cat <<EOF >$path_to_package/.rpmmacros
-%_topdir   %(echo $HOME)/rpmbuild
-%_tmppath  %{_topdir}/tmp
-EOF
+  mkdir -p $path_to_package
+  mkdir -p $path_to_package/{RPMS,SRPMS,BUILD,SOURCES,SPECS}
 }
 
 function get_version_release()
 {
-  version_release=("" "")
   if [[ ! -z $package_version ]]; then
     old_ifs=$IFS
     IFS="-"
-    set -- $var
-    version_release=("$1" "$2")
+    set -- $package_version
+    package_version="$1"
+    package_release="$2"
     IFS=$old_ifs
   fi
-  return $version_release
 }
 
 function append_to_spec()
 {
-  spec_contents=$1
-  new_addition=$2
-  spec_newline="\n"
-
-  spec_contents=$(printf "${spec_contents}${spec_newline}${new_addition}")
-  return spec_contents
+  new_addition="$@"
+  spec_separator="\n"
+  spec_contents="${spec_contents}${spec_separator}${new_addition}"
 }
 
 function generate_spec()
 {
-  spec_contents=$(printf "#\nSpec file for $package_name\n#\n")
+  path_to_package_spec=$path_to_package/SPECS/$package_name.spec
+  spec_contents="#\n# Spec file for package $package_name\n#\n"
+
+  append_to_spec "%%define _topdir   $path_to_package\n"
+
   if [[ ! -z $package_name ]]; then
     spec_package_name="Name: $package_name"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_name)
+    append_to_spec $spec_package_name
   fi
   if [[ ! -z $package_short_description ]]; then
     spec_package_short_description="Summary: $package_short_description"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_short_description)
+    append_to_spec $spec_package_short_description
   fi
   if [[ ! -z $package_version ]]; then
-    version_release=$(get_version_release)
-    spec_package_version="Version: ${version_release[0]}"
-    spec_package_release="Release: ${version_release[1]}"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_version)
-    spec_contents=$(append_to_spec $spec_contents $spec_package_release)
+    get_version_release
+    spec_package_version="Version: $package_version"
+    append_to_spec $spec_package_version
+    spec_package_release="Release: $package_release"
+    append_to_spec $spec_package_release
   fi
   if [[ ! -z $copyright ]]; then
     spec_package_license="License: $copyright"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_license)
+    append_to_spec $spec_package_license
   fi
   if [[ ! -z $package_group ]]; then
     spec_package_group="Group: $package_group"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_group)
+    append_to_spec $spec_package_group
   fi
   if [[ ! -z $package_source ]]; then
     spec_package_source="Source: $package_source"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_source)
+    append_to_spec $spec_package_source
   fi
   if [[ ! -z $package_website ]]; then
     spec_package_website="URL: $package_website"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_website)
+    append_to_spec $spec_package_website
   fi
   if [[ ! -z $package_dependencies ]]; then
     spec_package_dependencies="Requires: $package_dependencies"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_dependencies)
+    # TODO PROCESS (HERE OR AT BEGINNING)
+    append_to_spec $spec_package_dependencies
   fi
   if [[ ! -z $package_class ]]; then
     spec_package_class="BuildArch: $package_class"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_class)
-    rpmbuild_params="$rpmbuild_params --buildarch"
+    append_to_spec $spec_package_class
+    #rpmbuild_params="$rpmbuild_params --buildarch"
   fi
 
+  # Add BuildRoot to define output of files
+  spec_buildroot="BuildRoot: /home/${unixpackage_user}/${package_name}_${package_version_original}"
+  append_to_spec $spec_buildroot
 
   if [[ ! -z $package_distribution ]]; then
     spec_package_distribution="Distribution: $package_distribution"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_distribution)
+    append_to_spec $spec_package_distribution
   fi
+
   if [[ ! -z $name ]] && [[ ! -z $email ]]; then
     spec_package_packager="Packager: $name <$email>"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_packager)
+    append_to_spec $spec_package_packager
   fi
+
+
   if [[ ! -z $package_description ]]; then
-    spec_package_description="\n%description\n$package_description"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_description)
+    spec_package_description="\n%%description\n$package_description"
+    append_to_spec $spec_package_description
   fi
-  if [[ ! -z $package_prep ]]; then
-    spec_package_prep="\n%prep\n$package_prep"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_prep)
+  if [[ -z $package_prep ]]; then
+    spec_package_prep="\n%%prep"
+  else
+    spec_package_prep="\n%%prep\n$package_prep"
   fi
-  if [[ ! -z $package_build ]]; then
-    spec_package_build="\n%build\n$package_build"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_build)
+  if [[ ! -z $package_install_files ]]; then
+    spec_package_prep="$spec_package_prep\n$package_install_files"
   fi
-  if [[ ! -z $package_install ]]; then
-    spec_package_install="\n%install\n$package_install"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_install)
+
+  append_to_spec $spec_package_prep
+  if [[ -z $package_build ]]; then
+    spec_package_build="\n%%build"
+  else
+    spec_package_build="\n%%build\n$package_build"
   fi
+  append_to_spec $spec_package_build
+  if [[ -z $package_install ]]; then
+    spec_package_install="\n%%install"
+  else
+    spec_package_install="\n%%install\n$package_install"
+  fi
+  append_to_spec $spec_package_install
   if [[ ! -z $package_files ]]; then
-    spec_package_files="\n%files\n$package_files"
-    spec_contents=$(append_to_spec $spec_contents $spec_package_files)
+    spec_package_files="\n%%files$package_files"
+    spec_package_files="$spec_package_files\n#%%doc README CHANGELOG"
+    append_to_spec $spec_package_files
   fi
+
+  # Add clean line
+  append_to_spec "\n%%clean"
+
+  # Add changelog line
+  append_to_spec "\n%%changelog\n* $(date +'%a %b %d %Y') $name <$email> $package_version_original\n- Initial packaging"
+
+  # Dump everything to the spec file
+  printf "$spec_contents" > $path_to_package_spec
 }
 
-function perform_rmpbuild()
+function perform_rpmbuild()
 {
-  echo_v "> Generating ${package_name}_${package_version}.tar.gz..."
-  tar --ignore-failed-read -cvzf $path_to_package/SOURCES/${package_name}_${package_version}.tar.gz $path_to_package || echo_v "Could not create ${package_name}_${package_version}.tar.gz"
-
-  cd $path_to_package
-
   # Enforce package basic details
   validate_package_name
   validate_package_website # Optional
   validate_package_version
+  validate_release_version
 
-  rpmbuild $rpmbuild_params || error "Could not rpmbuild with ${package_name}_${package_version}.tar.gz"
+  # Check there is an unprivileged user to run rpmbuild with
+  breakline 2
+  echo_v "> Setting up unprivileged user..."
+  prepare_unprivileged_user
+
+  cd $path_to_package
+
+  # Perform rpmbuild
+  if [[ $sign_package == true ]]; then
+    echo_v "> Performing (signed) rpmbuild..."
+    # XXX Problematic
+    #$run_with_su -c "rpmbuild $rpmbuild_params --sign $path_to_package_spec" || error "Could not rpmbuild (signed) on $path_to_package"
+  else
+    echo_v "> Performing (unsigned) rpmbuild..."
+    #$run_with_su -c "rpmbuild $rpmbuild_params $path_to_package_spec" || error "Could not rpmbuild (unsigned) on $path_to_package"
+  fi
+  $run_with_su -c "rpmbuild $rpmbuild_params $path_to_package_spec" || error "Could not rpmbuild (unsigned) on $path_to_package"
+
+  generated_rpm_file_location=$(find $path_to_package/RPMS/$package_class -name "*.rpm" | head -1)
+  generated_rpm_file_name=$(basename $generated_rpm_file_location)
+
+  # Sign
+  if [[ $sign_package == true ]]; then
+    # Set proper directives in ~/.rpmmacros
+    gpg_key_macro="%%_signature  gpg\n"
+    if [[ ! -z $name ]]; then
+      gpg_key_macro="$gpg_key_macro\n%%_gpg_name   $name <$email>"
+    fi
+    printf "$gpg_key_macro" > /home/${unixpackage_user}/.rpmmacros
+    # Change permissions of tmp folder
+    chown $unixpackage_user:$unixpackage_user -R /home/${unixpackage_user}/.rpmmacros
+    # Send proper commands to sign the package in batch mode
+    $run_with_su -c "expect $path_to_package/../rpm_sign.sh $generated_rpm_file_location \"\""
+  fi
 }
 
 breakline 1
@@ -495,13 +556,25 @@ validate_parameters
 breakline 1
 echo_v "> Generating structure..."
 # Compute output location
-path_to_package=$root_script/${package_name}_${package_version}
+path_to_package=$root_script/${package_name}_${package_version_original}
 output_path=$(readlink -m $root_script/../../../unix_package_output__${current_date})
 generate_structure
 
-breakline 1
-echo_v "> Installing dependencies..."
-install_dependencies
+cd $path_to_package
+
+breakline 2
+# Move to proper location for rpmbuild
+place_user_files_in_package
+
+cd $path_to_package/SOURCES
+
+# Generates *.src.rpm package
+#breakline 1
+#echo_v "> Generating ${package_name}.tar.gz..."
+#tar --ignore-failed-read -zcvf ${package_name}.tar.gz * --exclude="*.tar.gz" || echo_v "Could not create ${package_name}.tar.gz"
+#find $path_to_package/SOURCES/ ! -name "*.tar.gz" -delete
+
+cd $path_to_package
 
 if [[ $no_build == true || $build == false ]]; then
   breakline 1
@@ -515,87 +588,75 @@ if [[ $no_build == true || $build == false ]]; then
   fi
   
   create_dir=$PWD
-  
-  breakline 2
-  perform_rmpbuild
-fi
-
-if [[ $no_build == true || $build == false ]]; then
-  breakline 2
-  echo_v "> Checking keys for package signing..."
-  if [[ $interactive == true ]]; then
-    read -p "> Do you want to sign the package? (y/n) [y]: " sign_package
-    case $sign_package in
-    [Yy]* ) gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
-      if [[ -z $gpg_key_exists ]]; then
-        breakline 2
-          while [[ ! $create_gpg_key ]]; do
-            read -p "> Do you want to create a GPG key to sign the package? (y/n) [y]: " create_gpg_key
-            case $create_gpg_key in
-              [Yy]* ) /usr/bin/gpg --gen-key;
-                break;;
-              [Nn]* ) sign_package=false;
-                break;;
-              * ) echo_v "Please answer 'Y' or 'N'.";;
-            esac
-          done
-        fi;
-        break;;
-       *) sign_package=false;
-#        break;;
-    esac
-  else
-    if [[ $sign_package == true ]]; then
-      test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools start
-      gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
-      # Look for key. If it does not exist, create
-      if [[ -z $gpg_key_exists ]]; then
-        breakline 2
-        echo_v ">> Generating key for $name <$email>..."
-        gpg --batch --gen-key <<EOF
-        Key-Type: DSA
-        Key-Length: 2048
-        Subkey-Type: ELG-E
-        Subkey-Length: 2048
-        Name-Real: $name
-        # The following forbids literal string matching. Avoiding!
-        #Name-Comment: used for unixpackage
-        Name-Email: $email
-        #Passphrase: unixpackage
-EOF
-        test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools stop
-        #gpg --list-keys
-      fi
-    fi
-  fi
 fi
 
 if [[ $no_build == true ]]; then
   exit 0
 fi
 
-breakline 2
-# Move to proper location for rpm-buildpackage
-cd $path_to_package
-place_user_files_in_package
+breakline 1
+echo_v "> Installing dependencies..."
+install_dependencies
 
-if [[ $sign_package == true ]]; then
-  echo_v "> Performing (signed) rpmbuild..."
-  rpmbuild $rpmbuild_params --sign SPECS/$package_name-$package_version.spec || error "Could not rpmbuild (signed) on $path_to_package"
+breakline 2
+echo_v "> Checking keys for package signing..."
+if [[ $interactive == true ]]; then
+  read -p "> Do you want to sign the package? (y/n) [y]: " sign_package
+  case $sign_package in
+  [Yy]* ) gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
+    if [[ -z $gpg_key_exists ]]; then
+      breakline 2
+        while [[ ! $create_gpg_key ]]; do
+          read -p "> Do you want to create a GPG key to sign the package? (y/n) [y]: " create_gpg_key
+          case $create_gpg_key in
+            [Yy]* ) /usr/bin/gpg --gen-key;
+              break;;
+            [Nn]* ) sign_package=false;
+              break;;
+            * ) echo_v "Please answer 'Y' or 'N'.";;
+          esac
+        done
+      fi;
+      break;;
+     *) sign_package=false;
+#      break;;
+  esac
 else
-  echo_v "> Performing (unsigned) rpmbuild..."
-  rpmbuild $rpmbuild_params SPECS/$package_name-$package_version.spec || error "Could not rpmbuild (unsigned) on $path_to_package"
+  if [[ $sign_package == true ]]; then
+    test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools start
+    gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
+    # Look for key. If it does not exist, create
+    if [[ -z $gpg_key_exists ]]; then
+      breakline 2
+      echo_v ">> Generating key for $name <$email>..."
+      gpg --batch --gen-key <<EOF
+      Key-Type: DSA
+      Key-Length: 2048
+      Subkey-Type: ELG-E
+      Subkey-Length: 2048
+      Name-Real: $name
+      # The following forbids literal string matching. Avoiding!
+      #Name-Comment: used for unixpackage
+      Name-Email: $email
+      #Passphrase: unixpackage
+EOF
+      test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools stop
+      #gpg --list-keys
+    fi
+  fi
 fi
 
+# Finally, generate .rpm package
+perform_rpmbuild
+
 breakline 1
-generated_rpm_file_location=$(find $root_script/ -name "*.rpm" | head -1)
-generated_rpm_file_name=$(basename $generated_rpm_file_location)
+# Display information for a non-installed RPM
 echo_v "> Review final info for package $generated_rpm_file_name..."
-rpm --info $generated_rpm_file_location || error "Could not show info for rpm package"
+rpm -qip $generated_rpm_file_location || error "Could not show info for rpm package"
 
 breakline 1
 echo_v "> Please check the correctness of the package..."
-/usr/bin/rpmlint $generated_rpm_file_location #|| error "Could not show info about the correctness of the .rpm file"
+rpmlint $generated_rpm_file_location #|| error "Could not show info about the correctness of the .rpm file"
 
 if [[ ! -z $rpm_files_location ]]; then
   breakline 1
@@ -605,9 +666,6 @@ fi
 breakline 1
 echo_v "> Ending package generation..."
 move_to_output
-
-# Cleaning temporary files
-clean_rpmized
 
 breakline 1
 echo_v "  ********** RPM GENERATOR: END **********"
