@@ -47,7 +47,11 @@ public class EditPackageFiles extends CommonStep {
 		// Populate the panel
 		JLabel splashLabel = new JLabel(
 				"Edit any package file");
-		JLabel infoLabel = new JLabel("Note: every edited file ending in '.ex' will be added to the bundle");
+		String infoLabelContents = "";
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			infoLabelContents = "Note: every edited file ending in '.ex' will be added to the bundle";
+		}
+		JLabel infoLabel = new JLabel(infoLabelContents);
 		
 		// Edit file
 		editFileButton = new JButton("Edit file");

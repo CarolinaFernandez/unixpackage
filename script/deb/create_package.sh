@@ -47,7 +47,7 @@ package_version_re='^[0-9]+([.][0-9]+)(-[0-9]+)?$'
 required_arguments_dh=('$package_name' '$package_version' '$package_class' '$name' '$email' '$copyright')
 required_arguments_sign=('$name' '$email')
 # Helps installing dependencies
-dpkg_dependencies=('dh-make' 'lintian' 'gzip')
+dpkg_dependencies=('dh-make' 'lintian' 'gzip' 'xdg-utils')
 
 
 # Internal variables

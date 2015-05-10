@@ -65,7 +65,11 @@ public class ReviewPackageInfo extends CommonStep {
 		this.add(l);
 		numRows++;
 
-		l = new JLabel("Version[-Revision]: ", JLabel.TRAILING);
+		String versionRevisionLabel = "Version[-Revision]";
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			versionRevisionLabel = "Version-Revision";
+		}
+		l = new JLabel(versionRevisionLabel + ": ", JLabel.TRAILING);
 		this.add(l);
 		l = new JLabel(Variables.PACKAGE_VERSION);
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
@@ -79,16 +83,28 @@ public class ReviewPackageInfo extends CommonStep {
 		this.add(l);
 		numRows++;
 
-		l = new JLabel("Class: ", JLabel.TRAILING);
+		String classLabel = "Class";
+		String classLabelContents = Variables.PACKAGE_CLASS + " (" + Constants.PACKAGE_CLASSES_DEB.get(Variables.PACKAGE_CLASS) + ")";
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			classLabel = "Architecture";
+			classLabelContents = Variables.PACKAGE_CLASS + " (" + Constants.PACKAGE_CLASSES_RPM.get(Variables.PACKAGE_CLASS) + ")";
+		}
+		l = new JLabel(classLabel + ": ", JLabel.TRAILING);
 		this.add(l);
-		l = new JLabel(Variables.PACKAGE_CLASS + " (" + Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS) + ")");
+		l = new JLabel(classLabelContents);
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		this.add(l);
 		numRows++;
 		
-		l = new JLabel("Section, Priority: ", JLabel.TRAILING);
+		String sectionLabel = "Section, Priority";
+		String sectionLabelContents = Variables.PACKAGE_SECTION + ", " + Variables.PACKAGE_PRIORITY;
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			sectionLabel = "Group";
+			sectionLabelContents = Variables.PACKAGE_SECTION;
+		}
+		l = new JLabel(sectionLabel + ": ", JLabel.TRAILING);
 		this.add(l);
-		l = new JLabel(Variables.PACKAGE_SECTION + ", " + Variables.PACKAGE_PRIORITY);
+		l = new JLabel(sectionLabelContents);
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		this.add(l);
 		numRows++;

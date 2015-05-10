@@ -172,19 +172,19 @@ public class Arguments {
 		argumentList.put(Constants.ARGUMENT_WEBSITE, Variables.PACKAGE_WEBSITE);
 		argumentList.put(Constants.ARGUMENT_PACKAGE_VERSION, Variables.PACKAGE_VERSION);
 		// Translate to something understandable by the script
-		if (Constants.PACKAGE_LICENCES.containsKey(Variables.PACKAGE_LICENCE)) {
+		if (Constants.PACKAGE_LICENCES_DEB.containsKey(Variables.PACKAGE_LICENCE)) {
 			argumentList.put(Constants.ARGUMENT_COPYRIGHT,
-				Constants.PACKAGE_LICENCES.get(Variables.PACKAGE_LICENCE));
-		} else if (Constants.PACKAGE_LICENCES.containsValue(Variables.PACKAGE_LICENCE)){
+				Constants.PACKAGE_LICENCES_DEB.get(Variables.PACKAGE_LICENCE));
+		} else if (Constants.PACKAGE_LICENCES_DEB.containsValue(Variables.PACKAGE_LICENCE)){
 			// Class in its short version
 			argumentList.put(Constants.ARGUMENT_COPYRIGHT, Variables.PACKAGE_LICENCE);		
 		}
 		// Translate to something understandable by the script
-		if (Constants.PACKAGE_CLASSES.containsKey(Variables.PACKAGE_CLASS)) {
+		if (Constants.PACKAGE_CLASSES_DEB.containsKey(Variables.PACKAGE_CLASS)) {
 			// Class is a full string
 			argumentList.put(Constants.ARGUMENT_CLASS,
-				Constants.PACKAGE_CLASSES.get(Variables.PACKAGE_CLASS));
-		} else if (Constants.PACKAGE_CLASSES.containsValue(Variables.PACKAGE_CLASS)){
+				Constants.PACKAGE_CLASSES_DEB.get(Variables.PACKAGE_CLASS));
+		} else if (Constants.PACKAGE_CLASSES_DEB.containsValue(Variables.PACKAGE_CLASS)){
 			// Class in its short version
 			argumentList.put(Constants.ARGUMENT_CLASS, Variables.PACKAGE_CLASS);		
 		}
@@ -236,6 +236,94 @@ public class Arguments {
 		}
 		commandList = commandListValidated;
 //		System.out.println("*** [V] Validated commandList: " + commandList);
+		return commandList;
+	}
+	
+	public static List<String> generateArgumentsForRedHatFiles() {
+		List<String> commandList = Arguments.generateArgumentsForRedHatPackage();
+		// Generate Debian files only (dh_make) and do not remove sample (.ex) files
+		// In advanced mode, a path is passed to copy the user's templates from
+		if (!Variables.isNull("BUNDLE_MODE")
+				&& !Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+			commandList.add(Constants.ARGUMENT_NO_BUILD);
+		}
+		// Remove verbose argument
+		commandList.remove(Constants.ARGUMENT_VERBOSE);
+		commandList.remove(Constants.ARGUMENT_VERBOSE_LONG);
+		// Should also remove Constants.ARGUMENT_FILE and what follows...
+		return commandList;
+	}
+	
+	public static List<String> generateArgumentsForRedHatPackage() {
+		List<String> commandList = new ArrayList<String>();
+		List<String> commandListValidated = new ArrayList<String>();
+		HashMap<String, String> argumentList = new HashMap<String, String>();
+		// Both simple and manual modes carry a first source generation and a final build
+		if (!Variables.isNull("BUNDLE_MODE")
+				&& !Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+			if (StepLoader.currentStep == Constants.STEPS_METHODS_LENGTH) {
+				// Do a build only during the last step (source files generated previously)
+				argumentList.put(Constants.ARGUMENT_BUILD, null);
+			}
+			// Add user's files to the package
+			String sourceFiles = generateFileStringForDebianFiles();
+			if (sourceFiles.length() > 0) {
+				argumentList.put(Constants.ARGUMENT_FILES, sourceFiles);
+			}
+		}
+		argumentList.put(Constants.ARGUMENT_BATCH, null);
+		argumentList.put(Constants.ARGUMENT_WEBSITE, Variables.PACKAGE_WEBSITE);
+		argumentList.put(Constants.ARGUMENT_PACKAGE_VERSION, Variables.PACKAGE_VERSION);
+		
+		// No translation performed for RPM
+		argumentList.put(Constants.ARGUMENT_COPYRIGHT, Variables.PACKAGE_LICENCE);		
+		// Translate to something understandable by the script
+		if (Constants.PACKAGE_CLASSES_RPM.containsKey(Variables.PACKAGE_CLASS)) {
+			// Class is a full string
+			argumentList.put(Constants.ARGUMENT_CLASS,
+				Constants.PACKAGE_CLASSES_RPM.get(Variables.PACKAGE_CLASS));
+		} else if (Constants.PACKAGE_CLASSES_RPM.containsValue(Variables.PACKAGE_CLASS)){
+			// Class in its short version
+			argumentList.put(Constants.ARGUMENT_CLASS, Variables.PACKAGE_CLASS);		
+		}
+		argumentList.put(Constants.ARGUMENT_PACKAGE_GROUP, Variables.PACKAGE_SECTION);
+		argumentList.put(Constants.ARGUMENT_PACKAGE_NAME, Variables.PACKAGE_NAME);
+		argumentList.put(Constants.ARGUMENT_DESCRIPTION_SHORT, Variables.PACKAGE_SHORT_DESCRIPTION);
+		argumentList.put(Constants.ARGUMENT_DESCRIPTION, Variables.PACKAGE_DESCRIPTION);
+		
+		// In simple and manual modes, the majority of the arguments are passed
+			argumentList.put(Constants.ARGUMENT_NAME, Variables.MAINTAINER_NAME);
+			argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
+
+		// In advanced mode, a path is passed to copy the user's templates from
+		if (!Variables.isNull("BUNDLE_MODE")
+				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+			System.out.println("Variables.BUNDLE_MODE_ADVANCED_PATH: " + Variables.BUNDLE_MODE_ADVANCED_PATH);
+			argumentList.put(Constants.ARGUMENT_TEMPLATES, Variables.BUNDLE_MODE_ADVANCED_PATH);
+		}
+
+		// Notify if package is to be signed
+		if (!Variables.isNull("PACKAGE_SIGN") && Variables.PACKAGE_SIGN) {
+			argumentList.put(Constants.ARGUMENT_SIGN, null);
+		}
+
+		// Verbosity
+		argumentList.put(Constants.ARGUMENT_VERBOSE_LONG, null);
+		
+		for (Entry<String, String> entry : argumentList.entrySet()) {
+			commandListValidated.add(entry.getKey());
+			// Check arguments not eligible for a 2nd argument
+			if (entry.getKey().matches("-(\\w?[^bSv]){1}")) {
+				System.out.println("+++ adding key -- " + entry);
+				if (entry.getValue() != null) {
+					commandListValidated.add(entry.getValue());
+				} else {
+					// If value is null, entry shall not be added
+					commandListValidated.remove(entry.getKey());
+				}
+			}
+		}
+		commandList = commandListValidated;
 		return commandList;
 	}
 	

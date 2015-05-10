@@ -1,5 +1,8 @@
 package com.github.unixpackage.steps;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -46,7 +49,13 @@ public class SetPackageInfo extends CommonStep {
 		}
 
 		// Version - Revision
-		JLabel packageVersionLabel = new JLabel("Version[-Revision]",
+		String versionRevision = "Version[-Revision]";
+		String versionToolTip = "Version (and optionally revision) of the package";
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			versionRevision = "Version-Revision";
+			versionToolTip = "Version and revision of the package";
+		}
+		JLabel packageVersionLabel = new JLabel(versionRevision,
 				JLabel.TRAILING);
 		this.add(packageVersionLabel);
 		JTextField packageVersionField = new JTextField(4);
@@ -58,15 +67,20 @@ public class SetPackageInfo extends CommonStep {
 		// Set name of variable where the field should be saved in
 		packageVersionField.setName("PACKAGE_VERSION");
 		packageVersionField
-		.setToolTipText("Version (and optionally revision) of the package");
+		.setToolTipText(versionToolTip);
 		packageVersionField.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		packageVersionField.setColumns(Constants.TEXTFIELD_COLUMNS_MAX);		
 		this.add(packageVersionField);
 		
 		// Licence
+		Map<String, String> packageLicences = Constants.PACKAGE_LICENCES_DEB;
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			packageLicences = Constants.PACKAGE_LICENCES_RPM;
+		}
+		
 		JLabel licenceLabel = new JLabel("Licence:", JLabel.TRAILING);
 		DefaultComboBoxModel licencesList = new DefaultComboBoxModel();
-		for (String licence : Constants.PACKAGE_LICENCES.keySet()) {
+		for (String licence : packageLicences.keySet()) {
 			licencesList.addElement(licence);
 		}
 		JComboBox licencesListBox = new JComboBox(licencesList);
@@ -83,15 +97,23 @@ public class SetPackageInfo extends CommonStep {
 		this.add(licencesListBox);
 
 		// Class
-		JLabel classLabel = new JLabel("Class:", JLabel.TRAILING);
+		String packageClassName = "Class";
+		Map<String, String> packageClasses = Constants.PACKAGE_CLASSES_DEB;
+		String classToolTip = "Choose a class in which your package fits";
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			packageClassName = "Architecture";
+			packageClasses = Constants.PACKAGE_CLASSES_RPM;
+			classToolTip = "Choose an architecture in which your package fits";
+		}
+		JLabel classLabel = new JLabel(packageClassName + ":", JLabel.TRAILING);
 		DefaultComboBoxModel classesList = new DefaultComboBoxModel();
-		for (String packageClass : Constants.PACKAGE_CLASSES.keySet()) {
+		for (String packageClass : packageClasses.keySet()) {
 			classesList.addElement(packageClass);
 		}
 		JComboBox classesListBox = new JComboBox(classesList);
 		classLabel.setLabelFor(classesListBox);
 		classesListBox
-		.setToolTipText("Choose a class in which your package fits");
+		.setToolTipText(classToolTip);
 		// Set name of variable where the field should be saved in
 		classesListBox.setName("PACKAGE_CLASS");
 		// TODO Fill in CommonStep
@@ -103,14 +125,22 @@ public class SetPackageInfo extends CommonStep {
 		this.add(classesListBox);
 
 		// Section
-		JLabel sectionLabel = new JLabel("Section:", JLabel.TRAILING);
+		String sectionName = "Section";
+		String sectionToolTip = "Choose the section more related to your package";
+		ArrayList<String> packageSections = Constants.PACKAGE_SECTIONS_DEB;
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			sectionName = "Group";
+			sectionToolTip = "Choose the group more related to your package";
+			packageSections = Constants.PACKAGE_SECTIONS_RPM;
+		}
+		JLabel sectionLabel = new JLabel(sectionName + ":", JLabel.TRAILING);
 		DefaultComboBoxModel sectionsList = new DefaultComboBoxModel();
-		for (String section : Constants.PACKAGE_SECTIONS) {
+		for (String section : packageSections) {
 			sectionsList.addElement(section);
 		}
 		JComboBox sectionsListBox = new JComboBox(sectionsList);
 		sectionLabel.setLabelFor(sectionsListBox);
-		sectionsListBox.setToolTipText("Choose the section more related to your package");
+		sectionsListBox.setToolTipText(sectionToolTip);
 		// Set name of variable where the field should be saved in
 		sectionsListBox.setName("PACKAGE_SECTION");
 		// TODO Fill in CommonStep
@@ -127,18 +157,21 @@ public class SetPackageInfo extends CommonStep {
 		for (String priority : Constants.PACKAGE_PRIORITIES) {
 			prioritiesList.addElement(priority);
 		}
-		JComboBox prioritiesListBox = new JComboBox(prioritiesList);
-		priorityLabel.setLabelFor(prioritiesListBox);
-		prioritiesListBox.setToolTipText("Set a suitable priority");
-		// Set name of variable where the field should be saved in
-		prioritiesListBox.setName("PACKAGE_PRIORITY");
-		// TODO Fill in CommonStep
-		if (!Variables.isNull(prioritiesListBox.getName())) {
-			prioritiesListBox.setSelectedItem(Variables.get(prioritiesListBox
-					.getName()));
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			JComboBox prioritiesListBox = new JComboBox(prioritiesList);
+			priorityLabel.setLabelFor(prioritiesListBox);
+			prioritiesListBox.setToolTipText("Set a suitable priority");
+			// Set name of variable where the field should be saved in
+			prioritiesListBox.setName("PACKAGE_PRIORITY");
+			// TODO Fill in CommonStep
+			if (!Variables.isNull(prioritiesListBox.getName())) {
+				prioritiesListBox.setSelectedItem(Variables.get(prioritiesListBox
+						.getName()));
+			}
+			this.add(priorityLabel);
+			this.add(prioritiesListBox);
+			numPairs += 1;
 		}
-		this.add(priorityLabel);
-		this.add(prioritiesListBox);
 		
 		// New row
 		this.add(new JLabel());
@@ -156,7 +189,7 @@ public class SetPackageInfo extends CommonStep {
 		}
 
 		// Lay out the panel
-		SpringUtilities.makeCompactGrid(this, numPairs + 6, 2, // rows, cols
+		SpringUtilities.makeCompactGrid(this, numPairs + 5, 2, // rows, cols
 				6, 6, // initX, initY
 				6, 6); // xPad, yPad
 	}

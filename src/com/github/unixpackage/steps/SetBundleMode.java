@@ -47,17 +47,12 @@ public class SetBundleMode extends CommonStep {
 		choiceDEB.setText("Create DEB package");
 		choiceDEB.setToolTipText("Generate a package for Debian-based distros");
 		choiceDEB.setName("_DEB_PACKAGE");
-		// this.add(choiceDEB);
 		JRadioButton choiceRPM = new JRadioButton();
 		// Fill the width gap
 		choiceRPM.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		choiceRPM.setText("Create RPM package");
 		choiceRPM.setToolTipText("Generate a Red hat-based distros");
 		choiceRPM.setName("_RPM_PACKAGE");
-		// XXX Temporarily not available
-		choiceRPM.setFocusable(false);
-		choiceRPM.setEnabled(false);
-		// this.add(choiceRPM);
 		// Group these
 		ButtonGroup choicePackages = new ButtonGroup();
 		choicePackages.add(choiceDEB);
@@ -71,18 +66,15 @@ public class SetBundleMode extends CommonStep {
 		this.add(choicePackagesBox);
 
 		// Set name of variable where the field should be saved in
-		if (Variables.isNull("PACKAGE_TYPE")) {
+		if (Variables.isNull("PACKAGE_TYPE") || Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 			// DEB package by default
 			choicePackages.setSelected(choiceDEB.getModel(), true);
-			Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_DEB);
 		} else {
 			if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 				choicePackages.setSelected(choiceRPM.getModel(), true);
-			} else {
-				choicePackages.setSelected(choiceDEB.getModel(), true);
 			}
 		}
-
+		
 		// New row
 		this.add(new JLabel());
 		this.add(new JLabel());
@@ -99,7 +91,11 @@ public class SetBundleMode extends CommonStep {
 		bundleSimple.setToolTipText(Constants.BUNDLE_MODE_DESCRIPTIONS
 				.get(Constants.BUNDLE_MODE_SIMPLE));
 		bundleSimple.setName("BUNDLE_MODE_SIMPLE");
-
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			// Disabled for RPM
+			bundleSimple.setEnabled(false);
+		}
+		
 		final JRadioButton bundleManual = new JRadioButton();
 		// Fill the width gap
 		bundleManual.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
@@ -116,11 +112,11 @@ public class SetBundleMode extends CommonStep {
 		bundleAdvanced.setName("BUNDLE_MODE_ADVANCED");
 
 		// Group these
-		ButtonGroup choiceBundleMode = new ButtonGroup();
+		final ButtonGroup choiceBundleMode = new ButtonGroup();
 		choiceBundleMode.add(bundleSimple);
 		choiceBundleMode.add(bundleManual);
 		choiceBundleMode.add(bundleAdvanced);
-
+		
 		// Add choices to vertical box
 		Box choiceBundleModeBox = Box.createVerticalBox();
 		choiceBundleModeBox.setName("BUNDLE_MODE");
@@ -128,7 +124,7 @@ public class SetBundleMode extends CommonStep {
 		choiceBundleModeBox.add(bundleManual);
 		choiceBundleModeBox.add(bundleAdvanced);
 		this.add(choiceBundleModeBox);
-
+		
 		// Set name of variable where the field should be saved in
 		// TODO Fill in CommonStep
 		if (Variables.isNull("BUNDLE_MODE")) {
@@ -137,7 +133,10 @@ public class SetBundleMode extends CommonStep {
 			Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_MANUAL);
 		} else {
 			if (Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_SIMPLE)) {
-				choiceBundleMode.setSelected(bundleSimple.getModel(), true);
+				if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+					// Simple mode enabled for DEB only, enable manual mode
+					choiceBundleMode.setSelected(bundleSimple.getModel(), true);
+				}
 			} else if (Variables.BUNDLE_MODE
 					.equals(Constants.BUNDLE_MODE_MANUAL)) {
 				choiceBundleMode.setSelected(bundleManual.getModel(), true);
@@ -187,9 +186,7 @@ public class SetBundleMode extends CommonStep {
 						sourcePath = Files.choosePath();
 					}
 					try {
-						System.out.println(".... settingBundleMode start: " + sourcePath);
 						Variables.set("BUNDLE_MODE_ADVANCED_PATH", sourcePath);
-						System.out.println(".... settingBundleMode end: " + Variables.get("BUNDLE_MODE_ADVANCED_PATH"));
 						addSourceFilesPathLabel.setVisible(true);
 						addSourceFilesPath
 								.setText(Variables.BUNDLE_MODE_ADVANCED_PATH);
@@ -206,6 +203,25 @@ public class SetBundleMode extends CommonStep {
 			}
 		);
 
+		choiceDEB.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_DEB);
+				bundleSimple.setEnabled(true);
+			}
+		});
+		choiceRPM.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_RPM);
+				if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+					// Disable simple mode for RPM, enable manual mode
+					bundleSimple.setEnabled(false);
+					choiceBundleMode.setSelected(bundleManual.getModel(), true);
+				}
+			}
+		});
+		
 		// Define visibility for fields related to Advanced mode
 		if (Variables.isNull("BUNDLE_MODE")
 				|| !Variables.get("BUNDLE_MODE").equals(
@@ -231,6 +247,7 @@ public class SetBundleMode extends CommonStep {
 		this.add(new JLabel());
 
 		// Sign with GPG
+		// XXX: May not work for RPM. Cannot validate pass phrase of key
 		JLabel signGPGLabel = new JLabel("Sign package with GPG?");
 		final JCheckBox signGPG = new JCheckBox();
 		signGPG.setPreferredSize(Constants.TEXTFIELD_DIMENSION);

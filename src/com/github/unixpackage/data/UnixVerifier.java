@@ -56,7 +56,7 @@ public class UnixVerifier extends InputVerifier {
 		Pattern variableVerifier = Constants.VARIABLES_REGEXPS.get(variableName);
 		// Only try to verify when the pattern is available
 		if (variableVerifier != null) {
-			System.out.println("&&&& VERIFIER Pattern: " + variableVerifier);
+			System.out.println("&&&& VERIFIER Pattern (var=" + variableName + "): " + variableVerifier);
 			if (!variableVerifier.matcher(variableData).matches()) {
 				variableContentVerified = false;
 			}

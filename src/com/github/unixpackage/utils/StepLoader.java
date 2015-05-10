@@ -164,7 +164,6 @@ public class StepLoader {
 		if (stepNumber == 1) {
 			// Load file data into variables upon start
 			Listeners.onLoad();
-//			result = Shell.generateTempFiles();
 			result = Files.copyScriptSourcesIntoTempFolder();
 			// In case of failure, revert program to original state and exit
 			if (!result) {
@@ -179,13 +178,33 @@ public class StepLoader {
 					System.exit(0);
 				}
 			}
+		// SetPackageInfo
+		} else if (stepNumber == 3) {
+			// Hack: change validators for later steps
+			if (Variables.isNull("PACKAGE_TYPE") || Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+				// DEB
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_SECTION", Constants.RE_PACKAGE_SECTION_DEB);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_CLASS", Constants.RE_PACKAGE_CLASS_DEB);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_LICENCE", Constants.RE_PACKAGE_LICENCE_DEB);
+			} else {
+				// RPM
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_SECTION", Constants.RE_PACKAGE_GROUP_RPM);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_CLASS", Constants.RE_PACKAGE_CLASS_RPM);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_LICENCE", Constants.RE_PACKAGE_LICENCE_RPM);
+			}
 		// EditPackageFiles step
 		} else if (stepNumber == 5) {
 			if (!Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-				GeneratePackage.generateDebianFiles();
+				if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+					GeneratePackage.generateDebianFiles();
+				} else {
+					GeneratePackage.generateRedHatFiles();
+				}
 			}
 		} else if (stepNumber == 6) {
-			GeneratePackage.generateDebianFiles();
+			if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+				GeneratePackage.generateDebianFiles();
+			}
 		}
 	}
 }

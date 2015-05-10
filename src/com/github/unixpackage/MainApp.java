@@ -33,7 +33,10 @@ public class MainApp {
 			// Generate files before preparing packages
 //			Shell.generateTempFiles();
 			Files.copyScriptSourcesIntoTempFolder();
-			GeneratePackage.generateDebianPackage();
+			// XXX Ensure this works
+			if (!Variables.isNull("PACKAGE_TYPE") || Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+				GeneratePackage.generateDebianPackage();
+			}
 			// Save input data to disk once data has been validated
 			UnixPreferences prefs = new UnixPreferences();
 			prefs.saveToFile();

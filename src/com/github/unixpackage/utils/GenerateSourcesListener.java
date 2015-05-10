@@ -9,6 +9,9 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.Variables;
+
 public class GenerateSourcesListener implements ActionListener {
 
     private JScrollPane textareaScrollPane;
@@ -25,7 +28,11 @@ public class GenerateSourcesListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// Send full name of the calling class
 		String runPackageName = ((JButton) e.getSource()).getParent().getClass().getPackage().getName();
-        Thread thread = new UnixThread(runPackageName + ".GeneratePackage", "generateDebianPackage");
+		String generateMethod = "generateDebianPackage";
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			generateMethod = "generateRedHatPackage";
+		}
+        Thread thread = new UnixThread(runPackageName + ".GeneratePackage", generateMethod);
         thread.start();
 		// Block "Generate" button after packet is processed
 		((JButton) e.getSource()).setEnabled(false);
