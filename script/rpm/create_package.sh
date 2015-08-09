@@ -359,10 +359,10 @@ function place_user_files_in_package()
     destination_path_tmp=${destination_path:1:${#destination_path}}
 
     mkdir -p $path_to_package/SOURCES$destination_path_dirname
-    cp -p $source_path $path_to_package/SOURCES$destination_path
+    cp -Rp $source_path $path_to_package/SOURCES$destination_path
     package_files="$package_files\n$destination_path"
     package_install_files="$package_install_files\nmkdir -p %%{buildroot}$destination_path_dirname"
-    package_install_files="$package_install_files\ncp %%{_topdir}/SOURCES$destination_path %%{buildroot}$destination_path_dirname/"
+    package_install_files="$package_install_files\ncp -Rp %%{_topdir}/SOURCES$destination_path %%{buildroot}$destination_path_dirname/"
   done
 }
 
