@@ -18,6 +18,7 @@ import javax.swing.SpringLayout;
 import com.github.unixpackage.components.CommonStep;
 import com.github.unixpackage.data.Arguments;
 import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.utils.Files;
 import com.github.unixpackage.utils.GenerateSourcesListener;
@@ -65,7 +66,7 @@ public class GeneratePackage extends CommonStep {
 		textareaScrollPane = new JScrollPane(textArea);
 		textareaScrollPane.setVerticalScrollBarPolicy(
 		                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		textareaScrollPane.setPreferredSize(new Dimension(Constants.SCREEN_DIMENSION.width/2, Constants.SCREEN_DIMENSION.height/6));
+		textareaScrollPane.setPreferredSize(new Dimension(Constants.SCREEN_DIMENSION.width/3, Constants.SCREEN_DIMENSION.height/6));
 		if (!Variables._PACKAGE_GENERATED) {
 			textareaScrollPane.setVisible(false);
 			rerunLabel.setVisible(false);
@@ -116,11 +117,11 @@ public class GeneratePackage extends CommonStep {
 	 */
 	public static StringBuilder generateDebianFiles() {
 		StringBuilder outputLines = new StringBuilder();
-		System.out.println("... packages sources on disk: " + Files.isPackageSourcesOnDisk());
+		UnixLogger.LOGGER.debug("... packages sources on disk: " + Files.isPackageSourcesOnDisk());
 		// Only generate Debian files if not already existing
 		if (!Files.isPackageSourcesOnDisk()) {
 			List<String> commandList = Arguments.generateArgumentsForDebianFiles();
-			System.out.println(".... commands (JUST GENERATED) ===> " + commandList.toArray().toString());
+			UnixLogger.LOGGER.debug(".... commands (JUST GENERATED) ===> " + commandList.toArray().toString());
 			String command = "bash";
 			commandList.add(0, command);
 			// Default is "DEB"
@@ -182,7 +183,7 @@ public class GeneratePackage extends CommonStep {
 	 */
 	public static StringBuilder generateRedHatFiles() {
 		StringBuilder outputLines = new StringBuilder();
-		System.out.println("... packages sources on disk: " + Files.isPackageSourcesOnDisk());
+		UnixLogger.LOGGER.debug("... packages sources on disk: " + Files.isPackageSourcesOnDisk());
 		// Only generate RedHat files if not already existing
 		if (!Files.isPackageSourcesOnDisk()) {
 			List<String> commandList = Arguments.generateArgumentsForRedHatFiles();

@@ -19,6 +19,7 @@ import javax.swing.JTable;
 import com.github.unixpackage.components.CommonStep;
 import com.github.unixpackage.components.TablePanel;
 import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.utils.Files;
 import com.github.unixpackage.utils.Shell;
@@ -186,29 +187,29 @@ public class EditPackageFiles extends CommonStep {
 	}
 
 	private ArrayList<ArrayList<String>> fillAndRetrieveFileListInitial() {
-		System.out.println("\n\n\n\n\n\n\n******FILL\nAND\nRETRIEVE\nLIST\nINITIAL");
+		UnixLogger.LOGGER.debug("\n\n\n\n\n\n\n******FILL\nAND\nRETRIEVE\nLIST\nINITIAL");
 		ArrayList<ArrayList<String>> directoryContentsFinal = new ArrayList<ArrayList<String>>();
-		System.out.println("fillAndRetrieve 1");
+		UnixLogger.LOGGER.debug("fillAndRetrieve 1");
 		ArrayList<String> directoryContents = showDirectoryContents();
-		System.out.println("fillAndRetrieve 2");
+		UnixLogger.LOGGER.debug("fillAndRetrieve 2");
 		for (String directoryContent : directoryContents) {
-			System.out.println("fillAndRetrieve 3");
+			UnixLogger.LOGGER.debug("fillAndRetrieve 3");
 			String directoryContentAbsolutePath = directoryContent;
-			System.out.println("... directoryContentAbsolutePath 1 = " + directoryContentAbsolutePath);
+			UnixLogger.LOGGER.debug("... directoryContentAbsolutePath 1 = " + directoryContentAbsolutePath);
 			ArrayList<String> directoryFiles = new ArrayList<String>();
 			directoryFiles.add(directoryContent);
 			// First time: add files and their hashes to internal tracking list
 			directoryContentAbsolutePath = Files.getAbsolutePathPackageFile(directoryContent);
-			System.out.println("... directoryContentAbsolutePath 2 = " + directoryContentAbsolutePath);
+			UnixLogger.LOGGER.debug("... directoryContentAbsolutePath 2 = " + directoryContentAbsolutePath);
 //			if (selectedFilesHash == null) {
 //				selectedFilesHash = new HashMap<String,String>();
 //			}
 			if (Variables._PACKAGE_CONTENT_FILES_HASH == null) {
 				Variables._PACKAGE_CONTENT_FILES_HASH = new HashMap<String,String>();
 			}
-			System.out.println("... START ...");
-			System.out.println("..... >>> getHash: " + Files.getHash(directoryContentAbsolutePath));
-			System.out.println("..... >>> content: " + directoryContent);
+			UnixLogger.LOGGER.debug("... START ...");
+			UnixLogger.LOGGER.debug("..... >>> getHash: " + Files.getHash(directoryContentAbsolutePath));
+			UnixLogger.LOGGER.debug("..... >>> content: " + directoryContent);
 			// Initialise structure with original hashes
 			Variables._PACKAGE_CONTENT_FILES_HASH.put(directoryContent, Files.getHash(directoryContentAbsolutePath));
 
@@ -230,7 +231,7 @@ public class EditPackageFiles extends CommonStep {
 				Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH == null) {
 			// DEBUG
 			for (String filesHash_ : Variables._PACKAGE_CONTENT_FILES_HASH.keySet()) {
-				System.out.println(">>>> filesHash: " + filesHash_);
+				UnixLogger.LOGGER.debug(">>>> filesHash: " + filesHash_);
 			}
 			Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH = new HashMap<String,String>(Variables._PACKAGE_CONTENT_FILES_HASH);
 		}
@@ -238,7 +239,7 @@ public class EditPackageFiles extends CommonStep {
 	}
 	
 	private ArrayList<ArrayList<String>> fillAndRetrieveFileList() {
-		System.out.println("\n\n\n\n\n\n\n******FILL\nAND\nRETRIEVE\nLIST");
+		UnixLogger.LOGGER.debug("\n\n\n\n\n\n\n******FILL\nAND\nRETRIEVE\nLIST");
 		ArrayList<ArrayList<String>> directoryContentsFinal = new ArrayList<ArrayList<String>>();
 		ArrayList<String> directoryContents = showDirectoryContents();
 		for (String directoryContent : directoryContents) {
@@ -251,8 +252,8 @@ public class EditPackageFiles extends CommonStep {
 			if (Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH != null) {
 //				selectedFilesModifiedHash.put(directoryContent, Files.getHash(directoryContentAbsolutePath));
 				Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH.put(directoryContent, Files.getHash(directoryContentAbsolutePath));
-//				System.out.println("[M] " + directoryContent + "> " + selectedFilesModifiedHash.get(directoryContent));
-//				System.out.println("[M] " + directoryContent + "> " + Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH.get(directoryContent));
+//				UnixLogger.LOGGER.debug("[M] " + directoryContent + "> " + selectedFilesModifiedHash.get(directoryContent));
+//				UnixLogger.LOGGER.debug("[M] " + directoryContent + "> " + Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH.get(directoryContent));
 			}
 			
 			// Check modified file hash against initial file hash to determine if file was edited (*)
@@ -277,9 +278,9 @@ public class EditPackageFiles extends CommonStep {
 	
 	// Add files under temporary folder into the list shown to the user
 	private ArrayList<String> showDirectoryContents(String directory) {
-		System.out.println("DEBUG > String directory (searching) = " + directory);
+		UnixLogger.LOGGER.debug("DEBUG > String directory (searching) = " + directory);
 		File dir = new File(directory);
-		System.out.println("DEBUG > File directory (searching) = " + dir.getAbsolutePath());
+		UnixLogger.LOGGER.debug("DEBUG > File directory (searching) = " + dir.getAbsolutePath());
 		ArrayList<String> fileList = new ArrayList<String>();
 		try {
 			for (File file : dir.listFiles()) {
@@ -289,16 +290,15 @@ public class EditPackageFiles extends CommonStep {
 				}
 			}
 		} catch (Exception e) {
-			System.out
-					.println("E: Could not find UNIX package files. Exception: " + e);
+			UnixLogger.LOGGER.error("E: Could not find UNIX package files. Exception: " + e);
 		}
-		System.out.println("DEBUG > fileList = " + fileList);
+		UnixLogger.LOGGER.debug("DEBUG > fileList = " + fileList);
 		return fileList;
 	}
 
 	private ArrayList<String> showDirectoryContents() {
 		File dir = new File(Files.getAbsolutePathPackageFile(""));
-		System.out.println("DEBUG > File dir = " + dir.getAbsolutePath());
+		UnixLogger.LOGGER.debug("DEBUG > File dir = " + dir.getAbsolutePath());
 		return showDirectoryContents(dir.toString());
 	}
 
@@ -334,7 +334,7 @@ public class EditPackageFiles extends CommonStep {
 			    			 
 			    		 }
 					} catch (IOException e) {
-						System.out.println("Error: file '" + commandList.get(1) + "' could not be edited. Reason: " + e);
+						UnixLogger.LOGGER.error("Error: file '" + commandList.get(1) + "' could not be edited. Reason: " + e);
 					}
 			     }
 			});  
@@ -352,7 +352,7 @@ public class EditPackageFiles extends CommonStep {
 			selectedValue = Files.getAbsolutePathPackageFile(selectedValue);
 			// Remove from disk
 			File selectedFile = new File((String) selectedValue);
-//			System.out.println("** selectedValue: " + selectedValue);
+//			UnixLogger.LOGGER.debug("** selectedValue: " + selectedValue);
 			if (selectedFile.isFile()) {
 				selectedFile.delete();
 			}
@@ -362,13 +362,13 @@ public class EditPackageFiles extends CommonStep {
 	private void updateTableContents() {
 		// Fill file list with contents of directory
 		if (gregsPanel != null) {
-			System.out.println("\n\nUPDATING TABLE CONTENTS");
+			UnixLogger.LOGGER.debug("\n\nUPDATING TABLE CONTENTS");
 			Variables._PACKAGE_CONTENT_FILES = fillAndRetrieveFileList();
 			// Back up selected row to reselect after table is updated
 			int selectedRow = gregsPanel.getTable().getSelectedRow();
 			gregsPanel.fireTableDataChanged();
 			gregsPanel.setTableModelDataVector(Variables._PACKAGE_CONTENT_FILES, columnNames);
-			System.out.println("..... selected row: " + selectedRow);
+			UnixLogger.LOGGER.debug("..... selected row: " + selectedRow);
 			if (selectedRow >= 0 && selectedRow <= gregsPanel.getTable().getRowCount()) {
 				gregsPanel.getTable().setRowSelectionInterval(selectedRow, selectedRow);
 			}

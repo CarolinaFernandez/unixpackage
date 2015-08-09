@@ -33,24 +33,24 @@ public class Arguments {
 		
 		for (int i = 0; i < arguments.size(); i++) {
 			try {
-				System.out.println("\n\n*** ARGUMENT: " + arguments.get(i));
+				UnixLogger.LOGGER.debug("\n\n*** ARGUMENT: " + arguments.get(i));
 				argumentWithValue = true;
 				String variableName = null;
 				String variableData = null;
 				if (Constants.ARGUMENTS_ACCEPTED.containsKey(arguments.get(i))) {
 					variableName = Constants.ARGUMENTS_VARIABLES.get(arguments.get(i));
-					System.out.println("variableName 1 >> " + variableName);
+					UnixLogger.LOGGER.debug("variableName 1 >> " + variableName);
 				} else if (Constants.ARGUMENTS_ACCEPTED.containsValue(arguments.get(i))) {
 					variableName = Arguments.getKeyByValue(Constants.ARGUMENTS_ACCEPTED, arguments.get(i));
-					System.out.println("variableName 2a >> " + variableName);
+					UnixLogger.LOGGER.debug("variableName 2a >> " + variableName);
 					variableName = Constants.ARGUMENTS_VARIABLES.get(variableName);
-					System.out.println("variableName 2b >> " + variableName);
+					UnixLogger.LOGGER.debug("variableName 2b >> " + variableName);
 				} else {
 					variableName = null;
 					argumentWithValue = false;
 				}
 
-				System.out.println("*** ARGUMENT VARIABLE: " + variableName);
+				UnixLogger.LOGGER.debug("*** ARGUMENT VARIABLE: " + variableName);
 				// Place value of argument in its related variable
 				// No variable has an initial value on the first run, so ignore that
 				if (argumentWithValue && variableName != null && variableName != "") {
@@ -60,7 +60,7 @@ public class Arguments {
 						variableData = "";
 					}
 					Field variableField = Variables.class.getDeclaredField(variableName);
-					System.out.println("type of variable: " + variableField.getType().getSimpleName());
+					UnixLogger.LOGGER.debug("type of variable: " + variableField.getType().getSimpleName());
 					if (variableField.getType().getSimpleName().equals("String")) {
 						variableData = arguments.get(i+1);
 					} else if (variableField.getType().getSimpleName().equals("Boolean")) {
@@ -70,12 +70,12 @@ public class Arguments {
 					// Verify contents of variable prior to update it
 					variableData = variableData.trim();
 					argumentIsVerified = UnixVerifier.verify(variableName, variableData);
-					System.out.println("...argument verified... " + argumentIsVerified);
+					UnixLogger.LOGGER.debug("...argument verified... " + argumentIsVerified);
 					if (argumentIsVerified) {
 						Variables.set(variableName, variableData);
-						System.out.println(">>> Variable.get AFTER (GOOD) = " + Variables.get(variableName));
+						UnixLogger.LOGGER.debug(">>> Variable.get AFTER (GOOD) = " + Variables.get(variableName));
 					} else {
-						System.out.println(">>> Variable.get AFTER (BAD) = " + Variables.get(variableName));
+						UnixLogger.LOGGER.error(">>> Variable.get AFTER (BAD) = " + Variables.get(variableName));
 						variableName = null;
 						variableData = null;
 						throw new Exception();
@@ -84,7 +84,7 @@ public class Arguments {
 				}
 			} catch (Exception e) {
 				correctlyParsed &= false;
-				System.out.println("Exception! > " + e);
+				UnixLogger.LOGGER.error("Exception! > " + e);
 			}
 		}
 		return correctlyParsed;
@@ -207,7 +207,7 @@ public class Arguments {
 				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
 //			argumentList.put(Constants.ARGUMENT_NAME, Variables.MAINTAINER_NAME);
 //			argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
-			System.out.println("Variables.BUNDLE_MODE_ADVANCED_PATH: " + Variables.BUNDLE_MODE_ADVANCED_PATH);
+			UnixLogger.LOGGER.debug("Variables.BUNDLE_MODE_ADVANCED_PATH: " + Variables.BUNDLE_MODE_ADVANCED_PATH);
 			argumentList.put(Constants.ARGUMENT_TEMPLATES, Variables.BUNDLE_MODE_ADVANCED_PATH);
 		}
 
@@ -225,7 +225,7 @@ public class Arguments {
 			commandListValidated.add(entry.getKey());
 			// Check arguments not eligible for a 2nd argument
 			if (entry.getKey().matches("-(\\w?[^bSvmM]){1}")) {
-				System.out.println("+++ adding key -- " + entry);
+				UnixLogger.LOGGER.debug("+++ adding key -- " + entry);
 				if (entry.getValue() != null) {
 					commandListValidated.add(entry.getValue());
 				} else {
@@ -235,7 +235,7 @@ public class Arguments {
 			}
 		}
 		commandList = commandListValidated;
-//		System.out.println("*** [V] Validated commandList: " + commandList);
+//		UnixLogger.LOGGER.debug("*** [V] Validated commandList: " + commandList);
 		return commandList;
 	}
 	
@@ -298,7 +298,7 @@ public class Arguments {
 		// In advanced mode, a path is passed to copy the user's templates from
 		if (!Variables.isNull("BUNDLE_MODE")
 				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-			System.out.println("Variables.BUNDLE_MODE_ADVANCED_PATH: " + Variables.BUNDLE_MODE_ADVANCED_PATH);
+			UnixLogger.LOGGER.debug("Variables.BUNDLE_MODE_ADVANCED_PATH: " + Variables.BUNDLE_MODE_ADVANCED_PATH);
 			argumentList.put(Constants.ARGUMENT_TEMPLATES, Variables.BUNDLE_MODE_ADVANCED_PATH);
 		}
 
@@ -314,7 +314,7 @@ public class Arguments {
 			commandListValidated.add(entry.getKey());
 			// Check arguments not eligible for a 2nd argument
 			if (entry.getKey().matches("-(\\w?[^bSv]){1}")) {
-				System.out.println("+++ adding key -- " + entry);
+				UnixLogger.LOGGER.debug("+++ adding key -- " + entry);
 				if (entry.getValue() != null) {
 					commandListValidated.add(entry.getValue());
 				} else {

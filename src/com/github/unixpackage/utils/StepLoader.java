@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.github.unixpackage.components.CommonStep;
 import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.Variables;
 //import com.github.unixpackage.steps.GeneratePackage;
 import com.github.unixpackage.steps.GeneratePackage;
@@ -127,7 +128,7 @@ public class StepLoader {
 		try {
 			classObject = (Class<CommonStep>) Class.forName(className);
 		} catch (Exception e) {
-			System.out.println("Exception looking for class: " + e);
+			UnixLogger.LOGGER.debug("Exception looking for class: " + e);
 		}
 		return classObject;
 	}
@@ -168,12 +169,10 @@ public class StepLoader {
 			// In case of failure, revert program to original state and exit
 			if (!result) {
 				try {
-					System.out
-							.println("Cleaning temporal folder because of some previous error...");
+					UnixLogger.LOGGER.debug("Cleaning temporal folder because of some previous error...");
 					Shell.postProcess();
 				} catch (Exception e) {
-					System.out
-							.print("Program exiting due to failure. Exception: "
+					UnixLogger.LOGGER.fatal("Program exiting due to failure. Exception: "
 									+ e);
 					System.exit(0);
 				}

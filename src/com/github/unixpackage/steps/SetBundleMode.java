@@ -34,8 +34,9 @@ public class SetBundleMode extends CommonStep {
 		// Populate the panel
 		this.setLayout(new SpringLayout());
 
-		// Action buttons
+		// Action button and checkbox
 		final JButton addSourceFiles;
+		final JCheckBox signGPG = new JCheckBox();
 
 		// Description
 		JLabel packageTypeDescription = new JLabel(
@@ -208,6 +209,7 @@ public class SetBundleMode extends CommonStep {
 			public void actionPerformed(ActionEvent arg0) {
 				Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_DEB);
 				bundleSimple.setEnabled(true);
+				signGPG.setEnabled(true);
 			}
 		});
 		choiceRPM.addActionListener(new ActionListener() {
@@ -218,6 +220,9 @@ public class SetBundleMode extends CommonStep {
 					// Disable simple mode for RPM, enable manual mode
 					bundleSimple.setEnabled(false);
 					choiceBundleMode.setSelected(bundleManual.getModel(), true);
+					// Disable automatic signature for RPM
+					signGPG.setEnabled(false);
+					signGPG.setSelected(false);
 				}
 			}
 		});
@@ -247,9 +252,8 @@ public class SetBundleMode extends CommonStep {
 		this.add(new JLabel());
 
 		// Sign with GPG
-		// XXX: May not work for RPM. Cannot validate pass phrase of key
+		// XXX: Currently not working properly for RPM. Cannot validate passphrase for key
 		JLabel signGPGLabel = new JLabel("Sign package with GPG?");
-		final JCheckBox signGPG = new JCheckBox();
 		signGPG.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		signGPGLabel.setLabelFor(signGPG);
 		// Set name of variable where the field should be saved in
@@ -257,6 +261,10 @@ public class SetBundleMode extends CommonStep {
 		// TODO Fill in CommonStep
 		if (!Variables.isNull(signGPG.getName())) {
 			signGPG.setSelected((Boolean) Variables.get(signGPG.getName()));
+			if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+				signGPG.setSelected(false);
+				signGPG.setEnabled(false);
+			}
 		}
 		this.add(signGPGLabel);
 		this.add(signGPG);
@@ -308,6 +316,19 @@ public class SetBundleMode extends CommonStep {
 					if (!Variables.isNull("BUNDLE_MODE_ADVANCED_PATH")) {
 						addSourceFilesPathLabel.setVisible(true);
 						addSourceFilesPath.setVisible(true);
+					}
+				}
+			}
+		});
+
+		// Another for the signing checkbox
+		signGPG.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (signGPG.isSelected()) {
+					if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+						signGPG.setSelected(false);
+						signGPG.setEnabled(false);
 					}
 				}
 			}

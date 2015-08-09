@@ -2,7 +2,8 @@ package com.github.unixpackage.utils;
 
 import java.lang.reflect.InvocationTargetException;
 
-//public class UnixThread implements Runnable {
+import com.github.unixpackage.data.UnixLogger;
+
 public class UnixThread extends Thread {
     private String runClassName;
     private String runMethodName;
@@ -24,34 +25,26 @@ public class UnixThread extends Thread {
     	Class<?> classObject;
     	Object classInstance;
 		try {
-			System.out.println("runClassName: " + this.runClassName);
+			UnixLogger.LOGGER.debug("runClassName: " + this.runClassName);
 			classObject = Class.forName(this.runClassName);
-			// XXX added...
-			System.out.println("classObject: " + classObject.toString());
+			UnixLogger.LOGGER.debug("classObject: " + classObject.toString());
 			classInstance = (Object) classObject.newInstance();
-			System.out.println("classInstance: " + classInstance.toString());
+			UnixLogger.LOGGER.debug("classInstance: " + classInstance.toString());
 			// TODO Pass arguments
 		  method = classInstance.getClass().getMethod(this.runMethodName);
-		  System.out.println("method: " + method.toString());
+		  UnixLogger.LOGGER.debug("method: " + method.toString());
 		  method.invoke(classInstance, this.runArguments);
 		} catch (SecurityException e) {
-		  // ...
 		} catch (NoSuchMethodException e) {
-		  // ...
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

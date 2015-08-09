@@ -67,7 +67,7 @@ public class UnixPreferences {
 			for (Entry<Object, Object> property : props.entrySet()) {
 				String fieldName = property.getKey().toString();
 				String fieldValue = property.getValue().toString();
-				System.out.println("read [" + fieldName + "] -> " + fieldValue);
+				UnixLogger.LOGGER.debug("read [" + fieldName + "] -> " + fieldValue);
 				if (Variables.isNull(fieldName) && (fieldValue != null)) {
 					// Check syntax and parse appropriately for the "source:install" pairs
 					//

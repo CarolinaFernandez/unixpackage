@@ -24,6 +24,7 @@ import javax.swing.JFileChooser;
 import org.apache.commons.io.IOUtils;
 
 import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.steps.GeneratePackage;
 
@@ -56,9 +57,9 @@ public class Files {
 
 	public static boolean isFolder(final String location, final String folderName) {
 		File folder = new File(location);
-		System.out.println("*** folderName: " + folderName);
-		System.out.println("*** folderName (File): " + folder.getName());
-		System.out.println("*** folderName (equals?): " + folder.getName().equals(folderName));
+		UnixLogger.LOGGER.debug("*** folderName: " + folderName);
+		UnixLogger.LOGGER.debug("*** folderName (File): " + folder.getName());
+		UnixLogger.LOGGER.debug("*** folderName (equals?): " + folder.getName().equals(folderName));
 		return folder.getName().equals(folderName);
 	}
 	
@@ -167,7 +168,7 @@ public class Files {
 		try {
 			Files.copyResourcesRecursively(new URL(sourceDir.toString()), destDir);
 		} catch (IOException e1) {
-			System.out.println("E: Cannot copy into folder!");
+			UnixLogger.LOGGER.trace("E: Cannot copy into folder!");
 			e1.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -197,7 +198,7 @@ public class Files {
 		if (!Variables.isNull("PACKAGE_TYPE") && Variables.PACKAGE_TYPE.equals("RPM")) {
 			validatedDestination = Constants.TMP_PACKAGE_REDHAT_FILES_PATH;
 		}
-		System.out.println("GENERATE PACKAGE SOURCES,GENERATE SOURCES... ->" + validatedDestination);
+		UnixLogger.LOGGER.debug("GENERATE PACKAGE SOURCES,GENERATE SOURCES... ->" + validatedDestination);
 		return Files.copyFolderIntoTempFolder(validatedSource,
 				validatedDestination);
 	}
@@ -205,7 +206,7 @@ public class Files {
 	public static boolean isPackageSourcesOnDisk() {
 		boolean packageSourcesOnDisk = false;
 		File packageSourcesPath = new File(Files.getAbsolutePathPackageFile(""));
-		System.out.println("...... isPackageSourcesOnDisk.checking paakage sources: " + packageSourcesPath);
+		UnixLogger.LOGGER.debug("...... isPackageSourcesOnDisk.checking paakage sources: " + packageSourcesPath);
 		if (packageSourcesPath.isDirectory()) {
 			packageSourcesOnDisk = true;
 		}
@@ -250,7 +251,7 @@ public class Files {
 		if (validatedSource.startsWith("jar:")) {
 			validatedDestination = Constants.TMP_SCRIPT_FILES_PATH;
 		}
-		System.out.println(">> copyScriptSourcesIntoTempFolder: [" + Constants.ROOT_SCRIPT_FILES_PATH + "] -> [" + validatedDestination + "]");
+		UnixLogger.LOGGER.debug(">> copyScriptSourcesIntoTempFolder: [" + Constants.ROOT_SCRIPT_FILES_PATH + "] -> [" + validatedDestination + "]");
 		return copyFolderIntoTempFolder(Constants.ROOT_SCRIPT_FILES_PATH,
 				validatedDestination);
 	}
@@ -326,10 +327,10 @@ public class Files {
 	        }
 	        fileHash = hexString.toString();
 		} catch (NoSuchAlgorithmException e) {
-			System.out.println("Error: could not generate hash due to digest algorithm problem");
+			UnixLogger.LOGGER.trace("Error: could not generate hash due to digest algorithm problem");
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("Error: could not generate hash due to I/O error on file (" + file + ")");
+			UnixLogger.LOGGER.trace("Error: could not generate hash due to I/O error on file (" + file + ")");
 		}
 		return fileHash;
 	}

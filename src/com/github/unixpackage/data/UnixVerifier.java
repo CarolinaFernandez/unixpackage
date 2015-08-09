@@ -52,20 +52,20 @@ public class UnixVerifier extends InputVerifier {
 	 */
 	public static boolean verify(String variableName, String variableData) {
 		Boolean variableContentVerified = true;
-		System.out.println("033[0;32m&&&& VERIFIER (" + variableName + ":" + variableData + ")\033[0m");
+		UnixLogger.LOGGER.info("033[0;32m&&&& VERIFIER (" + variableName + ":" + variableData + ")\033[0m");
 		Pattern variableVerifier = Constants.VARIABLES_REGEXPS.get(variableName);
 		// Only try to verify when the pattern is available
 		if (variableVerifier != null) {
-			System.out.println("&&&& VERIFIER Pattern (var=" + variableName + "): " + variableVerifier);
+			UnixLogger.LOGGER.info("&&&& VERIFIER Pattern (var=" + variableName + "): " + variableVerifier);
 			if (!variableVerifier.matcher(variableData).matches()) {
 				variableContentVerified = false;
 			}
 		}
 		// TODO Leave this print
 		if (!variableContentVerified && !Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
-			System.out.println("Error: " + UnixVerifier.indicateErrorCondition(variableName));
+			UnixLogger.LOGGER.error("Error: " + UnixVerifier.indicateErrorCondition(variableName));
 		}
-		System.out.println("&&&& VERIFIER Result: " + variableContentVerified);
+		UnixLogger.LOGGER.info("&&&& VERIFIER Result: " + variableContentVerified);
 		return variableContentVerified;
 	}
 	
@@ -92,7 +92,7 @@ public class UnixVerifier extends InputVerifier {
 			}
 			this.indicateNormalConditionGUI(input);
 		} catch (Exception e) {
-			System.out.println("BATCH MODE????? " + Variables.get("BATCH_MODE"));
+			UnixLogger.LOGGER.debug("BATCH MODE????? " + Variables.get("BATCH_MODE"));
 			this.indicateErrorConditionGUI(input);
 			return false;
 		}

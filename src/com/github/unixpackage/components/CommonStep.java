@@ -16,6 +16,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.utils.Listeners;
 import com.github.unixpackage.utils.StepLoader;
@@ -199,7 +200,7 @@ public class CommonStep extends CommonPanel {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Exception saving data into variables: " + e);
+			UnixLogger.LOGGER.error("Exception saving data into variables: " + e);
 		}
 	}
 

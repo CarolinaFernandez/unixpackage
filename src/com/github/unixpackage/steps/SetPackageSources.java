@@ -15,6 +15,7 @@ import javax.swing.JScrollPane;
 import com.github.unixpackage.components.CommonStep;
 import com.github.unixpackage.components.TablePanel;
 import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.utils.Files;
 
@@ -38,8 +39,9 @@ public class SetPackageSources extends CommonStep {
 		this.removeAll();
 
 		// Populate the panel
-		JLabel splashLabel = new JLabel(
-				"Choose the sources to be added to the package");
+		JLabel splashWarningLabel = new JLabel(
+				"IMPORTANT! Add *ALL* sources at once, before proceeding to the next step");
+	
 		// Another initialization
 		sourceInstallPair = null;// new ArrayList<String>(2);
 
@@ -150,42 +152,64 @@ public class SetPackageSources extends CommonStep {
 
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
-
-		this.add(splashLabel);
+		
 		layout.setHorizontalGroup(layout
 				.createParallelGroup()
+				.addGroup(layout.createSequentialGroup()
+								.addGroup(
+										layout.createParallelGroup(
+												GroupLayout.Alignment.LEADING)
+												.addComponent(splashWarningLabel)
+								)
+				)
 				.addGroup(
 						layout.createSequentialGroup()
 								.addGroup(
 										layout.createParallelGroup(
 												GroupLayout.Alignment.LEADING)
-												.addComponent(addSourcePath))
+												.addComponent(addSourcePath)
+								)
 								.addGroup(
 										layout.createParallelGroup(
 												GroupLayout.Alignment.LEADING)
 												.addComponent(
-														addInstallationPath))
+														addInstallationPath)
+								)
 								.addGroup(
 										layout.createParallelGroup(
 												GroupLayout.Alignment.LEADING)
 												.addComponent(
-														removePathTupleFromList)))
+														removePathTupleFromList)
+								)
+				)
 				.addGroup(
 						layout.createParallelGroup(
 								GroupLayout.Alignment.LEADING).addComponent(
-								gregsPanel.getMainPanel())));
+									gregsPanel.getMainPanel()
+								)
+				)
+		);
 		layout.setVerticalGroup(layout
 				.createSequentialGroup()
 				.addGroup(
 						layout.createParallelGroup(
 								GroupLayout.Alignment.BASELINE)
+								.addComponent(splashWarningLabel)
+				)
+				.addGroup(
+						layout.createParallelGroup(
+								GroupLayout.Alignment.BASELINE)
 								.addComponent(addSourcePath)
 								.addComponent(addInstallationPath)
-								.addComponent(removePathTupleFromList))
+								.addComponent(removePathTupleFromList)
+				)
 				.addGroup(
 						layout.createParallelGroup(
 								GroupLayout.Alignment.LEADING).addComponent(
-								gregsPanel.getMainPanel())));
+										gregsPanel.getMainPanel()
+								)
+				)
+		);
 	}
 
 	public static <T extends JComponent> T findParent(JComponent comp,
@@ -227,8 +251,7 @@ public class SetPackageSources extends CommonStep {
 			}
 			sourceInstallPair = new ArrayList<String>(2);
 		} catch (Exception e) {
-			System.out
-					.println("Could not find source/install pairs...? More info: "
+			UnixLogger.LOGGER.error("Could not find source/install pairs...? More info: "
 							+ e);
 		}
 	}

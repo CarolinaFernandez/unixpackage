@@ -12,6 +12,7 @@ import javax.swing.JTextArea;
 import org.apache.commons.io.FileUtils;
 
 import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.UnixLogger;
 
 public class Shell {
 
@@ -44,7 +45,7 @@ public class Shell {
 		StringBuilder lines = new StringBuilder();
 		try {
 			// Use ProcessBuilder rather than Runtime.exec
-			System.out.println(">>> execute.commandlist: " + commandList);
+			UnixLogger.LOGGER.debug(">>> execute.commandlist: " + commandList);
 			ProcessBuilder pb = new ProcessBuilder(commandList);
 			pb.directory(new File(Constants.ROOT_TMP_PACKAGE_FILES_PATH));
 			pb.redirectErrorStream(true);
@@ -53,7 +54,7 @@ public class Shell {
 			// Read the output from the command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					proc.getInputStream()));
-			System.out.println(">>> execute.result: " + reader.readLine());
+			UnixLogger.LOGGER.debug(">>> execute.result: " + reader.readLine());
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				lines.append(line + "\n");
@@ -61,7 +62,7 @@ public class Shell {
 			}
 			proc.destroy();
 		} catch (Exception e) {
-			System.out.println("Error: could not invoke bash script. Details: " + e);
+			UnixLogger.LOGGER.error("Error: could not invoke bash script. Details: " + e);
 		}
 		return lines;
 	}
@@ -151,11 +152,11 @@ public class Shell {
 		helpOutput = helpOutput.replace("%O8%", Constants.ARGUMENT_TEMPLATES);
 		helpOutput = helpOutput.replace("%O8l%", Constants.ARGUMENT_TEMPLATES_LONG);
 		
-		System.out.println(helpOutput);
+		UnixLogger.LOGGER.info(helpOutput);
 	}
 	
 	public static void outputVersionInformation() {
-		System.out.println(Constants.APP_VERSION);
+		UnixLogger.LOGGER.info(Constants.APP_VERSION);
 	}
 
 	public static boolean cleanTempFiles() {

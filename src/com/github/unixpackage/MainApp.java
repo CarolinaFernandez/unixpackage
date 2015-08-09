@@ -1,16 +1,14 @@
 package com.github.unixpackage;
 
-//import java.lang.reflect.Field;
-
 import com.github.unixpackage.components.CommonFrame;
 import com.github.unixpackage.data.Arguments;
 import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.UnixPreferences;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.steps.GeneratePackage;
 import com.github.unixpackage.utils.Files;
 import com.github.unixpackage.utils.Shell;
-//import com.github.unixpackage.utils.Shell;
 import com.github.unixpackage.utils.StepLoader;
 
 import javax.swing.JPanel;
@@ -25,7 +23,7 @@ public class MainApp {
 		// was not correctly parsed
 		if (!Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
 			if (!argumentsCorrectlyParsed) {
-				System.out.println("ERRORS PARSING");
+				UnixLogger.LOGGER.error("ERRORS PARSING");
 				System.exit(1);
 			}
 			// Preconditions
