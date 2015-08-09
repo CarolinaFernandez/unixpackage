@@ -359,10 +359,10 @@ function place_user_files_in_package()
     destination_path_tmp=${destination_path:1:${#destination_path}}
 
     mkdir -p $path_to_package/SOURCES$destination_path_dirname
-    cp -p $source_path $path_to_package/SOURCES$destination_path_dirname/
+    cp -p $source_path $path_to_package/SOURCES$destination_path
     package_files="$package_files\n$destination_path"
     package_install_files="$package_install_files\nmkdir -p %%{buildroot}$destination_path_dirname"
-    package_install_files="$package_install_files\ncp %%{_topdir}/SOURCES$source_path %%{buildroot}$destination_path_dirname/"
+    package_install_files="$package_install_files\ncp %%{_topdir}/SOURCES$destination_path %%{buildroot}$destination_path_dirname/"
   done
 }
 
@@ -462,10 +462,10 @@ function generate_spec()
   if [[ -z $package_prep ]]; then
     spec_package_prep="\n%%prep"
   else
-    spec_package_prep="\n%%prep\n$package_prep"
+    spec_package_prep="\n%%prep\n$package_prep\n"
   fi
   if [[ ! -z $package_install_files ]]; then
-    spec_package_prep="$spec_package_prep\n$package_install_files"
+    spec_package_prep="$spec_package_prep$package_install_files"
   fi
 
   append_to_spec $spec_package_prep

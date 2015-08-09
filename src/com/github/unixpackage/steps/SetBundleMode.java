@@ -26,7 +26,7 @@ public class SetBundleMode extends CommonStep {
 	protected String[] labels = { "Description: ", "Extra: " };
 	protected String[] tooltips = { "", "" };
 	protected String[] variables = { "", "PACKAGE_SHORT_DESCRIPTION",
-			"PACKAGE_DESCRIPTION" };
+	"PACKAGE_DESCRIPTION" };
 
 	public SetBundleMode() {
 		// Clear screen first
@@ -42,6 +42,9 @@ public class SetBundleMode extends CommonStep {
 		JLabel packageTypeDescription = new JLabel(
 				"Choose the type of package:", JLabel.TRAILING);
 		this.add(packageTypeDescription);
+		final JLabel warningMessageOS = new JLabel("");
+		final String warningOSRPM = "Warning: RPM generation under Debian-based OS";
+		final String warningOSDEB = "Warning: DEB generation under RedHat-based OS";
 
 		// Choose DEB or RPM packages
 		JRadioButton choiceDEB = new JRadioButton();
@@ -183,20 +186,20 @@ public class SetBundleMode extends CommonStep {
 									.containsFolder(sourcePath,
 											bundleTypeFolder))) {
 						JOptionPane
-								.showMessageDialog(
-										null,
-										"The chosen path is not (or does not contain) a '"
-												+ bundleTypeFolder
-												+ "' folder."
-												+ "\n"
-												+ "Please choose an appropriate folder");
+						.showMessageDialog(
+								null,
+								"The chosen path is not (or does not contain) a '"
+										+ bundleTypeFolder
+										+ "' folder."
+										+ "\n"
+										+ "Please choose an appropriate folder");
 						sourcePath = Files.choosePath();
 					}
 					try {
 						Variables.set("BUNDLE_MODE_ADVANCED_PATH", sourcePath);
 						addSourceFilesPathLabel.setVisible(true);
 						addSourceFilesPath
-								.setText(Variables.BUNDLE_MODE_ADVANCED_PATH);
+						.setText(Variables.BUNDLE_MODE_ADVANCED_PATH);
 						addSourceFilesPath.setVisible(true);
 					} catch (Exception ex) {
 					}
@@ -216,6 +219,15 @@ public class SetBundleMode extends CommonStep {
 				Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_DEB);
 				bundleSimple.setEnabled(true);
 				signGPG.setEnabled(true);
+				// Update consistency warning if required
+				String osDistro = Files.getOSDistro();
+				if (osDistro != null) {
+					if (osDistro.equals("Fedora")) {
+						warningMessageOS.setText(warningOSDEB);
+					} else {
+						warningMessageOS.setText("");
+					}
+				}
 			}
 		});
 		choiceRPM.addActionListener(new ActionListener() {
@@ -229,6 +241,15 @@ public class SetBundleMode extends CommonStep {
 					// Disable automatic signature for RPM
 					signGPG.setEnabled(false);
 					signGPG.setSelected(false);
+					// Update consistency warning if required
+					String osDistro = Files.getOSDistro();
+					if (osDistro != null) {
+						if (osDistro.equals("Debian")) {
+							warningMessageOS.setText(warningOSRPM);
+						} else {
+							warningMessageOS.setText("");
+						}
+					}
 				}
 			}
 		});
@@ -276,14 +297,32 @@ public class SetBundleMode extends CommonStep {
 		this.add(signGPGLabel);
 		this.add(signGPG);
 
+		// New row
+		this.add(new JLabel());
+		this.add(new JLabel());
+
+		// Independently of the package type stored in the preferences, this warns about inaccuracies between selected package type and current OS
+		String osDistro = Files.getOSDistro();
+		if (osDistro != null) {
+			if (osDistro.equals("Debian") && choiceRPM.isSelected()) {
+				warningMessageOS.setText(warningOSRPM);
+			} else if (osDistro.equals("Fedora") && choiceDEB.isSelected()) {
+				warningMessageOS.setText(warningOSDEB);
+			}
+		}
+
+		this.add(new JLabel());
+		warningMessageOS.setForeground(Constants.WARNING_FOREGROUND);
+		this.add(warningMessageOS);
+
 		// One per radio button
 		bundleSimple.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				if (bundleSimple.isSelected()) {
 					choiceDescription
-							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
-									.get(Constants.BUNDLE_MODE_SIMPLE));
+					.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
+							.get(Constants.BUNDLE_MODE_SIMPLE));
 					Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_SIMPLE);
 					// Disabling importing package files
 					addSourceFiles.setVisible(false);
@@ -297,8 +336,8 @@ public class SetBundleMode extends CommonStep {
 			public void stateChanged(ChangeEvent arg0) {
 				if (bundleManual.isSelected()) {
 					choiceDescription
-							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
-									.get(Constants.BUNDLE_MODE_MANUAL));
+					.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
+							.get(Constants.BUNDLE_MODE_MANUAL));
 					SetBundleMode.setDefaultBundleMode(bundleManual);
 					// Disabling importing package files
 					addSourceFiles.setVisible(false);
@@ -312,10 +351,10 @@ public class SetBundleMode extends CommonStep {
 			public void stateChanged(ChangeEvent arg0) {
 				if (bundleAdvanced.isSelected()) {
 					choiceDescription
-							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
-									.get("Advanced"));
+					.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
+							.get("Advanced"));
 					Variables
-							.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
+					.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
 					// Allow to input a path to import package files
 					addSourceFiles.setVisible(true);
 					// Show path information once it was select at least one
@@ -343,7 +382,7 @@ public class SetBundleMode extends CommonStep {
 		});
 
 		// Lay out the panel
-		SpringUtilities.makeCompactGrid(this, 9, 2, // rows, cols
+		SpringUtilities.makeCompactGrid(this, 11, 2, // rows, cols
 				6, 6, // initX, initY
 				6, 6); // xPad, yPad
 	}

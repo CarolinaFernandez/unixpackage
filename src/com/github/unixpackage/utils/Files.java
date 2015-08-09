@@ -207,8 +207,12 @@ public class Files {
 				&& Variables.PACKAGE_TYPE.equals("RPM")) {
 			validatedDestination = Constants.TMP_PACKAGE_REDHAT_FILES_PATH;
 		}
-		UnixLogger.LOGGER.debug("Generating package sources under "
-				+ validatedDestination);
+		if (validatedDestination.length() > 0) {
+			UnixLogger.LOGGER.debug("Generating package sources under "
+					+ validatedDestination);
+		} else {
+			UnixLogger.LOGGER.error("Could not generate package sources");
+		}
 		return Files.copyFolderIntoTempFolder(validatedSource,
 				validatedDestination);
 	}
@@ -377,5 +381,43 @@ public class Files {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Retrieve current OS and distribution.
+	 * 
+	 * @return main OS distribution (i.e. Debian- or Fedora- based)
+	 */
+	public static String getOSDistro() {
+		String distroOS = null;
+		StringBuilder distroOSFull = new StringBuilder();
+		// distroOS = Shell.execute("cat /etc/*-release");
+		// distroOS = Shell.execute("lb_release -a");
+		File locationPath = new File("/etc");
+		FilenameFilter releaseFilter = new FilenameFilter() {
+			@Override
+			public boolean accept(File directory, String file) {
+				if (file.endsWith("release")) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		};
+		String[] etcFiles = locationPath.list(releaseFilter);
+		for (String releaseFile : etcFiles) {
+			// Retrieve every content from the release files
+			// Do NOT output this via System.out
+			distroOSFull.append(Shell.execute("cat /etc/" + releaseFile, null));
+		}
+		if (distroOSFull.toString().indexOf("Debian") > -1
+				|| distroOSFull.toString().indexOf("Ubuntu") > -1) {
+			distroOS = "Debian";
+		} else if (distroOSFull.toString().indexOf("Red") > -1
+				|| distroOSFull.toString().indexOf("CentOS") > -1
+				|| distroOSFull.toString().indexOf("Fedora") > -1) {
+			distroOS = "Fedora";
+		}
+		return distroOS;
 	}
 }

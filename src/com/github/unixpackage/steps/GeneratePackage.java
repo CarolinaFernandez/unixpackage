@@ -62,7 +62,7 @@ public class GeneratePackage extends CommonStep {
 		}
 		textareaScrollPane = new JScrollPane(textArea);
 		textareaScrollPane
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		textareaScrollPane.setPreferredSize(new Dimension(
 				Constants.SCREEN_DIMENSION.width / 3,
 				Constants.SCREEN_DIMENSION.height / 6));
@@ -117,8 +117,8 @@ public class GeneratePackage extends CommonStep {
 		StringBuilder outputLines = new StringBuilder();
 		// Only generate Debian files if not already existing
 		UnixLogger.LOGGER
-				.debug("Checking package sources already available on disk: "
-						+ Files.isPackageSourcesOnDisk());
+		.debug("Checking package sources already available on disk: "
+				+ Files.isPackageSourcesOnDisk());
 		if (!Files.isPackageSourcesOnDisk()) {
 			List<String> commandList = Arguments
 					.generateArgumentsForDebianFiles();
@@ -162,7 +162,7 @@ public class GeneratePackage extends CommonStep {
 					// ".ex" termination
 					if (fileName.matches(".*\\.[eE][xX]$")
 							&& Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS
-									.get(fileName).equals("*")) {
+							.get(fileName).equals("*")) {
 						// Rename (remove the ".ex" termination)
 						File packageSourcesNewFile = new File(
 								filePath.substring(0, filePath.length() - 3));
@@ -195,8 +195,8 @@ public class GeneratePackage extends CommonStep {
 	public static StringBuilder generateRedHatFiles() {
 		StringBuilder outputLines = new StringBuilder();
 		UnixLogger.LOGGER
-				.debug("Checking package sources already available on disk: "
-						+ Files.isPackageSourcesOnDisk());
+		.debug("Checking package sources already available on disk: "
+				+ Files.isPackageSourcesOnDisk());
 		// Only generate RedHat files if not already existing
 		if (!Files.isPackageSourcesOnDisk()) {
 			List<String> commandList = Arguments
@@ -247,10 +247,16 @@ public class GeneratePackage extends CommonStep {
 			while (matcher.find()) {
 				outputPathPackage = matcher.group(1);
 			}
-			Shell.execute("xdg-open " + outputPathPackage);
-			UnixLogger.LOGGER.info("Process finished. "
-					+ Variables.PACKAGE_TYPE
-					+ " package has been generated under " + outputPathPackage);
+			if (outputPathPackage.length() > 0) {
+				UnixLogger.LOGGER.info("Process finished successfully. "
+						+ Variables.PACKAGE_TYPE
+						+ " package has been generated under " + outputPathPackage);
+				Shell.execute("xdg-open " + outputPathPackage);
+			} else {
+				UnixLogger.LOGGER.error("Process finished. Could not generate "
+						+ Variables.PACKAGE_TYPE
+						+ " package");	
+			}
 		}
 	}
 }

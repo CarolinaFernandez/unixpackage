@@ -27,6 +27,15 @@ public class Shell {
 		return Shell.execute(commandList);
 	}
 
+	// If writeTo = null, Shell will not output to System.out
+	public static StringBuilder execute(String commands, Object writeTo) {
+		List<String> commandList = new ArrayList<String>();
+		for (String command : commands.split(" ")) {
+			commandList.add(command);
+		}
+		return Shell.execute(commandList, writeTo);
+	}
+
 	public static void writeContentTo(String content, Object writeTo) {
 		String className = writeTo.getClass().getName();
 		if (className.contains("JTextArea")) {
@@ -51,10 +60,14 @@ public class Shell {
 			}
 			// When "-m" flag is used, sources are generated
 			// Otherwise, packages are created
-			if (commandListString.indexOf("bash") >= 0
-					&& commandListString.indexOf("-m") < 0) {
+			if (commandListString.indexOf("bash") >= 0) {
+				String operationType = "package";
+				if (commandListString.indexOf("-m") > -1) {
+					operationType = "files";
+				}
 				UnixLogger.LOGGER.info("Generating " + Variables.PACKAGE_TYPE
-						+ " package with commands: " + commandListString);
+						+ " " + operationType + " with commands: "
+						+ commandListString);
 			}
 			// Use ProcessBuilder rather than Runtime.exec
 			ProcessBuilder pb = new ProcessBuilder(commandList);
@@ -65,12 +78,12 @@ public class Shell {
 			// Read the output from the command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					proc.getInputStream()));
-			// UnixLogger.LOGGER
-			// .debug("Result of execution: " + reader.readLine());
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				lines.append(line + "\n");
-				System.out.println(line);
+				if (writeTo != null) {
+					System.out.println(line);
+				}
 			}
 			proc.destroy();
 		} catch (Exception e) {

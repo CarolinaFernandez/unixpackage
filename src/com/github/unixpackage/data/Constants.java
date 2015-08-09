@@ -92,8 +92,8 @@ public final class Constants {
 	// Colors
 	public static final Color TITLE_BACKGROUND = new Color(29, 29, 29);
 	public static final Color TITLE_FOREGROUND = new Color(180, 255, 180);
-
 	public static final Color STEPTITLE_FOREGROUND = new Color(0, 0, 0);
+	public static final Color WARNING_FOREGROUND = new Color(230, 138, 46);
 
 	// Size and dimension for components
 	public static final Dimension SCREEN_DIMENSION = Toolkit
