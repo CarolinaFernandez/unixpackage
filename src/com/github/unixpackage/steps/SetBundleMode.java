@@ -67,7 +67,8 @@ public class SetBundleMode extends CommonStep {
 		this.add(choicePackagesBox);
 
 		// Set name of variable where the field should be saved in
-		if (Variables.isNull("PACKAGE_TYPE") || Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+		if (Variables.isNull("PACKAGE_TYPE")
+				|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 			// DEB package by default
 			choicePackages.setSelected(choiceDEB.getModel(), true);
 		} else {
@@ -75,7 +76,7 @@ public class SetBundleMode extends CommonStep {
 				choicePackages.setSelected(choiceRPM.getModel(), true);
 			}
 		}
-		
+
 		// New row
 		this.add(new JLabel());
 		this.add(new JLabel());
@@ -96,7 +97,7 @@ public class SetBundleMode extends CommonStep {
 			// Disabled for RPM
 			bundleSimple.setEnabled(false);
 		}
-		
+
 		final JRadioButton bundleManual = new JRadioButton();
 		// Fill the width gap
 		bundleManual.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
@@ -117,7 +118,7 @@ public class SetBundleMode extends CommonStep {
 		choiceBundleMode.add(bundleSimple);
 		choiceBundleMode.add(bundleManual);
 		choiceBundleMode.add(bundleAdvanced);
-		
+
 		// Add choices to vertical box
 		Box choiceBundleModeBox = Box.createVerticalBox();
 		choiceBundleModeBox.setName("BUNDLE_MODE");
@@ -125,7 +126,7 @@ public class SetBundleMode extends CommonStep {
 		choiceBundleModeBox.add(bundleManual);
 		choiceBundleModeBox.add(bundleAdvanced);
 		this.add(choiceBundleModeBox);
-		
+
 		// Set name of variable where the field should be saved in
 		// TODO Fill in CommonStep
 		if (Variables.isNull("BUNDLE_MODE")) {
@@ -177,13 +178,18 @@ public class SetBundleMode extends CommonStep {
 							.equals(Constants.BUNDLE_TYPE_RPM)) {
 						bundleTypeFolder = Constants.BUNDLE_TYPE_RPM_FOLDER;
 					}
-					while (!sourcePath.isEmpty() && 
-							!(Files.isFolder(sourcePath, bundleTypeFolder) || 
-							Files.containsFolder(sourcePath, bundleTypeFolder))) {
-						JOptionPane.showMessageDialog(null,
-								"The chosen path is not (or does not contain) a '"
-										+ bundleTypeFolder + "' folder."
-										+ "\n" + "Please choose an appropriate folder");
+					while (!sourcePath.isEmpty()
+							&& !(Files.isFolder(sourcePath, bundleTypeFolder) || Files
+									.containsFolder(sourcePath,
+											bundleTypeFolder))) {
+						JOptionPane
+								.showMessageDialog(
+										null,
+										"The chosen path is not (or does not contain) a '"
+												+ bundleTypeFolder
+												+ "' folder."
+												+ "\n"
+												+ "Please choose an appropriate folder");
 						sourcePath = Files.choosePath();
 					}
 					try {
@@ -195,14 +201,14 @@ public class SetBundleMode extends CommonStep {
 					} catch (Exception ex) {
 					}
 				}
-				// If location of sources is empty (user cancelled choice of path)
+				// If location of sources is empty (user cancelled choice of
+				// path)
 				// then automatically choose another type of bundle
 				if (sourcePath.isEmpty()) {
 					SetBundleMode.setDefaultBundleMode(bundleManual);
 				}
 			}
-			}
-		);
+		});
 
 		choiceDEB.addActionListener(new ActionListener() {
 			@Override
@@ -226,7 +232,7 @@ public class SetBundleMode extends CommonStep {
 				}
 			}
 		});
-		
+
 		// Define visibility for fields related to Advanced mode
 		if (Variables.isNull("BUNDLE_MODE")
 				|| !Variables.get("BUNDLE_MODE").equals(
@@ -252,7 +258,8 @@ public class SetBundleMode extends CommonStep {
 		this.add(new JLabel());
 
 		// Sign with GPG
-		// XXX: Currently not working properly for RPM. Cannot validate passphrase for key
+		// XXX: Currently not working properly for RPM. Cannot validate
+		// passphrase for key
 		JLabel signGPGLabel = new JLabel("Sign package with GPG?");
 		signGPG.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		signGPGLabel.setLabelFor(signGPG);
@@ -268,7 +275,7 @@ public class SetBundleMode extends CommonStep {
 		}
 		this.add(signGPGLabel);
 		this.add(signGPG);
-		
+
 		// One per radio button
 		bundleSimple.addChangeListener(new ChangeListener() {
 			@Override
@@ -326,7 +333,8 @@ public class SetBundleMode extends CommonStep {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				if (signGPG.isSelected()) {
-					if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+					if (Variables.PACKAGE_TYPE
+							.equals(Constants.BUNDLE_TYPE_RPM)) {
 						signGPG.setSelected(false);
 						signGPG.setEnabled(false);
 					}
@@ -339,7 +347,7 @@ public class SetBundleMode extends CommonStep {
 				6, 6, // initX, initY
 				6, 6); // xPad, yPad
 	}
-	
+
 	public static void setDefaultBundleMode(JRadioButton defaultBundleMode) {
 		defaultBundleMode.setSelected(true);
 		Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_MANUAL);

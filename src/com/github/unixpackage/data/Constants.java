@@ -24,13 +24,13 @@ public final class Constants {
 	public static final String APP_NAME = "upkg";
 	public static final String APP_DESCRIPTION = "Create a UNIX package";
 	public static final String APP_VERSION = "0.1";
-	
+
 	// Could be under /etc; but root permissions would be needed
 	public static final String APP_PREFERENCES_PATH = System
 			.getProperty("user.home") + "/." + APP_NAME;
 	public static final String APP_PREFERENCES_FILE_PATH = APP_PREFERENCES_PATH
 			+ "/" + APP_NAME + ".properties";
-	
+
 	// Forbidden character, will never appear as part of a path
 	public static final String FOLDER_IFS = "\\0";
 
@@ -41,7 +41,7 @@ public final class Constants {
 
 	public final static String OPEN_COMMAND = "xdg-open";
 	public final static String MESSAGE_DIGEST = "MD5";
-	
+
 	public static final String ROOT_FILES_PATH = ".";
 
 	// Package files
@@ -50,10 +50,10 @@ public final class Constants {
 			+ "/deb";
 	public static final String REDHAT_FILES_PATH = ROOT_PACKAGE_FILES_PATH
 			+ "/rpm";
-	
+
 	public static final String BUNDLE_TYPE_DEB_FOLDER = "debian";
 	public static final String BUNDLE_TYPE_RPM_FOLDER = "SPECS";
-	
+
 	public static final String ROOT_TMP_FILES_PATH = "/tmp";
 	public static final String ROOT_TMP_PACKAGE_FILES_PATH = ROOT_TMP_FILES_PATH
 			+ "/unix_package_" + (new Random().nextInt(1000 - 1 + 1) + 1);
@@ -67,8 +67,10 @@ public final class Constants {
 
 	// Script files
 	public static final String ROOT_SCRIPT_FILES_PATH = "script";
-	public static final String TMP_SCRIPT_DEBIAN_FILES_PATH = ROOT_SCRIPT_FILES_PATH + "/deb";
-	public static final String TMP_SCRIPT_REDHAT_FILES_PATH = ROOT_SCRIPT_FILES_PATH + "/rpm";
+	public static final String TMP_SCRIPT_DEBIAN_FILES_PATH = ROOT_SCRIPT_FILES_PATH
+			+ "/deb";
+	public static final String TMP_SCRIPT_REDHAT_FILES_PATH = ROOT_SCRIPT_FILES_PATH
+			+ "/rpm";
 	public static final String DEBIAN_SCRIPT_PATH = TMP_SCRIPT_DEBIAN_FILES_PATH
 			+ "/create_package.sh";
 	public static final String REDHAT_SCRIPT_PATH = TMP_SCRIPT_REDHAT_FILES_PATH
@@ -123,7 +125,7 @@ public final class Constants {
 	public static final Dimension TABLE_DIMENSION = new Dimension(
 			CONTENT_DIMENSION.width,
 			(int) (CONTENT_DIMENSION.height - 5 * STEPTITLE_DIMENSION.height));
-	
+
 	// Arguments names
 	public static final String ARGUMENT_HELP = "-h";
 	public static final String ARGUMENT_HELP_LONG = "--help";
@@ -168,7 +170,7 @@ public final class Constants {
 	public static final String ARGUMENT_NO_BUILD = "-m";
 	public static final String ARGUMENT_NO_BUILD_LONG = "--no-build";
 	// RPM-specific
-	public static final String ARGUMENT_PACKAGE_GROUP= "-g";
+	public static final String ARGUMENT_PACKAGE_GROUP = "-g";
 	public static final String ARGUMENT_PACKAGE_GROUP_LONG = "--group";
 
 	// Values for the bundle modes
@@ -203,98 +205,86 @@ public final class Constants {
 
 	// Regular expressions
 	// RegExp for e-mail (follows RFC822)
-	public static final Pattern RE_MAINTAINER_EMAIL = Pattern.compile(
-	        "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
-	);
+	public static final Pattern RE_MAINTAINER_EMAIL = Pattern
+			.compile("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 	// RegExp for package name
-	public static final Pattern RE_PACKAGE_NAME = Pattern.compile(
-	        "^[a-z]{2,}([a-z]|[0-9]|[+]|[-]|[.])*?$"
-	);
+	public static final Pattern RE_PACKAGE_NAME = Pattern
+			.compile("^[a-z]{2,}([a-z]|[0-9]|[+]|[-]|[.])*?$");
 	// RegExp for package licence (DEB)
-	public static final Pattern RE_PACKAGE_LICENCE_DEB = Pattern.compile(
-			"^([A|a]pache|[A|a]rtistic|(BSD|bsd)|[L|l]?(GPL|gpl)[2|3]{0,1}|(MIT|mit))$"
-	);
+	public static final Pattern RE_PACKAGE_LICENCE_DEB = Pattern
+			.compile("^([A|a]pache|[A|a]rtistic|(BSD|bsd)|[L|l]?(GPL|gpl)[2|3]{0,1}|(MIT|mit))$");
 	// RegExp for package licence (RPM)
-	public static final Pattern RE_PACKAGE_LICENCE_RPM = Pattern.compile(
-			"^(Glide|ASL 1.1|Abstyles|AFL|AMPAS BSD|Adobe|APAFML|MIT|AGPLv1|AGPLv3|AGPLv3+|" +
-			"AGPLv3 with exceptions|Afmparse|ADSL|AMDPLPA|ASL 1.0|ASL 1.1|ASL 2.0|" +
-			"App-s2p|AML|APSL 2.0|Artistic clarified|Artistic 2.0|ARL|AAL|Bahyph|Barr|" +
-			"Beerware|BeOpen|Bibtex|BitTorrent|Boost|Borceux|BSD with advertising|" +
-			"BSD with attribution|BSD|BSD Protection|CATOSL|CeCILL|CeCILL-B|CeCILL-C|" +
-			"Netscape|MIT|CNRI|CDDL|CPL|Condor|Copyright only|CPAL|BSD|GPLv2+|LGPLv2+|" +
-			"CC0|Crossword|Crystal Stacker|MPLv1.1|Cube|diffmark|WTFPL|DOC|DMIT|Dotseqn|" +
-			"DSDP|dvipdfm|EPL|eCos|ECL 1.0|ECL 2.0|eGenix|EFL 2.0|MIT with advertising|" +
-			"Entessa|EPICS|ERPL|EU Datagrid|EUPL 1.1|Eurosym|GPLv2 with exceptions|Fair|" +
-			"LGPLv2 with exceptions|MPLv1.0|FTL|FSFUL|FSFULLR|Giftware|GL2PS|Glulxe|GPL+|" +
-			"GPL+ with exceptions|GPLv1|GPLv2|GPLv2+ with exceptions|GPLv3|" +
-			"GPLv3 with exceptions|GPLv3+|GPLv3+ with exceptions|LGPLv2|" +
-			"LGPLv2+ with exceptions|LGPLv3|LGPLv3 with exceptions|LGPLv3+" +
-			"gnuplot|HaskellReport|HSRL|IBM|iMatix|ImageMagick|lmlib2|IJG|Intel ACPI|" +
-			"Interbase|ISC|Jabber|Jasper|JPython|Julius|Knuth|LPPL|Latex2e|LBNL BSD|" +
-			"LOSLA|Leptonica|Lhcyr|libtiff|LLGPL|Logica|LPL|MakeIndex|MTLL|mecab-ipadic|" +
-			"MS-PL|MS-RL|midnight|MirOS|MITNFA|mod_macro|Motosoto|MPLv1.0|MPLv1.1|MPLv2.0|" +
-			"Mup|Naumen|NCSA|NetCDF|NGPL|NOSL|Newmat|Newsletr|Nmap|Nokia|NLPL|Noweb|" +
-			"MIT with advertising|OpenLDAP|OML|OpenPBS|OSL 1.0|OSL 1.1|OSL 2.0|OSL 2.1|" +
-			"OSL 3.0|OpenSSL|OReilly|Par|GPL+ or Artistic|GPLv2 or Artistic|" +
-			"GPLv2+ or Artistic|LGPLv2+ or Artistic|Phorum|PHP|PlainTeX|Plexus|PostgreSQL|" +
-			"psfrag|psutils|Public Domain|Python|Qhull|QPL|Rdisc|RPSL|REX|RiceBSD|Romio|" +
-			"Rsfs|Ruby|Saxpath|Sequence|SCEA|SWL|STMPL|SCRIP|Sendmail|Sleepycat|SLIB|" +
-			"softSurfer|SNIA|SISSL|SPL|TCL|Teeworlds|TTWL|TPL|Threeparttable|TPDL|" +
-			"TMate|Tolua|TORQUEv1.1|TGPPL|TOSL|UCD|Unicode|Unlicense|Vim|VNLSL|VOSTROM|" +
-			"VSL|W3C|Webmin|Wsuipa|wxWidgets|xinetd|Xerox|xpp|XSkat|YPLv1.1|Zed|Zend|" +
-			"ZPLv1.0|ZPLv2.0|ZPLv2.1|zlib|zlib with acknowledgement)$"
-	);
+	public static final Pattern RE_PACKAGE_LICENCE_RPM = Pattern
+			.compile("^(Glide|ASL 1.1|Abstyles|AFL|AMPAS BSD|Adobe|APAFML|MIT|AGPLv1|AGPLv3|AGPLv3+|"
+					+ "AGPLv3 with exceptions|Afmparse|ADSL|AMDPLPA|ASL 1.0|ASL 1.1|ASL 2.0|"
+					+ "App-s2p|AML|APSL 2.0|Artistic clarified|Artistic 2.0|ARL|AAL|Bahyph|Barr|"
+					+ "Beerware|BeOpen|Bibtex|BitTorrent|Boost|Borceux|BSD with advertising|"
+					+ "BSD with attribution|BSD|BSD Protection|CATOSL|CeCILL|CeCILL-B|CeCILL-C|"
+					+ "Netscape|MIT|CNRI|CDDL|CPL|Condor|Copyright only|CPAL|BSD|GPLv2+|LGPLv2+|"
+					+ "CC0|Crossword|Crystal Stacker|MPLv1.1|Cube|diffmark|WTFPL|DOC|DMIT|Dotseqn|"
+					+ "DSDP|dvipdfm|EPL|eCos|ECL 1.0|ECL 2.0|eGenix|EFL 2.0|MIT with advertising|"
+					+ "Entessa|EPICS|ERPL|EU Datagrid|EUPL 1.1|Eurosym|GPLv2 with exceptions|Fair|"
+					+ "LGPLv2 with exceptions|MPLv1.0|FTL|FSFUL|FSFULLR|Giftware|GL2PS|Glulxe|GPL+|"
+					+ "GPL+ with exceptions|GPLv1|GPLv2|GPLv2+ with exceptions|GPLv3|"
+					+ "GPLv3 with exceptions|GPLv3+|GPLv3+ with exceptions|LGPLv2|"
+					+ "LGPLv2+ with exceptions|LGPLv3|LGPLv3 with exceptions|LGPLv3+"
+					+ "gnuplot|HaskellReport|HSRL|IBM|iMatix|ImageMagick|lmlib2|IJG|Intel ACPI|"
+					+ "Interbase|ISC|Jabber|Jasper|JPython|Julius|Knuth|LPPL|Latex2e|LBNL BSD|"
+					+ "LOSLA|Leptonica|Lhcyr|libtiff|LLGPL|Logica|LPL|MakeIndex|MTLL|mecab-ipadic|"
+					+ "MS-PL|MS-RL|midnight|MirOS|MITNFA|mod_macro|Motosoto|MPLv1.0|MPLv1.1|MPLv2.0|"
+					+ "Mup|Naumen|NCSA|NetCDF|NGPL|NOSL|Newmat|Newsletr|Nmap|Nokia|NLPL|Noweb|"
+					+ "MIT with advertising|OpenLDAP|OML|OpenPBS|OSL 1.0|OSL 1.1|OSL 2.0|OSL 2.1|"
+					+ "OSL 3.0|OpenSSL|OReilly|Par|GPL+ or Artistic|GPLv2 or Artistic|"
+					+ "GPLv2+ or Artistic|LGPLv2+ or Artistic|Phorum|PHP|PlainTeX|Plexus|PostgreSQL|"
+					+ "psfrag|psutils|Public Domain|Python|Qhull|QPL|Rdisc|RPSL|REX|RiceBSD|Romio|"
+					+ "Rsfs|Ruby|Saxpath|Sequence|SCEA|SWL|STMPL|SCRIP|Sendmail|Sleepycat|SLIB|"
+					+ "softSurfer|SNIA|SISSL|SPL|TCL|Teeworlds|TTWL|TPL|Threeparttable|TPDL|"
+					+ "TMate|Tolua|TORQUEv1.1|TGPPL|TOSL|UCD|Unicode|Unlicense|Vim|VNLSL|VOSTROM|"
+					+ "VSL|W3C|Webmin|Wsuipa|wxWidgets|xinetd|Xerox|xpp|XSkat|YPLv1.1|Zed|Zend|"
+					+ "ZPLv1.0|ZPLv2.0|ZPLv2.1|zlib|zlib with acknowledgement)$");
 	// RegExp for package class (DEB)
-	public static final Pattern RE_PACKAGE_CLASS_DEB = Pattern.compile(
-			"^([sikml]|(Single binary)|Arch-Independent|Kernel module|Multiple binary|Library)$"
-	);
+	public static final Pattern RE_PACKAGE_CLASS_DEB = Pattern
+			.compile("^([sikml]|(Single binary)|Arch-Independent|Kernel module|Multiple binary|Library)$");
 	// RegExp for package class (RPM)
 	public static final Pattern RE_PACKAGE_CLASS_RPM = Pattern.compile(
-//			"^((Arch-Independent)|noarch|Athlon|athlon|Geode|geode|i386|i486|i586|i686|x86_64)$"
-			"^((Arch-Independent)|noarch|Athlon|athlon|Geode|geode|i386|i486|i586|i686)$"
-	);
+	// "^((Arch-Independent)|noarch|Athlon|athlon|Geode|geode|i386|i486|i586|i686|x86_64)$"
+			"^((Arch-Independent)|noarch|Athlon|athlon|Geode|geode|i386|i486|i586|i686)$");
 	// RegExp for package web site
-	public static final Pattern RE_PACKAGE_WEBSITE = Pattern.compile(
-			"^([a-z]*[://])?([a-zA-Z0-9]|[-_./#?&%$=])*?$"
-	);
+	public static final Pattern RE_PACKAGE_WEBSITE = Pattern
+			.compile("^([a-z]*[://])?([a-zA-Z0-9]|[-_./#?&%$=])*?$");
 	// RegExp for package version
-	public static final Pattern RE_PACKAGE_VERSION = Pattern.compile(
-			"^[0-9]+([.][0-9]+)(-[0-9]+)?$"
-	);
+	public static final Pattern RE_PACKAGE_VERSION = Pattern
+			.compile("^[0-9]+([.][0-9]+)(-[0-9]+)?$");
 	// RegExp for package (short) description
-	public static final Pattern RE_PACKAGE_SHORT_DESCRIPTION = Pattern.compile(
-			"^.{1,%SUB%}$".replace("%SUB%", new Integer(Constants.PACKAGE_SHORT_DESCRIPTION_MAX_LENGTH).toString())
-	);
+	public static final Pattern RE_PACKAGE_SHORT_DESCRIPTION = Pattern
+			.compile("^.{1,%SUB%}$".replace("%SUB%", new Integer(
+					Constants.PACKAGE_SHORT_DESCRIPTION_MAX_LENGTH).toString()));
 	// RegExp for package section (DEB)
-	public static final Pattern RE_PACKAGE_SECTION_DEB = Pattern.compile(
-			"^(admin|cli-mono|comm|database|debug|devel|doc|editors|education|electronics|embedded|" +
-			"fonts|games|gnome|gnu-r|gnustep|graphics|hamradio|haskell|httpd|interpreters|introspection|" +
-			"java|kde|kernel|libdevel|libs|lisp|localization|mail|math|metapackages|misc|net|news|ocaml|" +
-			"oldlibs|otherosfs|perl|php|python|ruby|science|shells|sound|tasks|tex|text|utils|vcs|video|" +
-			"web|x11|xfce|zope)$"
-	);
+	public static final Pattern RE_PACKAGE_SECTION_DEB = Pattern
+			.compile("^(admin|cli-mono|comm|database|debug|devel|doc|editors|education|electronics|embedded|"
+					+ "fonts|games|gnome|gnu-r|gnustep|graphics|hamradio|haskell|httpd|interpreters|introspection|"
+					+ "java|kde|kernel|libdevel|libs|lisp|localization|mail|math|metapackages|misc|net|news|ocaml|"
+					+ "oldlibs|otherosfs|perl|php|python|ruby|science|shells|sound|tasks|tex|text|utils|vcs|video|"
+					+ "web|x11|xfce|zope)$");
 	// RegExp for package group (RPM)
-	public static final Pattern RE_PACKAGE_GROUP_RPM = Pattern.compile(
-			"^(Amusements\\/Games|Amusements\\/Graphics|Applications\\/Archiving|" +
-			"Applications\\/Communications|Applications\\/Databases|Applications\\/Editors|" +
-			"Applications\\/Emulators|Applications\\/Engineering|Applications\\/File|" +
-			"Applications\\/Internet|Applications\\/Multimedia|Applications\\/Productivity|" +
-			"Applications\\/Publishing|Applications\\/System|Applications\\/Text|" +
-			"Development\\/Debuggers|Development\\/Languages|Development\\/Libraries|" +
-			"Development\\/System|Development\\/Tools|Documentation|System Environment\\/Base|" +
-			"System Environment\\/Daemons|System Environment\\/Kernel|" +
-			"System Environment\\/Libraries|System Environment\\/Shells|" +
-			"User Interface\\/Desktops|User Interface\\/X|User Interface\\/X Hardware Support)$"
-	);
+	public static final Pattern RE_PACKAGE_GROUP_RPM = Pattern
+			.compile("^(Amusements\\/Games|Amusements\\/Graphics|Applications\\/Archiving|"
+					+ "Applications\\/Communications|Applications\\/Databases|Applications\\/Editors|"
+					+ "Applications\\/Emulators|Applications\\/Engineering|Applications\\/File|"
+					+ "Applications\\/Internet|Applications\\/Multimedia|Applications\\/Productivity|"
+					+ "Applications\\/Publishing|Applications\\/System|Applications\\/Text|"
+					+ "Development\\/Debuggers|Development\\/Languages|Development\\/Libraries|"
+					+ "Development\\/System|Development\\/Tools|Documentation|System Environment\\/Base|"
+					+ "System Environment\\/Daemons|System Environment\\/Kernel|"
+					+ "System Environment\\/Libraries|System Environment\\/Shells|"
+					+ "User Interface\\/Desktops|User Interface\\/X|User Interface\\/X Hardware Support)$");
 	// RegExp for package priority
-	public static final Pattern RE_PACKAGE_PRIORITY = Pattern.compile(
-			"^(required|important|standard|optional|extra)$"
-	);
+	public static final Pattern RE_PACKAGE_PRIORITY = Pattern
+			.compile("^(required|important|standard|optional|extra)$");
 	// RegExp for package (short) description
-	public static final Pattern BUNDLE_MODE_ADVANCED_PATH = Pattern.compile(
-			"^(([a-zA-Z]:)?(\\/[a-zA-Z0-9_+-]*)\\/?)+$"
-	);
-	
+	public static final Pattern BUNDLE_MODE_ADVANCED_PATH = Pattern
+			.compile("^(([a-zA-Z]:)?(\\/[a-zA-Z0-9_+-]*)\\/?)+$");
+
 	// Mappings
 	public static final Map<Integer, String> STEPS_METHODS;
 	public static final Map<Integer, String> STEPS_DESCRIPTIONS;
@@ -347,11 +337,14 @@ public final class Constants {
 		PACKAGE_LICENCES_DEB.put("MIT", "mit");
 
 		PACKAGE_LICENCES_RPM = new TreeMap<String, String>();
-		ArrayList<String> licensesRPM = new ArrayList<String>(Arrays.asList(RE_PACKAGE_LICENCE_RPM.toString().replace("(","").replace(")","").replace("^","").replace("$","").split("\\|")));
+		ArrayList<String> licensesRPM = new ArrayList<String>(
+				Arrays.asList(RE_PACKAGE_LICENCE_RPM.toString()
+						.replace("(", "").replace(")", "").replace("^", "")
+						.replace("$", "").split("\\|")));
 		for (String licenseRPM : licensesRPM) {
 			PACKAGE_LICENCES_RPM.put(licenseRPM, licenseRPM);
 		}
-		
+
 		PACKAGE_CLASSES_DEB = new TreeMap<String, String>();
 		PACKAGE_CLASSES_DEB.put("Single binary", "s");
 		PACKAGE_CLASSES_DEB.put("Kernel module", "k");
@@ -366,12 +359,21 @@ public final class Constants {
 		PACKAGE_CLASSES_RPM.put("i486", "i486");
 		PACKAGE_CLASSES_RPM.put("i586", "i586");
 		PACKAGE_CLASSES_RPM.put("i686", "i686");
-//		PACKAGE_CLASSES_RPM.put("x86_64", "x86_64");
-		
-		PACKAGE_SECTIONS_DEB = new ArrayList<String>(Arrays.asList(RE_PACKAGE_SECTION_DEB.toString().replace("(","").replace(")","").replace("^","").replace("$","").split("\\|")));
-		PACKAGE_SECTIONS_RPM = new ArrayList<String>(Arrays.asList(RE_PACKAGE_GROUP_RPM.toString().replace("(","").replace(")","").replace("^","").replace("$","").replace("\\/", "/").split("\\|")));
+		// PACKAGE_CLASSES_RPM.put("x86_64", "x86_64");
 
-		PACKAGE_PRIORITIES = new ArrayList<String>(Arrays.asList(RE_PACKAGE_PRIORITY.toString().replace("(","").replace(")","").replace("^","").replace("$","").split("\\|")));
+		PACKAGE_SECTIONS_DEB = new ArrayList<String>(
+				Arrays.asList(RE_PACKAGE_SECTION_DEB.toString()
+						.replace("(", "").replace(")", "").replace("^", "")
+						.replace("$", "").split("\\|")));
+		PACKAGE_SECTIONS_RPM = new ArrayList<String>(
+				Arrays.asList(RE_PACKAGE_GROUP_RPM.toString().replace("(", "")
+						.replace(")", "").replace("^", "").replace("$", "")
+						.replace("\\/", "/").split("\\|")));
+
+		PACKAGE_PRIORITIES = new ArrayList<String>(
+				Arrays.asList(RE_PACKAGE_PRIORITY.toString().replace("(", "")
+						.replace(")", "").replace("^", "").replace("$", "")
+						.split("\\|")));
 
 		// Explanation of each bundle mode
 		BUNDLE_MODE_DESCRIPTIONS = new HashMap<String, String>();
@@ -385,7 +387,8 @@ public final class Constants {
 		// Validation of fields (must be synchronized!)
 		FIELDS_CANONICAL_NAME = new HashMap<String, String>();
 		FIELDS_CANONICAL_NAME.put("PACKAGE_NAME", "package name");
-		FIELDS_CANONICAL_NAME.put("PACKAGE_SHORT_DESCRIPTION", "package short description");
+		FIELDS_CANONICAL_NAME.put("PACKAGE_SHORT_DESCRIPTION",
+				"package short description");
 		FIELDS_CANONICAL_NAME.put("PACKAGE_WEBSITE", "package website");
 		FIELDS_CANONICAL_NAME.put("PACKAGE_VERSION", "package version");
 		FIELDS_CANONICAL_NAME.put("PACKAGE_LICENCE", "package licence");
@@ -394,65 +397,95 @@ public final class Constants {
 		FIELDS_CANONICAL_NAME.put("MAINTAINER_EMAIL", "e-mail");
 
 		FIELDS_FORMAT_EXPLANATION = new HashMap<String, String>();
-		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_NAME",
-				"must consist only of lower case letters (a-z), digits (0-9), plus (+) and minus (-) signs, and periods (.). They must be at least two characters long and must start with an alphanumeric character");
+		FIELDS_FORMAT_EXPLANATION
+				.put("PACKAGE_NAME",
+						"must consist only of lower case letters (a-z), digits (0-9), plus (+) and minus (-) signs, and periods (.). They must be at least two characters long and must start with an alphanumeric character");
 		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_SHORT_DESCRIPTION",
 				"must be 60 characters at most");
-		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_WEBSITE",
-				"must be well formed");
-		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_VERSION",
-				"is restricted to the format x.y[-revision], where all fields are digits");
+		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_WEBSITE", "must be well formed");
+		FIELDS_FORMAT_EXPLANATION
+				.put("PACKAGE_VERSION",
+						"is restricted to the format x.y[-revision], where all fields are digits");
 		FIELDS_FORMAT_EXPLANATION.put("MAINTAINER_EMAIL",
 				"must be a valid e-mail address");
-		
+
 		// Creating register of available parameters
 		ARGUMENTS_ACCEPTED = new HashMap<String, String>();
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_BATCH, Constants.ARGUMENT_BATCH_LONG);
-//		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_SOURCE, Constants.ARGUMENT_SOURCE_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_DESCRIPTION_SHORT, Constants.ARGUMENT_DESCRIPTION_SHORT_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_DESCRIPTION, Constants.ARGUMENT_DESCRIPTION_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_TEMPLATES, Constants.ARGUMENT_TEMPLATES_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_WEBSITE, Constants.ARGUMENT_WEBSITE_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_NAME, Constants.ARGUMENT_NAME_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_EMAIL, Constants.ARGUMENT_EMAIL_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_COPYRIGHT, Constants.ARGUMENT_COPYRIGHT_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_CLASS, Constants.ARGUMENT_CLASS_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_SECTION, Constants.ARGUMENT_PACKAGE_SECTION_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_PRIORITY, Constants.ARGUMENT_PACKAGE_PRIORITY_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_NAME, Constants.ARGUMENT_PACKAGE_NAME_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_VERSION, Constants.ARGUMENT_PACKAGE_VERSION_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_SIGN, Constants.ARGUMENT_SIGN_LONG);
-		
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_BATCH,
+				Constants.ARGUMENT_BATCH_LONG);
+		// ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_SOURCE,
+		// Constants.ARGUMENT_SOURCE_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_DESCRIPTION_SHORT,
+				Constants.ARGUMENT_DESCRIPTION_SHORT_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_DESCRIPTION,
+				Constants.ARGUMENT_DESCRIPTION_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_TEMPLATES,
+				Constants.ARGUMENT_TEMPLATES_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_WEBSITE,
+				Constants.ARGUMENT_WEBSITE_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_NAME,
+				Constants.ARGUMENT_NAME_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_EMAIL,
+				Constants.ARGUMENT_EMAIL_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_COPYRIGHT,
+				Constants.ARGUMENT_COPYRIGHT_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_CLASS,
+				Constants.ARGUMENT_CLASS_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_SECTION,
+				Constants.ARGUMENT_PACKAGE_SECTION_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_PRIORITY,
+				Constants.ARGUMENT_PACKAGE_PRIORITY_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_NAME,
+				Constants.ARGUMENT_PACKAGE_NAME_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_VERSION,
+				Constants.ARGUMENT_PACKAGE_VERSION_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_SIGN,
+				Constants.ARGUMENT_SIGN_LONG);
+
 		// Mapping of input arguments and their associated variables
 		ARGUMENTS_VARIABLES = new HashMap<String, String>();
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_BATCH, "BATCH_MODE");
-//		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_SOURCE, "");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_DESCRIPTION_SHORT, "PACKAGE_SHORT_DESCRIPTION");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_DESCRIPTION, "PACKAGE_DESCRIPTION");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_TEMPLATES, "BUNDLE_MODE_ADVANCED_PATH");
+		// ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_SOURCE, "");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_DESCRIPTION_SHORT,
+				"PACKAGE_SHORT_DESCRIPTION");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_DESCRIPTION,
+				"PACKAGE_DESCRIPTION");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_TEMPLATES,
+				"BUNDLE_MODE_ADVANCED_PATH");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_WEBSITE, "PACKAGE_WEBSITE");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_NAME, "MAINTAINER_NAME");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_EMAIL, "MAINTAINER_EMAIL");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_COPYRIGHT, "PACKAGE_LICENCE");
+		ARGUMENTS_VARIABLES
+				.put(Constants.ARGUMENT_COPYRIGHT, "PACKAGE_LICENCE");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_CLASS, "PACKAGE_CLASS");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_SECTION, "PACKAGE_SECTION");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_PRIORITY, "PACKAGE_PRIORITY");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_NAME, "PACKAGE_NAME");
-		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_VERSION, "PACKAGE_VERSION");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_SECTION,
+				"PACKAGE_SECTION");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_PRIORITY,
+				"PACKAGE_PRIORITY");
+		ARGUMENTS_VARIABLES
+				.put(Constants.ARGUMENT_PACKAGE_NAME, "PACKAGE_NAME");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_VERSION,
+				"PACKAGE_VERSION");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_SIGN, "PACKAGE_SIGN");
-		
+
 		// RegExps (e.g. for validation)
 		VARIABLES_REGEXPS = new HashMap<String, Pattern>();
-		VARIABLES_REGEXPS.put("MAINTAINER_EMAIL", Constants.RE_MAINTAINER_EMAIL);
+		VARIABLES_REGEXPS
+				.put("MAINTAINER_EMAIL", Constants.RE_MAINTAINER_EMAIL);
 		VARIABLES_REGEXPS.put("PACKAGE_NAME", Constants.RE_PACKAGE_NAME);
-		VARIABLES_REGEXPS.put("PACKAGE_LICENCE", Constants.RE_PACKAGE_LICENCE_DEB);
+		VARIABLES_REGEXPS.put("PACKAGE_LICENCE",
+				Constants.RE_PACKAGE_LICENCE_DEB);
 		VARIABLES_REGEXPS.put("PACKAGE_CLASS", Constants.RE_PACKAGE_CLASS_DEB);
-		VARIABLES_REGEXPS.put("PACKAGE_SECTION", Constants.RE_PACKAGE_SECTION_DEB);
-		VARIABLES_REGEXPS.put("PACKAGE_PRIORITY", Constants.RE_PACKAGE_PRIORITY);
-		VARIABLES_REGEXPS.put("PACKAGE_SHORT_DESCRIPTION", Constants.RE_PACKAGE_SHORT_DESCRIPTION);
+		VARIABLES_REGEXPS.put("PACKAGE_SECTION",
+				Constants.RE_PACKAGE_SECTION_DEB);
+		VARIABLES_REGEXPS
+				.put("PACKAGE_PRIORITY", Constants.RE_PACKAGE_PRIORITY);
+		VARIABLES_REGEXPS.put("PACKAGE_SHORT_DESCRIPTION",
+				Constants.RE_PACKAGE_SHORT_DESCRIPTION);
 		VARIABLES_REGEXPS.put("PACKAGE_WEBSITE", Constants.RE_PACKAGE_WEBSITE);
 		VARIABLES_REGEXPS.put("PACKAGE_VERSION", Constants.RE_PACKAGE_VERSION);
-		VARIABLES_REGEXPS.put("BUNDLE_MODE_ADVANCED_PATH", Constants.BUNDLE_MODE_ADVANCED_PATH);
+		VARIABLES_REGEXPS.put("BUNDLE_MODE_ADVANCED_PATH",
+				Constants.BUNDLE_MODE_ADVANCED_PATH);
 	}
 
 	public static final int STEPS_METHODS_LENGTH = STEPS_METHODS.size();

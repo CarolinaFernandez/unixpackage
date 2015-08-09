@@ -34,26 +34,26 @@ public class EditPackageFiles extends CommonStep {
 	// Action buttons
 	JButton editFileButton;
 	JButton removeFileButton;
-	
+
 	public EditPackageFiles() {
 		// Clear screen first
 		this.removeAll();
-		
+
 		// Initialisation
 		if (Variables._PACKAGE_CONTENT_FILES == null) {
 			Variables._PACKAGE_CONTENT_FILES = fillAndRetrieveFileListInitial();
 		}
-		gregsPanel = new TablePanel(Variables._PACKAGE_CONTENT_FILES, columnNames);
-		
+		gregsPanel = new TablePanel(Variables._PACKAGE_CONTENT_FILES,
+				columnNames);
+
 		// Populate the panel
-		JLabel splashLabel = new JLabel(
-				"Edit any package file");
+		JLabel splashLabel = new JLabel("Edit any package file");
 		String infoLabelContents = "";
 		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 			infoLabelContents = "Note: every edited file ending in '.ex' will be added to the bundle";
 		}
 		JLabel infoLabel = new JLabel(infoLabelContents);
-		
+
 		// Edit file
 		editFileButton = new JButton("Edit file");
 		editFileButton.addActionListener(new ActionListener() {
@@ -91,7 +91,7 @@ public class EditPackageFiles extends CommonStep {
 				// Re-enable focus after selection is processed
 				gregsPanel.getTable().setFocusable(true);
 			}
-			
+
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				// Redundant check
@@ -103,7 +103,7 @@ public class EditPackageFiles extends CommonStep {
 				gregsPanel.getTable().setFocusable(false);
 			}
 		});
-		
+
 		// Update contents of table when mouse enters the table
 		gregsPanel.getMainPanel().addMouseListener(new MouseAdapter() {
 			@Override
@@ -111,8 +111,9 @@ public class EditPackageFiles extends CommonStep {
 				updateTableContents();
 			}
 		});
-		
-		// Focus listener on the JTable to ensure that the files can be edited on double click
+
+		// Focus listener on the JTable to ensure that the files can be edited
+		// on double click
 		gregsPanel.getTable().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent evt) {
@@ -122,13 +123,13 @@ public class EditPackageFiles extends CommonStep {
 					updateTableContents();
 				}
 			}
-			
+
 			@Override
 			public void mouseEntered(MouseEvent evt) {
 				updateTableContents();
 			}
 		});
-		
+
 		this.add(gregsPanel.getMainPanel());
 
 		/* Layout */
@@ -143,31 +144,28 @@ public class EditPackageFiles extends CommonStep {
 				.createParallelGroup()
 				.addGroup(
 						layout.createParallelGroup(
-								GroupLayout.Alignment.LEADING).addComponent(
-								infoLabel
-						)
-				.addGroup(
-						layout.createSequentialGroup()
+								GroupLayout.Alignment.LEADING)
+								.addComponent(infoLabel)
 								.addGroup(
-										layout.createParallelGroup(
-												GroupLayout.Alignment.LEADING)
-										)
+										layout.createSequentialGroup()
+												.addGroup(
+														layout.createParallelGroup(GroupLayout.Alignment.LEADING))
+												.addGroup(
+														layout.createParallelGroup(
+																GroupLayout.Alignment.LEADING)
+																.addComponent(
+																		editFileButton))
+												.addGroup(
+														layout.createParallelGroup(
+																GroupLayout.Alignment.LEADING)
+																.addComponent(
+																		removeFileButton)))
 								.addGroup(
 										layout.createParallelGroup(
 												GroupLayout.Alignment.LEADING)
 												.addComponent(
-														editFileButton))
-								.addGroup(
-										layout.createParallelGroup(
-												GroupLayout.Alignment.LEADING)
-												.addComponent(
-														removeFileButton)))
-				.addGroup(
-						layout.createParallelGroup(
-								GroupLayout.Alignment.LEADING).addComponent(
-								gregsPanel.getMainPanel())
-						)
-				));
+														gregsPanel
+																.getMainPanel()))));
 		layout.setVerticalGroup(layout
 				.createSequentialGroup()
 				.addGroup(
@@ -177,69 +175,55 @@ public class EditPackageFiles extends CommonStep {
 								.addComponent(removeFileButton))
 				.addGroup(
 						layout.createParallelGroup(
-								GroupLayout.Alignment.BASELINE)
-								.addComponent(infoLabel))
+								GroupLayout.Alignment.BASELINE).addComponent(
+								infoLabel))
 				.addGroup(
 						layout.createParallelGroup(
 								GroupLayout.Alignment.LEADING).addComponent(
-								gregsPanel.getMainPanel())							
-				));
+								gregsPanel.getMainPanel())));
 	}
 
 	private ArrayList<ArrayList<String>> fillAndRetrieveFileListInitial() {
-		UnixLogger.LOGGER.debug("\n\n\n\n\n\n\n******FILL\nAND\nRETRIEVE\nLIST\nINITIAL");
 		ArrayList<ArrayList<String>> directoryContentsFinal = new ArrayList<ArrayList<String>>();
-		UnixLogger.LOGGER.debug("fillAndRetrieve 1");
 		ArrayList<String> directoryContents = showDirectoryContents();
-		UnixLogger.LOGGER.debug("fillAndRetrieve 2");
 		for (String directoryContent : directoryContents) {
-			UnixLogger.LOGGER.debug("fillAndRetrieve 3");
 			String directoryContentAbsolutePath = directoryContent;
-			UnixLogger.LOGGER.debug("... directoryContentAbsolutePath 1 = " + directoryContentAbsolutePath);
 			ArrayList<String> directoryFiles = new ArrayList<String>();
 			directoryFiles.add(directoryContent);
 			// First time: add files and their hashes to internal tracking list
-			directoryContentAbsolutePath = Files.getAbsolutePathPackageFile(directoryContent);
-			UnixLogger.LOGGER.debug("... directoryContentAbsolutePath 2 = " + directoryContentAbsolutePath);
-//			if (selectedFilesHash == null) {
-//				selectedFilesHash = new HashMap<String,String>();
-//			}
+			directoryContentAbsolutePath = Files
+					.getAbsolutePathPackageFile(directoryContent);
+			UnixLogger.LOGGER.debug("Listing directory contents: "
+					+ directoryContentAbsolutePath + "(hash: "
+					+ Files.getHash(directoryContentAbsolutePath) + ")");
 			if (Variables._PACKAGE_CONTENT_FILES_HASH == null) {
-				Variables._PACKAGE_CONTENT_FILES_HASH = new HashMap<String,String>();
+				Variables._PACKAGE_CONTENT_FILES_HASH = new HashMap<String, String>();
 			}
-			UnixLogger.LOGGER.debug("... START ...");
-			UnixLogger.LOGGER.debug("..... >>> getHash: " + Files.getHash(directoryContentAbsolutePath));
-			UnixLogger.LOGGER.debug("..... >>> content: " + directoryContent);
 			// Initialise structure with original hashes
-			Variables._PACKAGE_CONTENT_FILES_HASH.put(directoryContent, Files.getHash(directoryContentAbsolutePath));
+			Variables._PACKAGE_CONTENT_FILES_HASH.put(directoryContent,
+					Files.getHash(directoryContentAbsolutePath));
 
 			if (Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS == null) {
-				Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS = new HashMap<String,String>();
+				Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS = new HashMap<String, String>();
 			}
 			// Initialise structure with edition status
-			Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS.put(directoryContent, "");
-			
-			/*if (Variables._PACKAGE_CONTENT_FILES_HASH != null && Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH != null) {
-					/*} else {
-			}*/
-			directoryFiles.add(Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS.get(directoryContent));
+			Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS.put(
+					directoryContent, "");
+			directoryFiles.add(Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS
+					.get(directoryContent));
 			directoryContentsFinal.add(directoryFiles);
 		}
-		
+
 		// First time: copy structure with hashes
-		if (Variables._PACKAGE_CONTENT_FILES_HASH != null && 
-				Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH == null) {
-			// DEBUG
-			for (String filesHash_ : Variables._PACKAGE_CONTENT_FILES_HASH.keySet()) {
-				UnixLogger.LOGGER.debug(">>>> filesHash: " + filesHash_);
-			}
-			Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH = new HashMap<String,String>(Variables._PACKAGE_CONTENT_FILES_HASH);
+		if (Variables._PACKAGE_CONTENT_FILES_HASH != null
+				&& Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH == null) {
+			Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH = new HashMap<String, String>(
+					Variables._PACKAGE_CONTENT_FILES_HASH);
 		}
 		return directoryContentsFinal;
 	}
-	
+
 	private ArrayList<ArrayList<String>> fillAndRetrieveFileList() {
-		UnixLogger.LOGGER.debug("\n\n\n\n\n\n\n******FILL\nAND\nRETRIEVE\nLIST");
 		ArrayList<ArrayList<String>> directoryContentsFinal = new ArrayList<ArrayList<String>>();
 		ArrayList<String> directoryContents = showDirectoryContents();
 		for (String directoryContent : directoryContents) {
@@ -247,40 +231,46 @@ public class EditPackageFiles extends CommonStep {
 			ArrayList<String> directoryFiles = new ArrayList<String>();
 			directoryFiles.add(directoryContent);
 			// First time: add files and their hashes to internal tracking list
-			directoryContentAbsolutePath = Files.getAbsolutePathPackageFile(directoryContent);
-//			if (selectedFilesModifiedHash != null) {
+			directoryContentAbsolutePath = Files
+					.getAbsolutePathPackageFile(directoryContent);
 			if (Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH != null) {
-//				selectedFilesModifiedHash.put(directoryContent, Files.getHash(directoryContentAbsolutePath));
-				Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH.put(directoryContent, Files.getHash(directoryContentAbsolutePath));
-//				UnixLogger.LOGGER.debug("[M] " + directoryContent + "> " + selectedFilesModifiedHash.get(directoryContent));
-//				UnixLogger.LOGGER.debug("[M] " + directoryContent + "> " + Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH.get(directoryContent));
+				Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH.put(
+						directoryContent,
+						Files.getHash(directoryContentAbsolutePath));
 			}
-			
-			// Check modified file hash against initial file hash to determine if file was edited (*)
-			if (Variables._PACKAGE_CONTENT_FILES_HASH != null && Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH != null) {
-				String selectedFilesHashValue = Variables._PACKAGE_CONTENT_FILES_HASH.get(directoryContent);
-				String selectedFilesModifiedHashValue = Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH.get(directoryContent);
-				if (selectedFilesHashValue != null && selectedFilesModifiedHashValue != null) {
-					if (selectedFilesHashValue.equals(selectedFilesModifiedHashValue)) {
+			// Check modified file hash against initial file hash to determine
+			// if file was edited (*)
+			if (Variables._PACKAGE_CONTENT_FILES_HASH != null
+					&& Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH != null) {
+				String selectedFilesHashValue = Variables._PACKAGE_CONTENT_FILES_HASH
+						.get(directoryContent);
+				String selectedFilesModifiedHashValue = Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH
+						.get(directoryContent);
+				if (selectedFilesHashValue != null
+						&& selectedFilesModifiedHashValue != null) {
+					if (selectedFilesHashValue
+							.equals(selectedFilesModifiedHashValue)) {
 						// Initialise structure with edition status
-						Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS.put(directoryContent, "");
+						Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS.put(
+								directoryContent, "");
 					} else {
 						// Initialise structure with edition status
-						Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS.put(directoryContent, "*");
+						Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS.put(
+								directoryContent, "*");
 					}
-					directoryFiles.add(Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS.get(directoryContent));
+					directoryFiles
+							.add(Variables._PACKAGE_CONTENT_FILES_EDITION_STATUS
+									.get(directoryContent));
 				}
 			}
 			directoryContentsFinal.add(directoryFiles);
 		}
 		return directoryContentsFinal;
 	}
-	
+
 	// Add files under temporary folder into the list shown to the user
 	private ArrayList<String> showDirectoryContents(String directory) {
-		UnixLogger.LOGGER.debug("DEBUG > String directory (searching) = " + directory);
 		File dir = new File(directory);
-		UnixLogger.LOGGER.debug("DEBUG > File directory (searching) = " + dir.getAbsolutePath());
 		ArrayList<String> fileList = new ArrayList<String>();
 		try {
 			for (File file : dir.listFiles()) {
@@ -290,15 +280,15 @@ public class EditPackageFiles extends CommonStep {
 				}
 			}
 		} catch (Exception e) {
-			UnixLogger.LOGGER.error("E: Could not find UNIX package files. Exception: " + e);
+			UnixLogger.LOGGER
+					.error("Could not find UNIX package files. Exception: " + e);
 		}
-		UnixLogger.LOGGER.debug("DEBUG > fileList = " + fileList);
+		UnixLogger.LOGGER.debug("Listing directory contents: " + fileList);
 		return fileList;
 	}
 
 	private ArrayList<String> showDirectoryContents() {
 		File dir = new File(Files.getAbsolutePathPackageFile(""));
-		UnixLogger.LOGGER.debug("DEBUG > File dir = " + dir.getAbsolutePath());
 		return showDirectoryContents(dir.toString());
 	}
 
@@ -313,64 +303,70 @@ public class EditPackageFiles extends CommonStep {
 		}
 		return selectedValues;
 	}
-		
-	
+
 	public static void editFileInPosition(JTable table) {
 		Object[] selectedValues = EditPackageFiles.getSelectedRows(table);
 		for (Object value : selectedValues) {
 			commandList = new ArrayList<String>();
 			commandList.add(Constants.OPEN_COMMAND);
-			commandList.add(Files.getAbsolutePathPackageFile((String)value));
+			commandList.add(Files.getAbsolutePathPackageFile((String) value));
 			// Execute concurrently
 			Thread t1 = new Thread(new Runnable() {
-			     public void run() {
-			    	 try {
-			    		 // Much better than directly calling 'gedit'
-			    		 if (java.awt.Desktop.isDesktopSupported()) {
-			    			 java.awt.Desktop.getDesktop().open(new File(commandList.get(1)));
-			    		 } else {
-			    			 // If desktop is not available, perform a direct call
-			    			 Shell.execute(commandList);
-			    			 
-			    		 }
+				public void run() {
+					try {
+						// Much better than directly calling 'gedit'
+						if (java.awt.Desktop.isDesktopSupported()) {
+							java.awt.Desktop.getDesktop().open(
+									new File(commandList.get(1)));
+						} else {
+							// If desktop is not available, perform a direct
+							// call
+							Shell.execute(commandList);
+
+						}
 					} catch (IOException e) {
-						UnixLogger.LOGGER.error("Error: file '" + commandList.get(1) + "' could not be edited. Reason: " + e);
+						UnixLogger.LOGGER.trace("File '" + commandList.get(1)
+								+ "' could not be edited. Details: " + e);
 					}
-			     }
-			});  
+				}
+			});
 			t1.start();
 		}
 	}
-	
+
 	public void removeFileInPosition() {
 		int[] chosenRows = gregsPanel.getTable().getSelectedRows();
 		for (int row : chosenRows) {
-			String selectedValue = (String) gregsPanel.getTable().getValueAt(row, 0);
+			String selectedValue = (String) gregsPanel.getTable().getValueAt(
+					row, 0);
 			// Remove from structures
 			Variables._PACKAGE_CONTENT_FILES_HASH.remove(selectedValue);
-			Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH.remove(selectedValue);
+			Variables._PACKAGE_CONTENT_FILES_MODIFIED_HASH
+					.remove(selectedValue);
 			selectedValue = Files.getAbsolutePathPackageFile(selectedValue);
 			// Remove from disk
 			File selectedFile = new File((String) selectedValue);
-//			UnixLogger.LOGGER.debug("** selectedValue: " + selectedValue);
 			if (selectedFile.isFile()) {
 				selectedFile.delete();
 			}
 		}
 	}
-	
+
 	private void updateTableContents() {
 		// Fill file list with contents of directory
 		if (gregsPanel != null) {
-			UnixLogger.LOGGER.debug("\n\nUPDATING TABLE CONTENTS");
+			UnixLogger.LOGGER
+					.debug("Updating retrieved contents for directory");
 			Variables._PACKAGE_CONTENT_FILES = fillAndRetrieveFileList();
 			// Back up selected row to reselect after table is updated
 			int selectedRow = gregsPanel.getTable().getSelectedRow();
 			gregsPanel.fireTableDataChanged();
-			gregsPanel.setTableModelDataVector(Variables._PACKAGE_CONTENT_FILES, columnNames);
-			UnixLogger.LOGGER.debug("..... selected row: " + selectedRow);
-			if (selectedRow >= 0 && selectedRow <= gregsPanel.getTable().getRowCount()) {
-				gregsPanel.getTable().setRowSelectionInterval(selectedRow, selectedRow);
+			gregsPanel.setTableModelDataVector(
+					Variables._PACKAGE_CONTENT_FILES, columnNames);
+			if (selectedRow >= 0
+					&& selectedRow <= gregsPanel.getTable().getRowCount()) {
+				gregsPanel.getTable().setRowSelectionInterval(selectedRow,
+						selectedRow);
 			}
 		}
 	}

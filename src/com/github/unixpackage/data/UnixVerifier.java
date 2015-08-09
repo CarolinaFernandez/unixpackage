@@ -15,60 +15,63 @@ import javax.swing.JTextField;
 import com.github.unixpackage.components.CommonStep;
 
 public class UnixVerifier extends InputVerifier {
-	
+
 	private JLabel findLabelForComponent(Component component) {
 		JLabel foundLabel = null;
 		for (Component parentComponent : component.getParent().getComponents()) {
 			if (parentComponent instanceof JLabel) {
-				Component componentWithLabel = ((JLabel) parentComponent).getLabelFor();
-				if (componentWithLabel != null && componentWithLabel.equals(component)) {
+				Component componentWithLabel = ((JLabel) parentComponent)
+						.getLabelFor();
+				if (componentWithLabel != null
+						&& componentWithLabel.equals(component)) {
 					foundLabel = (JLabel) parentComponent;
 				}
 			}
 		}
 		return foundLabel;
 	}
-	
+
 	private static String indicateErrorCondition(String variableName) {
 		return getFieldErrorExplanation(variableName);
 	}
-	
+
 	private void indicateErrorConditionGUI(Component component) {
 		JLabel foundLabel = this.findLabelForComponent(component);
 		if (foundLabel != null) {
 			foundLabel.setForeground(Color.RED);
 		}
 	}
-	
+
 	private void indicateNormalConditionGUI(Component component) {
 		JLabel foundLabel = this.findLabelForComponent(component);
 		if (foundLabel != null) {
 			foundLabel.setForeground(Color.BLACK);
 		}
 	}
-	
+
 	/**
 	 * Verify a single variable, depending on its name
 	 */
 	public static boolean verify(String variableName, String variableData) {
 		Boolean variableContentVerified = true;
-		UnixLogger.LOGGER.info("033[0;32m&&&& VERIFIER (" + variableName + ":" + variableData + ")\033[0m");
-		Pattern variableVerifier = Constants.VARIABLES_REGEXPS.get(variableName);
+		Pattern variableVerifier = Constants.VARIABLES_REGEXPS
+				.get(variableName);
 		// Only try to verify when the pattern is available
 		if (variableVerifier != null) {
-			UnixLogger.LOGGER.info("&&&& VERIFIER Pattern (var=" + variableName + "): " + variableVerifier);
 			if (!variableVerifier.matcher(variableData).matches()) {
 				variableContentVerified = false;
 			}
 		}
-		// TODO Leave this print
-		if (!variableContentVerified && !Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
-			UnixLogger.LOGGER.error("Error: " + UnixVerifier.indicateErrorCondition(variableName));
+		UnixLogger.LOGGER.debug("Verifying variable " + variableName + " == "
+				+ variableData + ". Result := " + variableContentVerified);
+		if (!variableContentVerified && !Variables.isNull("BATCH_MODE")
+				&& Variables.BATCH_MODE) {
+			UnixLogger.LOGGER.error("Error: "
+					+ UnixVerifier.indicateErrorCondition(variableName));
 		}
-		UnixLogger.LOGGER.info("&&&& VERIFIER Result: " + variableContentVerified);
 		return variableContentVerified;
 	}
-	
+
 	@Override
 	/**
 	 * Verify a single component
@@ -92,7 +95,6 @@ public class UnixVerifier extends InputVerifier {
 			}
 			this.indicateNormalConditionGUI(input);
 		} catch (Exception e) {
-			UnixLogger.LOGGER.debug("BATCH MODE????? " + Variables.get("BATCH_MODE"));
 			this.indicateErrorConditionGUI(input);
 			return false;
 		}
@@ -102,20 +104,24 @@ public class UnixVerifier extends InputVerifier {
 
 	/**
 	 * Verify all the components in a step
+	 * 
 	 * @param step
 	 * @return
 	 */
 	public boolean verify(CommonStep step) {
 		return true;
 	}
-	
+
 	@Override
 	public boolean shouldYieldFocus(JComponent input) {
 		boolean valid = verify(input);
 		if (!valid) {
-			String inputFormatExplanation = getFieldErrorExplanation(input.getName());
+			String inputFormatExplanation = getFieldErrorExplanation(input
+					.getName());
 			// Adapt to comply to the size of the message dialog
-			inputFormatExplanation = inputFormatExplanation.replaceAll("(.{" + Constants.VALIDATION_FORMAT_EXPLANATION_MAX_LENGTH + "})", "$1\n");
+			inputFormatExplanation = inputFormatExplanation.replaceAll(
+					"(.{" + Constants.VALIDATION_FORMAT_EXPLANATION_MAX_LENGTH
+							+ "})", "$1\n");
 			JOptionPane.showMessageDialog(null, inputFormatExplanation);
 		}
 
@@ -123,14 +129,16 @@ public class UnixVerifier extends InputVerifier {
 	}
 
 	/**
-	 *  Get explanation of the error for a given variable.
+	 * Get explanation of the error for a given variable.
 	 */
 	private static String getFieldErrorExplanation(String variableName) {
-		String inputCanonicalName = Constants.FIELDS_CANONICAL_NAME.get(variableName);
+		String inputCanonicalName = Constants.FIELDS_CANONICAL_NAME
+				.get(variableName);
 		if (inputCanonicalName == null) {
 			inputCanonicalName = variableName;
 		}
-		String inputFormatExplanation = Constants.FIELDS_FORMAT_EXPLANATION.get(variableName);
+		String inputFormatExplanation = Constants.FIELDS_FORMAT_EXPLANATION
+				.get(variableName);
 		if (inputFormatExplanation == null) {
 			inputFormatExplanation = "";
 		} else {
@@ -138,7 +146,8 @@ public class UnixVerifier extends InputVerifier {
 			inputFormatExplanation = ": " + inputFormatExplanation;
 		}
 		// Parse output to fit on the message dialog
-		inputFormatExplanation = inputCanonicalName + " is invalid" + inputFormatExplanation;
+		inputFormatExplanation = inputCanonicalName + " is invalid"
+				+ inputFormatExplanation;
 		return inputFormatExplanation;
 	}
 }

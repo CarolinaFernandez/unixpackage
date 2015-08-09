@@ -41,10 +41,10 @@ public class Variables {
 	public static String BUNDLE_MODE_ADVANCED_PATH;
 	// Package files to be edited
 	public static ArrayList<ArrayList<String>> _PACKAGE_CONTENT_FILES;
-	public static HashMap<String,String> _PACKAGE_CONTENT_FILES_HASH;
-	public static HashMap<String,String> _PACKAGE_CONTENT_FILES_MODIFIED_HASH;
-	public static HashMap<String,String> _PACKAGE_CONTENT_FILES_EDITION_STATUS;
-	
+	public static HashMap<String, String> _PACKAGE_CONTENT_FILES_HASH;
+	public static HashMap<String, String> _PACKAGE_CONTENT_FILES_MODIFIED_HASH;
+	public static HashMap<String, String> _PACKAGE_CONTENT_FILES_EDITION_STATUS;
+
 	public static Object get(String key) {
 		Object value = null;
 		try {
@@ -83,16 +83,17 @@ public class Variables {
 					if (value.indexOf("],") >= 0) {
 						for (String splittedValue : value.split("],")) {
 							// Then clean and add to array
-							splittedValue = splittedValue.replace("[", "").replace(
-									"]", "");
-							String[] splittedValuePair = splittedValue.split(",");
+							splittedValue = splittedValue.replace("[", "")
+									.replace("]", "");
+							String[] splittedValuePair = splittedValue
+									.split(",");
 							pairValue = new ArrayList<String>();
 							pairValue.add(splittedValuePair[0].trim());
 							pairValue.add(splittedValuePair[1].trim());
 							valueModified.add(pairValue);
 						}
 					} else {
-						value = value.substring(1, value.length()-1);
+						value = value.substring(1, value.length() - 1);
 						value = value.replace("[", "").replace("]", "");
 						String[] splittedValuePair = value.split(",");
 						pairValue = new ArrayList<String>();

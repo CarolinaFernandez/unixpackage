@@ -25,7 +25,7 @@ public class Locations {
 				pathDir = new File("file:" + path);
 			}
 		}
-		
+
 		checkedPath = pathDir.toString() + "/";
 		return checkedPath;
 	}

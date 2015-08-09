@@ -18,7 +18,7 @@ public class MainApp {
 	public static void main(String[] args) {
 		// Process arguments
 		boolean argumentsCorrectlyParsed = Arguments.parseInputArguments(args);
-		
+
 		// When in batch mode, exit with error if some argument
 		// was not correctly parsed
 		if (!Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
@@ -28,11 +28,9 @@ public class MainApp {
 			}
 			// Preconditions
 			Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
-			// Generate files before preparing packages
-//			Shell.generateTempFiles();
 			Files.copyScriptSourcesIntoTempFolder();
-			// XXX Ensure this works
-			if (!Variables.isNull("PACKAGE_TYPE") || Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			if (!Variables.isNull("PACKAGE_TYPE")
+					|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 				GeneratePackage.generateDebianPackage();
 			}
 			// Save input data to disk once data has been validated
@@ -45,8 +43,8 @@ public class MainApp {
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					// 1st step
-					new CommonFrame((JPanel) StepLoader.getStepInstance(StepLoader
-							.getStepAt(1)));
+					new CommonFrame((JPanel) StepLoader
+							.getStepInstance(StepLoader.getStepAt(1)));
 				}
 			});
 		}

@@ -512,10 +512,11 @@ function perform_rpmbuild()
 
   cd $path_to_package
 
+  breakline 1
   # Perform rpmbuild
   if [[ $sign_package == true ]]; then
     echo_v "> Performing (signed) rpmbuild..."
-    # XXX Problematic
+    # Problematic
     #$run_with_su -c "rpmbuild $rpmbuild_params --sign $path_to_package_spec" || error "Could not rpmbuild (signed) on $path_to_package"
   else
     echo_v "> Performing (unsigned) rpmbuild..."
@@ -523,10 +524,12 @@ function perform_rpmbuild()
   fi
   $run_with_su -c "rpmbuild $rpmbuild_params $path_to_package_spec" || error "Could not rpmbuild (unsigned) on $path_to_package"
 
-  generated_rpm_file_location=$(find $path_to_package/RPMS/$package_class -name "*.rpm" | head -1)
+  # XXX ORIGINAL - TODO: PLACE BACK THIS ONE
+  #generated_rpm_file_location=$(find $path_to_package/*RPMS -name "*$package_class.rpm" | head -1)
+  generated_rpm_file_location=$(find $path_to_package/*RPMS -name "*$package_name*" | grep ".rpm$" | head -1)
   generated_rpm_file_name=$(basename $generated_rpm_file_location)
 
-  # Sign
+  # Sign (working - yet still problematic when it comes to sending the passphrase)
   if [[ $sign_package == true ]]; then
     # Set proper directives in ~/.rpmmacros
     gpg_key_macro="%%_signature  gpg\n"
@@ -537,7 +540,7 @@ function perform_rpmbuild()
     # Change permissions of tmp folder
     chown $unixpackage_user:$unixpackage_user -R /home/${unixpackage_user}/.rpmmacros
     # Send proper commands to sign the package in batch mode
-    $run_with_su -c "expect $path_to_package/../rpm_sign.sh $generated_rpm_file_location \"\""
+    $run_with_su -c "expect $path_to_package/../rpm_sign.sh -d $generated_rpm_file_location \"\""
   fi
 }
 
@@ -562,7 +565,6 @@ generate_structure
 
 cd $path_to_package
 
-breakline 2
 # Move to proper location for rpmbuild
 place_user_files_in_package
 
@@ -582,7 +584,6 @@ if [[ $no_build == true || $build == false ]]; then
   mkdir -p $path_to_package
   generate_spec
 
-  breakline 1
   if [[ $interactive == true ]]; then 
     echo_v "*NOTE* If you want to SIGN this package please see that the name and e-mail you use are already part of one of your GPG signatures. If this were not the case you will have the chance to generate it later."
   fi
@@ -598,14 +599,14 @@ breakline 1
 echo_v "> Installing dependencies..."
 install_dependencies
 
-breakline 2
+breakline 1
 echo_v "> Checking keys for package signing..."
 if [[ $interactive == true ]]; then
   read -p "> Do you want to sign the package? (y/n) [y]: " sign_package
   case $sign_package in
   [Yy]* ) gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
     if [[ -z $gpg_key_exists ]]; then
-      breakline 2
+      breakline 1
         while [[ ! $create_gpg_key ]]; do
           read -p "> Do you want to create a GPG key to sign the package? (y/n) [y]: " create_gpg_key
           case $create_gpg_key in
@@ -626,8 +627,9 @@ else
     test -f /etc/init.d/rng-tools && sudo /etc/init.d/rng-tools start
     gpg_key_exists=$(/usr/bin/gpg --list-keys | grep "$name" | grep "$email")
     # Look for key. If it does not exist, create
+    # No passphrase in use for automation. This should not be done at all!
     if [[ -z $gpg_key_exists ]]; then
-      breakline 2
+      breakline 1
       echo_v ">> Generating key for $name <$email>..."
       gpg --batch --gen-key <<EOF
       Key-Type: DSA

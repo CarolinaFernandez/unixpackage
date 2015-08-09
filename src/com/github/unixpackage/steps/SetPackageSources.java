@@ -41,7 +41,7 @@ public class SetPackageSources extends CommonStep {
 		// Populate the panel
 		JLabel splashWarningLabel = new JLabel(
 				"IMPORTANT! Add *ALL* sources at once, before proceeding to the next step");
-	
+
 		// Another initialization
 		sourceInstallPair = null;// new ArrayList<String>(2);
 
@@ -59,7 +59,8 @@ public class SetPackageSources extends CommonStep {
 						sourceInstallPair.add(sourcePath);
 					} catch (Exception ex) {
 					}
-					if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+					if (Variables.PACKAGE_TYPE
+							.equals(Constants.BUNDLE_TYPE_RPM)) {
 						sourceInstallPair.add(sourcePath);
 						updateSourceInstallPairsList();
 						removePathTupleFromList.setEnabled(true);
@@ -152,64 +153,50 @@ public class SetPackageSources extends CommonStep {
 
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
-		
+
 		layout.setHorizontalGroup(layout
 				.createParallelGroup()
-				.addGroup(layout.createSequentialGroup()
-								.addGroup(
-										layout.createParallelGroup(
-												GroupLayout.Alignment.LEADING)
-												.addComponent(splashWarningLabel)
-								)
-				)
+				.addGroup(
+						layout.createSequentialGroup().addGroup(
+								layout.createParallelGroup(
+										GroupLayout.Alignment.LEADING)
+										.addComponent(splashWarningLabel)))
 				.addGroup(
 						layout.createSequentialGroup()
 								.addGroup(
 										layout.createParallelGroup(
 												GroupLayout.Alignment.LEADING)
-												.addComponent(addSourcePath)
-								)
+												.addComponent(addSourcePath))
 								.addGroup(
 										layout.createParallelGroup(
 												GroupLayout.Alignment.LEADING)
 												.addComponent(
-														addInstallationPath)
-								)
+														addInstallationPath))
 								.addGroup(
 										layout.createParallelGroup(
 												GroupLayout.Alignment.LEADING)
 												.addComponent(
-														removePathTupleFromList)
-								)
-				)
+														removePathTupleFromList)))
 				.addGroup(
 						layout.createParallelGroup(
 								GroupLayout.Alignment.LEADING).addComponent(
-									gregsPanel.getMainPanel()
-								)
-				)
-		);
+								gregsPanel.getMainPanel())));
 		layout.setVerticalGroup(layout
 				.createSequentialGroup()
 				.addGroup(
 						layout.createParallelGroup(
-								GroupLayout.Alignment.BASELINE)
-								.addComponent(splashWarningLabel)
-				)
+								GroupLayout.Alignment.BASELINE).addComponent(
+								splashWarningLabel))
 				.addGroup(
 						layout.createParallelGroup(
 								GroupLayout.Alignment.BASELINE)
 								.addComponent(addSourcePath)
 								.addComponent(addInstallationPath)
-								.addComponent(removePathTupleFromList)
-				)
+								.addComponent(removePathTupleFromList))
 				.addGroup(
 						layout.createParallelGroup(
 								GroupLayout.Alignment.LEADING).addComponent(
-										gregsPanel.getMainPanel()
-								)
-				)
-		);
+								gregsPanel.getMainPanel())));
 	}
 
 	public static <T extends JComponent> T findParent(JComponent comp,
@@ -251,7 +238,8 @@ public class SetPackageSources extends CommonStep {
 			}
 			sourceInstallPair = new ArrayList<String>(2);
 		} catch (Exception e) {
-			UnixLogger.LOGGER.error("Could not find source/install pairs...? More info: "
+			UnixLogger.LOGGER
+					.error("Could not find source/install pairs...? More info: "
 							+ e);
 		}
 	}

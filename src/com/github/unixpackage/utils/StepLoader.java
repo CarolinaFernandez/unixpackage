@@ -59,14 +59,15 @@ public class StepLoader {
 		 */
 		if (StepLoader.currentStep < Constants.STEPS_METHODS.size()) {
 			switch (StepLoader.currentStep) {
-			// Advanced mode (either when signing the package or not) skips to step #7
+			// Advanced mode (either when signing the package or not) skips to
+			// step #7
 			case 4:
-					if (!Variables.isNull("BUNDLE_MODE")
-							&& Variables.get("BUNDLE_MODE").equals(
-									Constants.BUNDLE_MODE_ADVANCED)) {
-						return getStep((Constants.STEPS_METHODS.get(7)));
-					}
-					break;
+				if (!Variables.isNull("BUNDLE_MODE")
+						&& Variables.get("BUNDLE_MODE").equals(
+								Constants.BUNDLE_MODE_ADVANCED)) {
+					return getStep((Constants.STEPS_METHODS.get(7)));
+				}
+				break;
 			case 5:
 				if (!Variables.isNull("BUNDLE_MODE")
 						&& Variables.get("BUNDLE_MODE").equals(
@@ -169,29 +170,38 @@ public class StepLoader {
 			// In case of failure, revert program to original state and exit
 			if (!result) {
 				try {
-					UnixLogger.LOGGER.debug("Cleaning temporal folder because of some previous error...");
+					UnixLogger.LOGGER
+							.debug("Cleaning temporal folder because of some previous error...");
 					Shell.postProcess();
 				} catch (Exception e) {
-					UnixLogger.LOGGER.fatal("Program exiting due to failure. Exception: "
+					UnixLogger.LOGGER
+							.fatal("Program exiting due to failure. Exception: "
 									+ e);
 					System.exit(0);
 				}
 			}
-		// SetPackageInfo
+			// SetPackageInfo
 		} else if (stepNumber == 3) {
 			// Hack: change validators for later steps
-			if (Variables.isNull("PACKAGE_TYPE") || Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			if (Variables.isNull("PACKAGE_TYPE")
+					|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 				// DEB
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_SECTION", Constants.RE_PACKAGE_SECTION_DEB);
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_CLASS", Constants.RE_PACKAGE_CLASS_DEB);
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_LICENCE", Constants.RE_PACKAGE_LICENCE_DEB);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_SECTION",
+						Constants.RE_PACKAGE_SECTION_DEB);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_CLASS",
+						Constants.RE_PACKAGE_CLASS_DEB);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_LICENCE",
+						Constants.RE_PACKAGE_LICENCE_DEB);
 			} else {
 				// RPM
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_SECTION", Constants.RE_PACKAGE_GROUP_RPM);
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_CLASS", Constants.RE_PACKAGE_CLASS_RPM);
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_LICENCE", Constants.RE_PACKAGE_LICENCE_RPM);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_SECTION",
+						Constants.RE_PACKAGE_GROUP_RPM);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_CLASS",
+						Constants.RE_PACKAGE_CLASS_RPM);
+				Constants.VARIABLES_REGEXPS.put("PACKAGE_LICENCE",
+						Constants.RE_PACKAGE_LICENCE_RPM);
 			}
-		// EditPackageFiles step
+			// EditPackageFiles step
 		} else if (stepNumber == 5) {
 			if (!Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
 				if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {

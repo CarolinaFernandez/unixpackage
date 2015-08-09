@@ -37,17 +37,23 @@ public class UnixPreferences {
 		if (!Variables.isNull(key)) {
 			// Extra checks for variables depending on each other
 			if (key.equals("BUNDLE_MODE_ADVANCED_PATH")) {
-				if (!Variables.isNull("BUNDLE_MODE") && Variables.get("BUNDLE_MODE").equals(
-						Constants.BUNDLE_MODE_ADVANCED)) {
+				if (!Variables.isNull("BUNDLE_MODE")
+						&& Variables.get("BUNDLE_MODE").equals(
+								Constants.BUNDLE_MODE_ADVANCED)) {
 					props.setProperty(key, value.toString());
 				}
 			} else if (key.equals("PACKAGE_SOURCE_INSTALL_PAIRS")) {
 				StringBuilder packageSourceInstallPairs = new StringBuilder();
-				for (int i = 0; i < Variables.PACKAGE_SOURCE_INSTALL_PAIRS.size(); i++) {
-					ArrayList<String> sourceInstallPair = Variables.PACKAGE_SOURCE_INSTALL_PAIRS.get(i);
+				for (int i = 0; i < Variables.PACKAGE_SOURCE_INSTALL_PAIRS
+						.size(); i++) {
+					ArrayList<String> sourceInstallPair = Variables.PACKAGE_SOURCE_INSTALL_PAIRS
+							.get(i);
 					if (sourceInstallPair.size() == 2) {
-						packageSourceInstallPairs.append(sourceInstallPair.get(0) + Constants.FOLDER_IFS + sourceInstallPair.get(1) + Constants.FOLDER_IFS + Constants.FOLDER_IFS);
-//						packageSourceInstallPairs.append(sourceInstallPair.get(0) + ":" + sourceInstallPair.get(1) + ";");
+						packageSourceInstallPairs.append(sourceInstallPair
+								.get(0)
+								+ Constants.FOLDER_IFS
+								+ sourceInstallPair.get(1)
+								+ Constants.FOLDER_IFS + Constants.FOLDER_IFS);
 					}
 				}
 				props.setProperty(key, packageSourceInstallPairs.toString());
@@ -67,24 +73,36 @@ public class UnixPreferences {
 			for (Entry<Object, Object> property : props.entrySet()) {
 				String fieldName = property.getKey().toString();
 				String fieldValue = property.getValue().toString();
-				UnixLogger.LOGGER.debug("read [" + fieldName + "] -> " + fieldValue);
+				UnixLogger.LOGGER.debug("Parsing variable " + fieldName
+						+ " := " + fieldValue);
 				if (Variables.isNull(fieldName) && (fieldValue != null)) {
-					// Check syntax and parse appropriately for the "source:install" pairs
+					// Check syntax and parse appropriately for the
+					// "source:install" pairs
 					//
-					// Separation between <source> and <install> within a pair = "\0"
+					// Separation between <source> and <install> within a pair =
+					// "\0"
 					// Separation between pairs of <source>:<install> = "\0\0"
-					if (fieldName.equals("PACKAGE_SOURCE_INSTALL_PAIRS") && !fieldValue.isEmpty()) {
+					if (fieldName.equals("PACKAGE_SOURCE_INSTALL_PAIRS")
+							&& !fieldValue.isEmpty()) {
 						Variables.PACKAGE_SOURCE_INSTALL_PAIRS = new ArrayList<ArrayList<String>>();
-						ArrayList<String> packageSourceInstallPairsFile = new ArrayList<String>(Arrays.asList(fieldValue.split("\\" + Constants.FOLDER_IFS + "\\" + Constants.FOLDER_IFS)));
+						ArrayList<String> packageSourceInstallPairsFile = new ArrayList<String>(
+								Arrays.asList(fieldValue.split("\\"
+										+ Constants.FOLDER_IFS + "\\"
+										+ Constants.FOLDER_IFS)));
 						for (String packageSourceInstallPair : packageSourceInstallPairsFile) {
 							if (!packageSourceInstallPair.isEmpty()) {
-								ArrayList<String> packageSourceInstallPairFile = new ArrayList<String>(Arrays.asList(packageSourceInstallPair.split("\\" + Constants.FOLDER_IFS)));
-								Variables.PACKAGE_SOURCE_INSTALL_PAIRS.add(packageSourceInstallPairFile);
+								ArrayList<String> packageSourceInstallPairFile = new ArrayList<String>(
+										Arrays.asList(packageSourceInstallPair
+												.split("\\"
+														+ Constants.FOLDER_IFS)));
+								Variables.PACKAGE_SOURCE_INSTALL_PAIRS
+										.add(packageSourceInstallPairFile);
 							}
 						}
 					} else {
 						// Remove external brackets
-						fieldValue = fieldValue.replace("[", "").replace("]", "");
+						fieldValue = fieldValue.replace("[", "").replace("]",
+								"");
 						Variables.set(fieldName, fieldValue);
 					}
 				}
@@ -104,7 +122,8 @@ public class UnixPreferences {
 			}
 			File properties = new File(Constants.APP_PREFERENCES_FILE_PATH);
 			OutputStream out = new FileOutputStream(properties);
-			props.store(out, " UNIX package information\n# File generated automatically. Do NOT change.\n");
+			props.store(out,
+					" UNIX package information\n# File generated automatically. Do NOT change.\n");
 		} catch (Exception e) {
 			// Nothing happens if the file is not saved
 		}

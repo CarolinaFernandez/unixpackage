@@ -10,45 +10,54 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import com.github.unixpackage.data.Constants;
+import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.Variables;
 
 public class GenerateSourcesListener implements ActionListener {
 
-    private JScrollPane textareaScrollPane;
-    private JTextArea textArea;
-    private JLabel textAreaLabel;
+	private JScrollPane textareaScrollPane;
+	private JTextArea textArea;
+	private JLabel textAreaLabel;
 
-    public GenerateSourcesListener(JScrollPane textareaScrollPane, JTextArea textArea, JLabel textAreaLabel) {
-        this.textareaScrollPane = textareaScrollPane;
-        this.textArea = textArea;
-        this.textAreaLabel = textAreaLabel;
-    }
+	public GenerateSourcesListener(JScrollPane textareaScrollPane,
+			JTextArea textArea, JLabel textAreaLabel) {
+		this.textareaScrollPane = textareaScrollPane;
+		this.textArea = textArea;
+		this.textAreaLabel = textAreaLabel;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// Send full name of the calling class
-		String runPackageName = ((JButton) e.getSource()).getParent().getClass().getPackage().getName();
+		// Obtain full name of the calling class
+		String runPackageName = ((JButton) e.getSource()).getParent()
+				.getClass().getPackage().getName();
+		// Determine whether DEB or RPM package is to be generated
 		String generateMethod = "generateDebianPackage";
 		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 			generateMethod = "generateRedHatPackage";
 		}
-        Thread thread = new UnixThread(runPackageName + ".GeneratePackage", generateMethod);
-        thread.start();
+		UnixLogger.LOGGER.info("Process started. " + Variables.PACKAGE_TYPE
+				+ " package being generated");
+		Thread thread = new UnixThread(runPackageName + ".GeneratePackage",
+				generateMethod);
+		thread.start();
 		// Block "Generate" button after packet is processed
 		((JButton) e.getSource()).setEnabled(false);
-		
+
 		this.textareaScrollPane.setVisible(true);
 		this.textArea.setVisible(true);
 		this.textAreaLabel.setVisible(true);
-        
-        // Now create a new TextAreaOutputStream to write to our JTextArea control and wrap a
-        // PrintStream around it to support the println/printf methods.
-        PrintStream out = new PrintStream( new TextAreaOutputStream( textArea ) );
 
-        // Redirect standard output stream to the TextAreaOutputStream
-        System.setOut( out );
+		// Now create a new TextAreaOutputStream to write to our JTextArea
+		// control and wrap a
+		// PrintStream around it to support the println/printf methods.
+		PrintStream out = new PrintStream(new TextAreaOutputStream(textArea));
 
-        // Redirect standard error stream to the TextAreaOutputStream
-//        System.setErr( out );
+		// Redirect standard output stream to the TextAreaOutputStream (and log
+		// :/)
+		System.setOut(out);
+
+		// Redirect standard error stream to the TextAreaOutputStream
+		// System.setErr(out);
 	}
 }

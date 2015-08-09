@@ -106,7 +106,7 @@ public class CommonStep extends CommonPanel {
 		// Execute when button is pressed. Override per step
 		this.saveDataIntoVariables();
 		this.computeLinkedSteps();
-		
+
 		// Depending on the type of event, identify previous/next steps
 		Class<CommonStep> step;
 		if (e.getActionCommand() == "Previous") {
@@ -116,7 +116,7 @@ public class CommonStep extends CommonPanel {
 		}
 		// Calls to the navigation panel method with the given step
 		this.addNavigationPanel(step);
-		
+
 		// Bind input verifiers to text fields
 		// so it validates on each change of step
 		Listeners.bindInputFields(this);
@@ -200,7 +200,8 @@ public class CommonStep extends CommonPanel {
 				}
 			}
 		} catch (Exception e) {
-			UnixLogger.LOGGER.error("Exception saving data into variables: " + e);
+			UnixLogger.LOGGER.error("Exception saving data into variables: "
+					+ e);
 		}
 	}
 
@@ -209,7 +210,12 @@ public class CommonStep extends CommonPanel {
 		boolean radioSelected = radioPackages.isSelected();
 		if (radioSelected) {
 			// Custom processing... Not really nice
-			Variables.set("PACKAGE_TYPE", component.getName().split("_")[1]); // Retrieve relevant info from, e.g. _DEB_PACKAGE
+			Variables.set("PACKAGE_TYPE", component.getName().split("_")[1]); // Retrieve
+																				// relevant
+																				// info
+																				// from,
+																				// e.g.
+																				// _DEB_PACKAGE
 		}
 	}
 

@@ -42,7 +42,8 @@ public class ReviewPackageInfo extends CommonStep {
 		// Author info
 		l = new JLabel("Maintainer: ", JLabel.TRAILING);
 		this.add(l);
-		String maintainerData = Variables.MAINTAINER_NAME + " (" + Variables.MAINTAINER_EMAIL + ")";
+		String maintainerData = Variables.MAINTAINER_NAME + " ("
+				+ Variables.MAINTAINER_EMAIL + ")";
 		l = new JLabel(maintainerData);
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		l.setToolTipText(maintainerData);
@@ -84,10 +85,15 @@ public class ReviewPackageInfo extends CommonStep {
 		numRows++;
 
 		String classLabel = "Class";
-		String classLabelContents = Variables.PACKAGE_CLASS + " (" + Constants.PACKAGE_CLASSES_DEB.get(Variables.PACKAGE_CLASS) + ")";
+		String classLabelContents = Variables.PACKAGE_CLASS + " ("
+				+ Constants.PACKAGE_CLASSES_DEB.get(Variables.PACKAGE_CLASS)
+				+ ")";
 		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 			classLabel = "Architecture";
-			classLabelContents = Variables.PACKAGE_CLASS + " (" + Constants.PACKAGE_CLASSES_RPM.get(Variables.PACKAGE_CLASS) + ")";
+			classLabelContents = Variables.PACKAGE_CLASS
+					+ " ("
+					+ Constants.PACKAGE_CLASSES_RPM
+							.get(Variables.PACKAGE_CLASS) + ")";
 		}
 		l = new JLabel(classLabel + ": ", JLabel.TRAILING);
 		this.add(l);
@@ -95,9 +101,10 @@ public class ReviewPackageInfo extends CommonStep {
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		this.add(l);
 		numRows++;
-		
+
 		String sectionLabel = "Section, Priority";
-		String sectionLabelContents = Variables.PACKAGE_SECTION + ", " + Variables.PACKAGE_PRIORITY;
+		String sectionLabelContents = Variables.PACKAGE_SECTION + ", "
+				+ Variables.PACKAGE_PRIORITY;
 		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 			sectionLabel = "Group";
 			sectionLabelContents = Variables.PACKAGE_SECTION;
@@ -108,7 +115,7 @@ public class ReviewPackageInfo extends CommonStep {
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
 		this.add(l);
 		numRows++;
-		
+
 		// Path of source files only present in advanced mode
 		if (!Variables.isNull("BUNDLE_MODE")
 				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {

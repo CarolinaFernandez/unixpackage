@@ -23,7 +23,7 @@ public class SetPackageInfo extends CommonStep {
 			"Up to 60 characters", "Detailed description", "URL of the website" };
 	protected String[] variables = { "PACKAGE_NAME",
 			"PACKAGE_SHORT_DESCRIPTION", "PACKAGE_DESCRIPTION",
-	"PACKAGE_WEBSITE" };
+			"PACKAGE_WEBSITE" };
 
 	public SetPackageInfo() {
 		int numPairs = labels.length;
@@ -66,18 +66,17 @@ public class SetPackageInfo extends CommonStep {
 		packageVersionLabel.setLabelFor(packageVersionField);
 		// Set name of variable where the field should be saved in
 		packageVersionField.setName("PACKAGE_VERSION");
-		packageVersionField
-		.setToolTipText(versionToolTip);
+		packageVersionField.setToolTipText(versionToolTip);
 		packageVersionField.setPreferredSize(Constants.TEXTFIELD_DIMENSION);
-		packageVersionField.setColumns(Constants.TEXTFIELD_COLUMNS_MAX);		
+		packageVersionField.setColumns(Constants.TEXTFIELD_COLUMNS_MAX);
 		this.add(packageVersionField);
-		
+
 		// Licence
 		Map<String, String> packageLicences = Constants.PACKAGE_LICENCES_DEB;
 		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 			packageLicences = Constants.PACKAGE_LICENCES_RPM;
 		}
-		
+
 		JLabel licenceLabel = new JLabel("Licence:", JLabel.TRAILING);
 		DefaultComboBoxModel licencesList = new DefaultComboBoxModel();
 		for (String licence : packageLicences.keySet()) {
@@ -112,8 +111,7 @@ public class SetPackageInfo extends CommonStep {
 		}
 		JComboBox classesListBox = new JComboBox(classesList);
 		classLabel.setLabelFor(classesListBox);
-		classesListBox
-		.setToolTipText(classToolTip);
+		classesListBox.setToolTipText(classToolTip);
 		// Set name of variable where the field should be saved in
 		classesListBox.setName("PACKAGE_CLASS");
 		// TODO Fill in CommonStep
@@ -150,7 +148,7 @@ public class SetPackageInfo extends CommonStep {
 		}
 		this.add(sectionLabel);
 		this.add(sectionsListBox);
-		
+
 		// Priority
 		JLabel priorityLabel = new JLabel("Priority:", JLabel.TRAILING);
 		DefaultComboBoxModel prioritiesList = new DefaultComboBoxModel();
@@ -165,19 +163,21 @@ public class SetPackageInfo extends CommonStep {
 			prioritiesListBox.setName("PACKAGE_PRIORITY");
 			// TODO Fill in CommonStep
 			if (!Variables.isNull(prioritiesListBox.getName())) {
-				prioritiesListBox.setSelectedItem(Variables.get(prioritiesListBox
-						.getName()));
+				prioritiesListBox.setSelectedItem(Variables
+						.get(prioritiesListBox.getName()));
 			}
 			this.add(priorityLabel);
 			this.add(prioritiesListBox);
 			numPairs += 1;
 		}
-		
+
 		// New row
 		this.add(new JLabel());
 		this.add(new JLabel());
 
-		if (!Variables.isNull("BUNDLE_MODE") && Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED) && !Variables.isNull("BUNDLE_MODE_ADVANCED_PATH")) {
+		if (!Variables.isNull("BUNDLE_MODE")
+				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)
+				&& !Variables.isNull("BUNDLE_MODE_ADVANCED_PATH")) {
 			JLabel warningLabel1 = new JLabel("Warning: ensure the",
 					JLabel.TRAILING);
 			JLabel warningLabel2 = new JLabel(
