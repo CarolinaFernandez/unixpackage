@@ -62,6 +62,7 @@ rpm_dependencies=('rpm-build' 'rpmlint' 'gzip' 'xdg-utils')
 rpmbuild_params="-ba"
 # Rpmbuild to be run as normal user
 unixpackage_user="unixpackage"
+unixpackage_user_home=/home/$unixpackage_user
 run_with_su="su $unixpackage_user"
 
 # Internal variables
@@ -326,8 +327,12 @@ function prepare_unprivileged_user() {
   if [[ -z $unixpackage_user_exists ]]; then
     useradd $unixpackage_user -m -s /bin/bash
   fi
+  # Create folder if it does not exist
+  if [ ! -d $1 ]; then
+    mkdir -p $1
+  fi
   # Change permissions of tmp folder
-  chown $unixpackage_user:$unixpackage_user -R $path_to_package
+  chown $unixpackage_user:$unixpackage_user -R $1
 }
 
 # Exit on failure
@@ -358,16 +363,24 @@ function place_user_files_in_package()
     destination_path_dirname=$(dirname ${file_tuple[1]})
     destination_path_tmp=${destination_path:1:${#destination_path}}
 
-    mkdir -p $path_to_package/SOURCES$destination_path_dirname
-    cp -Rp $source_path $path_to_package/SOURCES$destination_path
     package_files="$package_files\n$destination_path"
-    package_install_files="$package_install_files\nmkdir -p %%{buildroot}$destination_path_dirname"
+    # Detect whether data is directory or file and prepare consequently
+    if [ -d $source_path ]; then
+      mkdir -p $path_to_package/SOURCES$destination_path
+      cp -R $source_path/* $path_to_package/SOURCES$destination_path
+      package_install_files="$package_install_files\nmkdir -p %%{buildroot}$destination_path"
+    else
+      mkdir -p $path_to_package/SOURCES$destination_path_dirname
+      cp $source_path $path_to_package/SOURCES$destination_path
+      package_install_files="$package_install_files\nmkdir -p %%{buildroot}$destination_path_dirname"
+    fi
     package_install_files="$package_install_files\ncp -Rp %%{_topdir}/SOURCES$destination_path %%{buildroot}$destination_path_dirname/"
   done
 }
 
 function generate_structure()
 {
+  # Prepare containing structure for RPM
   mkdir -p $path_to_package
   mkdir -p $path_to_package/{RPMS,SRPMS,BUILD,SOURCES,SPECS}
 }
@@ -441,7 +454,7 @@ function generate_spec()
   fi
 
   # Add BuildRoot to define output of files
-  spec_buildroot="BuildRoot: /home/${unixpackage_user}/${package_name}_${package_version_original}"
+  spec_buildroot="BuildRoot: $unixpackage_user_home/${package_name}_${package_version_original}"
   append_to_spec $spec_buildroot
 
   if [[ ! -z $package_distribution ]]; then
@@ -508,7 +521,7 @@ function perform_rpmbuild()
   # Check there is an unprivileged user to run rpmbuild with
   breakline 2
   echo_v "> Setting up unprivileged user..."
-  prepare_unprivileged_user
+  prepare_unprivileged_user $path_to_package
 
   cd $path_to_package
 
@@ -536,12 +549,17 @@ function perform_rpmbuild()
     if [[ ! -z $name ]]; then
       gpg_key_macro="$gpg_key_macro\n%%_gpg_name   $name <$email>"
     fi
-    printf "$gpg_key_macro" > /home/${unixpackage_user}/.rpmmacros
+    printf "$gpg_key_macro" > $unixpackage_user_home/.rpmmacros
     # Change permissions of tmp folder
-    chown $unixpackage_user:$unixpackage_user -R /home/${unixpackage_user}/.rpmmacros
+    chown $unixpackage_user:$unixpackage_user -R $unixpackage_user_home/.rpmmacros
     # Send proper commands to sign the package in batch mode
     $run_with_su -c "expect $path_to_package/../rpm_sign.sh -d $generated_rpm_file_location \"\""
   fi
+}
+
+function clean_up()
+{
+  rm -r $unixpackage_user_home
 }
 
 breakline 1
@@ -563,8 +581,9 @@ path_to_package=$root_script/${package_name}_${package_version_original}
 output_path=$(readlink -m $root_script/../../../unix_package_output__${current_date})
 generate_structure
 
-cd $path_to_package
+prepare_unprivileged_user $unixpackage_user_home
 
+cd $path_to_package
 # Move to proper location for rpmbuild
 place_user_files_in_package
 
@@ -668,6 +687,7 @@ fi
 breakline 1
 echo_v "> Ending package generation..."
 move_to_output
+clean_up
 
 breakline 1
 echo_v "  ********** RPM GENERATOR: END **********"
