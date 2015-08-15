@@ -54,9 +54,20 @@ public class UnixVerifier extends InputVerifier {
 	 */
 	public static boolean verify(String variableName, String variableData) {
 		Boolean variableContentVerified = true;
-		Pattern variableVerifier = Constants.VARIABLES_REGEXPS
-				.get(variableName);
-		// Only try to verify when the pattern is available
+		// Default: DEB
+		Pattern variableVerifier;
+		// Hack: change validators for later steps
+		if (Variables.isNull("PACKAGE_TYPE")
+				|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			// DEB
+			variableVerifier = Constants.VARIABLES_REGEXPS_DEB
+					.get(variableName);
+		} else {
+			// RPM
+			variableVerifier = Constants.VARIABLES_REGEXPS_RPM
+					.get(variableName);
+		}
+		// Attempt verification (upon pattern availability)
 		if (variableVerifier != null) {
 			if (!variableVerifier.matcher(variableData).matches()) {
 				variableContentVerified = false;
@@ -66,7 +77,7 @@ public class UnixVerifier extends InputVerifier {
 				+ variableData + ". Result := " + variableContentVerified);
 		if (!variableContentVerified && !Variables.isNull("BATCH_MODE")
 				&& Variables.BATCH_MODE) {
-			UnixLogger.LOGGER.error("Error: "
+			UnixLogger.LOGGER.error("Invalid validation for variable "
 					+ UnixVerifier.indicateErrorCondition(variableName));
 		}
 		return variableContentVerified;
@@ -146,8 +157,7 @@ public class UnixVerifier extends InputVerifier {
 			inputFormatExplanation = ": " + inputFormatExplanation;
 		}
 		// Parse output to fit on the message dialog
-		inputFormatExplanation = inputCanonicalName + " is invalid"
-				+ inputFormatExplanation;
+		inputFormatExplanation = inputCanonicalName + inputFormatExplanation;
 		return inputFormatExplanation;
 	}
 }

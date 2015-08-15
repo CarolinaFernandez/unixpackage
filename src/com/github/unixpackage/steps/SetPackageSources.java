@@ -46,9 +46,9 @@ public class SetPackageSources extends CommonStep {
 
 		// Source path
 		String addSourcePathLabel = "Add source path";
-//		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
-//			addSourcePathLabel = "Add path";
-//		}
+		// if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+		// addSourcePathLabel = "Add path";
+		// }
 		addSourcePath = new JButton(addSourcePathLabel);
 		addSourcePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -58,16 +58,16 @@ public class SetPackageSources extends CommonStep {
 						sourceInstallPair.add(sourcePath);
 					} catch (Exception ex) {
 					}
-//					if (Variables.PACKAGE_TYPE
-//							.equals(Constants.BUNDLE_TYPE_RPM)) {
-//						sourceInstallPair.add(sourcePath);
-//						updateSourceInstallPairsList();
-//						removePathTupleFromList.setEnabled(true);
-//					} else {
-						addSourcePath.setEnabled(false);
-						addInstallationPath.setEnabled(true);
-						// addPathTupleToList.setEnabled(false);
-//					}
+					// if (Variables.PACKAGE_TYPE
+					// .equals(Constants.BUNDLE_TYPE_RPM)) {
+					// sourceInstallPair.add(sourcePath);
+					// updateSourceInstallPairsList();
+					// removePathTupleFromList.setEnabled(true);
+					// } else {
+					addSourcePath.setEnabled(false);
+					addInstallationPath.setEnabled(true);
+					// addPathTupleToList.setEnabled(false);
+					// }
 				}
 			}
 		});
@@ -91,9 +91,9 @@ public class SetPackageSources extends CommonStep {
 			}
 		});
 		this.add(addInstallationPath);
-//		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
-//			addInstallationPath.setVisible(false);
-//		}
+		// if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+		// addInstallationPath.setVisible(false);
+		// }
 
 		removePathTupleFromList = new JButton("Remove path");
 		removePathTupleFromList.addActionListener(new ActionListener() {

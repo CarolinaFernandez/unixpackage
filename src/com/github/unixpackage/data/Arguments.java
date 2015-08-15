@@ -2,6 +2,7 @@ package com.github.unixpackage.data;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +30,15 @@ public class Arguments {
 		Boolean argumentWithValue = true;
 		Boolean argumentIsVerified = false;
 		ArrayList<String> arguments = parseArgumentsString(args);
-
+		String variableName = null;
+		String variableData = null;
+		
 		for (int i = 0; i < arguments.size(); i++) {
 			try {
 				argumentWithValue = true;
-				String variableName = null;
-				String variableData = null;
+				variableName = null;
+				variableData = null;
+				// Check first whether argument is key or value
 				if (Constants.ARGUMENTS_ACCEPTED.containsKey(arguments.get(i))) {
 					variableName = Constants.ARGUMENTS_VARIABLES.get(arguments
 							.get(i));
@@ -55,7 +59,28 @@ public class Arguments {
 				if (argumentWithValue && variableName != null
 						&& variableName != "") {
 					try {
-						variableData = Variables.get(variableName).toString();
+						if (Variables.get(variableName) != null) {
+							variableData = Variables.get(variableName).toString();
+						}
+						// If string is passed to argument (via terminal),
+						// replace the preferences file with it
+						if (arguments.get(i).startsWith("-") && ! arguments.get(i+1).startsWith("-")) {
+							variableData = arguments.get(i+1);
+							if (variableName.equals("PACKAGE_SOURCE_INSTALL_PAIRS")) {
+									Variables.PACKAGE_SOURCE_INSTALL_PAIRS = new ArrayList<ArrayList<String>>();
+									ArrayList<String> packageSourceInstallPairsFile = new ArrayList<String>(
+											Arrays.asList(variableData.split(" ")));
+									for (String packageSourceInstallPair : packageSourceInstallPairsFile) {
+										if (!packageSourceInstallPair.isEmpty()) {
+											ArrayList<String> packageSourceInstallPairFile = new ArrayList<String>(
+													Arrays.asList(packageSourceInstallPair
+															.split(":")));
+											Variables.PACKAGE_SOURCE_INSTALL_PAIRS
+													.add(packageSourceInstallPairFile);
+										}
+									}
+								}
+							}
 					} catch (Exception e) {
 						variableData = "";
 					}
@@ -74,7 +99,10 @@ public class Arguments {
 					argumentIsVerified = UnixVerifier.verify(variableName,
 							variableData);
 					if (argumentIsVerified) {
-						Variables.set(variableName, variableData);
+						// Avoid parsing the argument for files (-f)
+						if (! arguments.get(i).equals("-f")) {
+							Variables.set(variableName, variableData);
+						}
 					} else {
 						variableName = null;
 						variableData = null;
@@ -84,7 +112,8 @@ public class Arguments {
 				}
 			} catch (Exception e) {
 				correctlyParsed &= false;
-				UnixLogger.LOGGER.error("Error parsing argument: " + e);
+				UnixLogger.LOGGER.error("Could not parse argument '" + arguments.get(i) + "'. Details: " + e);
+				e.printStackTrace();
 			}
 		}
 		return correctlyParsed;
@@ -93,31 +122,34 @@ public class Arguments {
 	private static ArrayList<String> parseArgumentsString(String[] args) {
 		// Define maximum possible size of the new Array
 		ArrayList<String> arguments = new ArrayList<String>(args.length);
+		ArrayList<String> unrecognisedArguments = new ArrayList<String>(
+				args.length);
+
 		String aggregatedArgument = "";
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].matches(Arguments.ARGUMENT_RE.toString())) {
-				// In case help is implicitly or explicitly requested, show it
-				if (!(Constants.ARGUMENTS_ACCEPTED.containsKey(args[i]) || Constants.ARGUMENTS_ACCEPTED
-						.containsValue(args[i]))) {
-					Shell.outputHelpInformation();
-					System.exit(1);
-				} else if (args[i].equals(Constants.ARGUMENT_HELP)
-						|| args[i].equals(Constants.ARGUMENT_HELP_LONG)) {
+		for (String arg : args) {
+			if (arg.matches(Arguments.ARGUMENT_RE.toString())) {
+				if (!(Constants.ARGUMENTS_ACCEPTED.containsKey(arg) || Constants.ARGUMENTS_ACCEPTED
+						.containsValue(arg))) {
+					unrecognisedArguments.add(arg);
+					// If help is implicitly or explicitly requested, show
+					// it
+				} else if (arg.equals(Constants.ARGUMENT_HELP)
+						|| arg.equals(Constants.ARGUMENT_HELP_LONG)) {
 					Shell.outputHelpInformation();
 					System.exit(0);
 					// Show package version if explicitly requested
-				} else if (args[i].equals(Constants.ARGUMENT_VERSION)
-						|| args[i].equals(Constants.ARGUMENT_VERSION_LONG)) {
+				} else if (arg.equals(Constants.ARGUMENT_VERSION)
+						|| arg.equals(Constants.ARGUMENT_VERSION_LONG)) {
 					Shell.outputVersionInformation();
 					System.exit(0);
 				}
 				if (!aggregatedArgument.equals("")) {
 					arguments.add(aggregatedArgument);
 				}
-				arguments.add(args[i]);
+				arguments.add(arg);
 				aggregatedArgument = "";
 			} else {
-				aggregatedArgument += args[i] + " ";
+				aggregatedArgument += arg + " ";
 			}
 		}
 		arguments.add(aggregatedArgument.trim());
@@ -276,7 +308,8 @@ public class Arguments {
 		if (!Variables.isNull("BUNDLE_MODE")
 				&& !Variables.BUNDLE_MODE
 						.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-			if (StepLoader.currentStep == Constants.STEPS_METHODS_LENGTH) {
+			if (StepLoader.currentStep == Constants.STEPS_METHODS_LENGTH
+					|| Variables.BATCH_MODE.equals(Constants.BUNDLE_TYPE_RPM)) {
 				// Do a build only during the last step (source files generated
 				// previously)
 				argumentList.put(Constants.ARGUMENT_BUILD, null);
@@ -318,6 +351,7 @@ public class Arguments {
 		argumentList.put(Constants.ARGUMENT_NAME, Variables.MAINTAINER_NAME);
 		argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
 
+		// FIXME: Template usage not working as expected (fix RPM generation script)
 		// In advanced mode, a path is passed to copy the user's templates from
 		if (!Variables.isNull("BUNDLE_MODE")
 				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {

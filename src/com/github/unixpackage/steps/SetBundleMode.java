@@ -26,7 +26,7 @@ public class SetBundleMode extends CommonStep {
 	protected String[] labels = { "Description: ", "Extra: " };
 	protected String[] tooltips = { "", "" };
 	protected String[] variables = { "", "PACKAGE_SHORT_DESCRIPTION",
-	"PACKAGE_DESCRIPTION" };
+			"PACKAGE_DESCRIPTION" };
 
 	public SetBundleMode() {
 		// Clear screen first
@@ -186,20 +186,20 @@ public class SetBundleMode extends CommonStep {
 									.containsFolder(sourcePath,
 											bundleTypeFolder))) {
 						JOptionPane
-						.showMessageDialog(
-								null,
-								"The chosen path is not (or does not contain) a '"
-										+ bundleTypeFolder
-										+ "' folder."
-										+ "\n"
-										+ "Please choose an appropriate folder");
+								.showMessageDialog(
+										null,
+										"The chosen path is not (or does not contain) a '"
+												+ bundleTypeFolder
+												+ "' folder."
+												+ "\n"
+												+ "Please choose an appropriate folder");
 						sourcePath = Files.choosePath();
 					}
 					try {
 						Variables.set("BUNDLE_MODE_ADVANCED_PATH", sourcePath);
 						addSourceFilesPathLabel.setVisible(true);
 						addSourceFilesPath
-						.setText(Variables.BUNDLE_MODE_ADVANCED_PATH);
+								.setText(Variables.BUNDLE_MODE_ADVANCED_PATH);
 						addSourceFilesPath.setVisible(true);
 					} catch (Exception ex) {
 					}
@@ -301,7 +301,8 @@ public class SetBundleMode extends CommonStep {
 		this.add(new JLabel());
 		this.add(new JLabel());
 
-		// Independently of the package type stored in the preferences, this warns about inaccuracies between selected package type and current OS
+		// Independently of the package type stored in the preferences, this
+		// warns about inaccuracies between selected package type and current OS
 		String osDistro = Files.getOSDistro();
 		if (osDistro != null) {
 			if (osDistro.equals("Debian") && choiceRPM.isSelected()) {
@@ -321,8 +322,8 @@ public class SetBundleMode extends CommonStep {
 			public void stateChanged(ChangeEvent arg0) {
 				if (bundleSimple.isSelected()) {
 					choiceDescription
-					.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
-							.get(Constants.BUNDLE_MODE_SIMPLE));
+							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
+									.get(Constants.BUNDLE_MODE_SIMPLE));
 					Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_SIMPLE);
 					// Disabling importing package files
 					addSourceFiles.setVisible(false);
@@ -336,8 +337,8 @@ public class SetBundleMode extends CommonStep {
 			public void stateChanged(ChangeEvent arg0) {
 				if (bundleManual.isSelected()) {
 					choiceDescription
-					.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
-							.get(Constants.BUNDLE_MODE_MANUAL));
+							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
+									.get(Constants.BUNDLE_MODE_MANUAL));
 					SetBundleMode.setDefaultBundleMode(bundleManual);
 					// Disabling importing package files
 					addSourceFiles.setVisible(false);
@@ -351,10 +352,10 @@ public class SetBundleMode extends CommonStep {
 			public void stateChanged(ChangeEvent arg0) {
 				if (bundleAdvanced.isSelected()) {
 					choiceDescription
-					.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
-							.get("Advanced"));
+							.setText(Constants.BUNDLE_MODE_DESCRIPTIONS
+									.get("Advanced"));
 					Variables
-					.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
+							.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
 					// Allow to input a path to import package files
 					addSourceFiles.setVisible(true);
 					// Show path information once it was select at least one

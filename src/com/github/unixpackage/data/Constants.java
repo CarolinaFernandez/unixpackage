@@ -133,8 +133,8 @@ public final class Constants {
 	public static final String ARGUMENT_VERSION_LONG = "--version";
 	public static final String ARGUMENT_BATCH = "-b";
 	public static final String ARGUMENT_BATCH_LONG = "--batch";
-	public static final String ARGUMENT_SOURCE = "-s";
-	public static final String ARGUMENT_SOURCE_LONG = "--source";
+//	public static final String ARGUMENT_SOURCE = "-s";
+//	public static final String ARGUMENT_SOURCE_LONG = "--source";
 	public static final String ARGUMENT_DESCRIPTION_SHORT = "-d";
 	public static final String ARGUMENT_DESCRIPTION_SHORT_LONG = "--description-short";
 	public static final String ARGUMENT_DESCRIPTION = "-D";
@@ -300,7 +300,8 @@ public final class Constants {
 	public static final Map<String, String> FIELDS_FORMAT_EXPLANATION;
 	public static final Map<String, String> ARGUMENTS_ACCEPTED;
 	public static final Map<String, String> ARGUMENTS_VARIABLES;
-	public static final Map<String, Pattern> VARIABLES_REGEXPS;
+	public static final Map<String, Pattern> VARIABLES_REGEXPS_DEB;
+	public static final Map<String, Pattern> VARIABLES_REGEXPS_RPM;
 
 	// Static initializer
 	static {
@@ -441,6 +442,13 @@ public final class Constants {
 				Constants.ARGUMENT_PACKAGE_VERSION_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_SIGN,
 				Constants.ARGUMENT_SIGN_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_FILES,
+				Constants.ARGUMENT_FILES_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_VERBOSE,
+				Constants.ARGUMENT_VERBOSE_LONG);
+		// Only to be used in RPM packages (no effect in DEB)
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_GROUP,
+				Constants.ARGUMENT_PACKAGE_GROUP_LONG);
 
 		// Mapping of input arguments and their associated variables
 		ARGUMENTS_VARIABLES = new HashMap<String, String>();
@@ -467,25 +475,43 @@ public final class Constants {
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_VERSION,
 				"PACKAGE_VERSION");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_SIGN, "PACKAGE_SIGN");
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_FILES,
+				"PACKAGE_SOURCE_INSTALL_PAIRS");
+		// Only to be used in RPM packages (no effect in DEB)
+		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_GROUP,
+				"PACKAGE_SECTION");
 
 		// RegExps (e.g. for validation)
-		VARIABLES_REGEXPS = new HashMap<String, Pattern>();
-		VARIABLES_REGEXPS
-				.put("MAINTAINER_EMAIL", Constants.RE_MAINTAINER_EMAIL);
-		VARIABLES_REGEXPS.put("PACKAGE_NAME", Constants.RE_PACKAGE_NAME);
-		VARIABLES_REGEXPS.put("PACKAGE_LICENCE",
+		VARIABLES_REGEXPS_DEB = new HashMap<String, Pattern>();
+		VARIABLES_REGEXPS_DEB.put("MAINTAINER_EMAIL",
+				Constants.RE_MAINTAINER_EMAIL);
+		VARIABLES_REGEXPS_DEB.put("PACKAGE_NAME", Constants.RE_PACKAGE_NAME);
+		VARIABLES_REGEXPS_DEB.put("PACKAGE_LICENCE",
 				Constants.RE_PACKAGE_LICENCE_DEB);
-		VARIABLES_REGEXPS.put("PACKAGE_CLASS", Constants.RE_PACKAGE_CLASS_DEB);
-		VARIABLES_REGEXPS.put("PACKAGE_SECTION",
+		VARIABLES_REGEXPS_DEB.put("PACKAGE_CLASS",
+				Constants.RE_PACKAGE_CLASS_DEB);
+		VARIABLES_REGEXPS_DEB.put("PACKAGE_SECTION",
 				Constants.RE_PACKAGE_SECTION_DEB);
-		VARIABLES_REGEXPS
-				.put("PACKAGE_PRIORITY", Constants.RE_PACKAGE_PRIORITY);
-		VARIABLES_REGEXPS.put("PACKAGE_SHORT_DESCRIPTION",
+		VARIABLES_REGEXPS_DEB.put("PACKAGE_PRIORITY",
+				Constants.RE_PACKAGE_PRIORITY);
+		VARIABLES_REGEXPS_DEB.put("PACKAGE_SHORT_DESCRIPTION",
 				Constants.RE_PACKAGE_SHORT_DESCRIPTION);
-		VARIABLES_REGEXPS.put("PACKAGE_WEBSITE", Constants.RE_PACKAGE_WEBSITE);
-		VARIABLES_REGEXPS.put("PACKAGE_VERSION", Constants.RE_PACKAGE_VERSION);
-		VARIABLES_REGEXPS.put("BUNDLE_MODE_ADVANCED_PATH",
+		VARIABLES_REGEXPS_DEB.put("PACKAGE_WEBSITE",
+				Constants.RE_PACKAGE_WEBSITE);
+		VARIABLES_REGEXPS_DEB.put("PACKAGE_VERSION",
+				Constants.RE_PACKAGE_VERSION);
+		VARIABLES_REGEXPS_DEB.put("BUNDLE_MODE_ADVANCED_PATH",
 				Constants.BUNDLE_MODE_ADVANCED_PATH);
+
+		// RegExps (e.g. for validation) in Fedora-based distros
+		VARIABLES_REGEXPS_RPM = VARIABLES_REGEXPS_DEB;
+		VARIABLES_REGEXPS_RPM.put("PACKAGE_LICENCE",
+				Constants.RE_PACKAGE_LICENCE_RPM);
+		VARIABLES_REGEXPS_RPM.put("PACKAGE_CLASS",
+				Constants.RE_PACKAGE_CLASS_RPM);
+		VARIABLES_REGEXPS_RPM.put("PACKAGE_SECTION",
+				Constants.RE_PACKAGE_GROUP_RPM);
+		VARIABLES_REGEXPS_RPM.remove("PACKAGE_PRIORITY");
 	}
 
 	public static final int STEPS_METHODS_LENGTH = STEPS_METHODS.size();

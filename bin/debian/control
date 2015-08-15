@@ -11,4 +11,4 @@ Source: unixpackage
 Package: unixpackage
 Architecture: all
 Description: Create a UNIX package
- Administrative tool to generate UNIX packages through a UI.
+ Easily create Debian and Fedora based UNIX packages through a UI.

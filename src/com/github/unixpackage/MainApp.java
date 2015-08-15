@@ -3,7 +3,6 @@ package com.github.unixpackage;
 import com.github.unixpackage.components.CommonFrame;
 import com.github.unixpackage.data.Arguments;
 import com.github.unixpackage.data.Constants;
-import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.UnixPreferences;
 import com.github.unixpackage.data.Variables;
 import com.github.unixpackage.steps.GeneratePackage;
@@ -23,16 +22,26 @@ public class MainApp {
 		// was not correctly parsed
 		if (!Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
 			if (!argumentsCorrectlyParsed) {
-				UnixLogger.LOGGER.error("ERRORS PARSING");
 				System.exit(1);
 			}
 			// Preconditions
-			Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
-			Files.copyScriptSourcesIntoTempFolder();
-			if (!Variables.isNull("PACKAGE_TYPE")
-					|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
-				GeneratePackage.generateDebianPackage();
+			if (Variables.PACKAGE_SOURCE_INSTALL_PAIRS.size() > 0) {
+				Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_MANUAL);
+			} else {
+				Variables.set("BUNDLE_MODE", Constants.BUNDLE_MODE_ADVANCED);
 			}
+			Files.copyScriptSourcesIntoTempFolder();
+			if (!Variables.isNull("PACKAGE_TYPE")) {
+				// Default: DEB
+				if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+					GeneratePackage.generateDebianPackage();
+				} else if (Variables.PACKAGE_TYPE
+						.equals(Constants.BUNDLE_TYPE_RPM)) {
+					GeneratePackage.generateRedHatFiles();
+					GeneratePackage.generateRedHatPackage();
+				}
+			}
+
 			// Save input data to disk once data has been validated
 			UnixPreferences prefs = new UnixPreferences();
 			prefs.saveToFile();

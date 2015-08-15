@@ -82,11 +82,11 @@ Full name of the package maintainer.
 E-mail address of the package maintainer.
 .TP
 \fB\-C, \-\-class\fP \fIclass\fP
-Package class (s|i|k|l|m|n).
+Package class (noarch|athlon|geode|i386|i486|i586|i686).
 .TP
 \fB\-c, \-\-copyright\fP \fItype\fP
 .br
-Use type of licence in copyright file (apache|artistic|bsd|gpl|gpl2|gpl3|lgpl|lgpl2|lgpl3|mit).
+Use type of licence in copyright file (Glide|ASL 1.1|Abstyles|AFL|AMPAS BSD|Adobe|APAFML|MIT|AGPLv1|AGPLv3|AGPLv3+|AGPLv3 with exceptions|Afmparse|ADSL|AMDPLPA|ASL 1.0|ASL 1.1|ASL 2.0|App-s2p|AML|APSL 2.0|Artistic clarified|Artistic 2.0|ARL|AAL|Bahyph|Barr|Beerware|BeOpen|Bibtex|BitTorrent|Boost|Borceux|BSD with advertising|BSD with attribution|BSD|BSD Protection|CATOSL|CeCILL|CeCILL-B|CeCILL-C|Netscape|MIT|CNRI|CDDL|CPL|Condor|Copyright only|CPAL|BSD|GPLv2+|LGPLv2+|CC0|Crossword|Crystal Stacker|MPLv1.1|Cube|diffmark|WTFPL|DOC|DMIT|Dotseqn|DSDP|dvipdfm|EPL|eCos|ECL 1.0|ECL 2.0|eGenix|EFL 2.0|MIT with advertising|Entessa|EPICS|ERPL|EU Datagrid|EUPL 1.1|Eurosym|GPLv2 with exceptions|Fair|LGPLv2 with exceptions|MPLv1.0|FTL|FSFUL|FSFULLR|Giftware|GL2PS|Glulxe|GPL+|GPL+ with exceptions|GPLv1|GPLv2|GPLv2+ with exceptions|GPLv3|GPLv3 with exceptions|GPLv3+|GPLv3+ with exceptions|LGPLv2|LGPLv2+ with exceptions|LGPLv3|LGPLv3 with exceptions|LGPLv3+gnuplot|HaskellReport|HSRL|IBM|iMatix|ImageMagick|lmlib2|IJG|Intel ACPI|Interbase|ISC|Jabber|Jasper|JPython|Julius|Knuth|LPPL|Latex2e|LBNL BSD|LOSLA|Leptonica|Lhcyr|libtiff|LLGPL|Logica|LPL|MakeIndex|MTLL|mecab-ipadic|MS-PL|MS-RL|midnight|MirOS|MITNFA|mod_macro|Motosoto|MPLv1.0|MPLv1.1|MPLv2.0|Mup|Naumen|NCSA|NetCDF|NGPL|NOSL|Newmat|Newsletr|Nmap|Nokia|NLPL|Noweb|MIT with advertising|OpenLDAP|OML|OpenPBS|OSL 1.0|OSL 1.1|OSL 2.0|OSL 2.1|OSL 3.0|OpenSSL|OReilly|Par|GPL+ or Artistic|GPLv2 or Artistic|GPLv2+ or Artistic|LGPLv2+ or Artistic|Phorum|PHP|PlainTeX|Plexus|PostgreSQL|psfrag|psutils|Public Domain|Python|Qhull|QPL|Rdisc|RPSL|REX|RiceBSD|Romio|Rsfs|Ruby|Saxpath|Sequence|SCEA|SWL|STMPL|SCRIP|Sendmail|Sleepycat|SLIB|softSurfer|SNIA|SISSL|SPL|TCL|Teeworlds|TTWL|TPL|Threeparttable|TPDL|TMate|Tolua|TORQUEv1.1|TGPPL|TOSL|UCD|Unicode|Unlicense|Vim|VNLSL|VOSTROM|VSL|W3C|Webmin|Wsuipa|wxWidgets|xinetd|Xerox|xpp|XSkat|YPLv1.1|Zed|Zend|ZPLv1.0|ZPLv2.0|ZPLv2.1|zlib|zlib with acknowledgement).
 .TP
 \fB\-p, \-\-package\-name\fP \fIname\fP
 Package name (better use lowercase, digits, dashes).
@@ -98,27 +98,20 @@ Version of the package.
 .TP
 \fBOptional arguments.\fP Provide extra information or operations.
 .TP
-.B -S, \-\-sign
-Sign package. This will use name and email to look for a matching GPG key on the system.
-.TP
 \fB\-d, \-\-description\-short\fP \fIshort_description\fP
 Description of the package (up to 60 characters).
 .TP
 \fB\-D, \-\-description\-long\fP \fIextended_description\fP
 Detailed description of the package.
 .TP
-\fB\-s, \-\-section\fP \fIsection\fP
-Section to which the package belongs (admin|cli-mono|comm|database|debug|devel|doc|editors|education|electronics|embedded|fonts|games|gnome|gnu-r|gnustep|graphics|hamradio|haskell|httpd|interpreters|introspection|java|kde|kernel|libdevel|libs|lisp|localization|mail|math|metapackages|misc|net|news|ocaml|oldlibs|otherosfs|perl|php|python|ruby|science|shells|sound|tasks|tex|text|utils|vcs|video|web|x11|xfce|zope).
-.TP
-\fB\-P, \-\-priority\fP \fIlevel\fP
-Level of priority used for this package (required|important|standard|optional|extra).
+\fB\-g, \-\-group\fP \fIgroup\fP
+Group to which the package belongs (Amusements/Games|Amusements/Graphics|Applications/Archiving|Applications/Communications|Applications/Databases|Applications/Editors|Applications/Emulators|Applications/Engineering|Applications/File|Applications/Internet|Applications/Multimedia|Applications/Productivity|Applications/Publishing|Applications/System|Applications/Text|Development/Debuggers|Development/Languages|Development/Libraries|Development/System|Development/Tools|Documentation|System Environment/Base|System Environment/Daemons|System Environment/Kernel|System Environment/Libraries|System Environment/Shells|User Interface/Desktops|User Interface/X|User Interface/X Hardware Support).
 .TP
 \fB\-w, \-\-website\fP \fIurl\fP
 URL of the software upstream homepage.
 .TP
-\fB\-t, \-\-templates\fP \fIdir\fP
-Use customizing templates in dir for dh_make.
-
+\fB\-f, \-\-files\fP \fIsource1:target1 ... sourceN:targetN\fP
+Paths to files that will be added to the package. Used in manual mode.
 
 .SH FILES
 .TP
@@ -143,22 +136,12 @@ Man pages for this package, available only to administrators.
 When running the application for the first name, every required argument must be passed.
 .sp 2
 .TP.TP
-unixpackage -b -n Jane Doe -e jane.doe@trivi.al -C m -c lgpl3 -p trivialpackage -V 0.1
+unixpackage -b -n Jane Doe -e jane.doe@trivi.al -C noarch -c GPLv3 -p trivialpackage -V 0.1-1
 .TP
 Once the properties files is appropriately set, the simplest batch mode can be used.
 .sp 2
 .TP.TP
 unixpackage -b
-.TP
-The package can be signed when both name and email are provided (i.e. in the properties file or through the arguments).
-.sp 2
-.TP.TP
-unixpackage -b -n Jane Doe -e jane.doe@trivi.al -S
-.TP
-Templates can be used to provide your own control information, rules to install and corresponding files, scripts to manage installation and removal of the package, etc.
-.sp 2
-.TP.TP
-unixpackage -b -n Jane Doe -e jane.doe@trivi.al -C m -c lgpl3 -p trivialpackage -V 0.1 -t /root/path/for/deb/templates
 .TP
 Multiple files can be bundled into the package.
 .sp 2
@@ -167,4 +150,4 @@ unixpackage -b -n Jane Doe -e jane.doe@trivi.al -C noarch -c GPLv3 -p trivialpac
 
 
 .SH SEE ALSO
-\fBdh_make\fP (8), \fBdpkg-buildpackage\fP (1).
+\fBrpmbuild\fP (8).

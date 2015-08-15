@@ -60,7 +60,8 @@ public class Shell {
 			}
 			// When "-m" flag is used, sources are generated
 			// Otherwise, packages are created
-			if (commandListString.indexOf("bash") >= 0) {
+			if (commandListString.indexOf("bash") > -1) {
+				// Default: package
 				String operationType = "package";
 				if (commandListString.indexOf("-m") > -1) {
 					operationType = "files";
@@ -93,6 +94,16 @@ public class Shell {
 		return lines;
 	}
 
+	public static void outputHelpInformation(String argument) {
+		String warning = "Unrecognised argument '" + argument + "'.\n";
+		// Provide help on different outputs, depending on the source
+		if (!Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
+			System.out.println(warning);
+		}
+		UnixLogger.LOGGER.warn(warning);
+		outputHelpInformation();
+	}
+
 	public static void outputHelpInformation() {
 		String helpOutput = "unixpackage - create a UNIX package, version "
 				+ Constants.APP_VERSION
@@ -110,34 +121,55 @@ public class Shell {
 				+ " Arguments (required in batch mode - when no config file is available):\n"
 				+ "  %R1%, %R1l% <name>                  Full name of the package maintainer\n"
 				+ "  %R2%, %R2l% <address>              E-mail address of the package maintainer\n"
-				+ "  %R3%, %R3l% <class>                Package class (s|i|k|l|m|n)\n"
-				+ "  %R4%, %R4l% <type>             Use <type> of licence in copyright file\n"
-				+ "                                      (apache|artistic|bsd|gpl|gpl2|gpl3|lgpl|lgpl2|\n"
-				+ "                                      lgpl3|mit)\n"
-				+ "  %R5%, %R5l% <name>          Package name (better use lowercase, digits,\n"
-				+ "                                     dashes)\n"
+				+ "  %R3%, %R3l% <class>                Package class\n"
+				+ "                                      ";
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			helpOutput += Constants.RE_PACKAGE_CLASS_DEB.toString()
+					.replace("^", "").replace("$", "")
+					+ "\n";
+		} else {
+			helpOutput += Constants.RE_PACKAGE_CLASS_RPM.toString()
+					.replace("^", "").replace("$", "")
+					+ "\n";
+		}
+		helpOutput += "  %R4%, %R4l% <type>             Use <type> of licence in copyright file\n"
+				+ "                                      ";
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			helpOutput += Constants.RE_PACKAGE_LICENCE_DEB.toString()
+					.replace("^", "").replace("$", "")
+					+ "\n";
+		} else {
+			helpOutput += Constants.RE_PACKAGE_LICENCE_RPM.toString()
+					.replace("^", "").replace("$", "")
+					+ "\n";
+		}
+		helpOutput += "  %R5%, %R5l% <name>          Package name (better use lowercase, digits, dashes)\n"
 				+ "  %R6%, %R6l% <version>    Version of the package\n"
 				+ "\n"
 				+ " Arguments (optional - provide extra information or operations):\n"
-				+ "  %O1%, %O1l% <dir>                 Source directory\n"
+				// + "  %O1%, %O1l% <dir>                 Source directory\n"
 				+ "  %O2%, %O2l%                         Sign package. This will use name and email to look\n"
 				+ "                                     for a matching GPG key on the system.\n"
 				+ "  %O3%, %O3l% <text>     Description of the package (up to 60 characters)\n"
 				+ "  %O4%, %O4l% <text>      Detailed description of the package\n"
 				+ "  %O5%, %O5l% <section>            Section to which the package belongs\n"
-				+ "                                       (admin|cli-mono|comm|database|debug|devel|doc|\n"
-				+ "                                       editors|education|electronics|embedded|fonts|\n"
-				+ "                                       games|gnome|gnu-r|gnustep|graphics|hamradio|\n"
-				+ "                                       haskell|httpd|interpreters|introspection|java|\n"
-				+ "                                       kde|kernel|libdevel|libs|lisp|localization|mail|\n"
-				+ "                                       math|metapackages|misc|net|news|ocaml|oldlibs|\n"
-				+ "                                       otherosfs|perl|php|python|ruby|science|shells|\n"
-				+ "                                       sound|tasks|tex|text|utils|vcs|video|web|x11|\n"
-				+ "                                       xfce|zope)\n"
-				+ "  %O6%, %O6l% <section>           Level of priority used for this package\n"
-				+ "                                       (required|important|standard|optional|extra)\n"
-				+ "  %O7%, %O7l% <url>                URL of the software upstream homepage\n"
-				+ "  %O8%, %O8l% <dir>              Use customizing templates in <dir> for dh_make\n"
+				+ "                                      ";
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			helpOutput += Constants.RE_PACKAGE_SECTION_DEB.toString()
+					.replace("^", "").replace("$", "")
+					+ "\n";
+		} else {
+			helpOutput += Constants.RE_PACKAGE_GROUP_RPM.toString()
+					.replace("^", "").replace("$", "")
+					+ "\n";
+		}
+		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			helpOutput += "  %O6%, %O6l% <section>           Level of priority used for this package\n"
+					+ "                                       (required|important|standard|optional|extra)\n";
+		}
+		helpOutput += "  %O7%, %O7l% <url>                URL of the software upstream homepage\n"
+				+ "  %O8%, %O8l% <dir>              Use customizing templates in <dir> for dh_make (advanced mode)\n"
+				+ "  %O9%, %O9l% <path:path>            Paths to files to be added (manual mode)\n"
 				+ "\n"
 				+ "Examples:\n"
 				+ "  Refer to the manpages of this package at unixpackage (8).\n";
@@ -169,9 +201,9 @@ public class Shell {
 		helpOutput = helpOutput.replace("%R6l%",
 				Constants.ARGUMENT_PACKAGE_VERSION_LONG);
 
-		helpOutput = helpOutput.replace("%O1%", Constants.ARGUMENT_SOURCE);
-		helpOutput = helpOutput
-				.replace("%O1l%", Constants.ARGUMENT_SOURCE_LONG);
+		// helpOutput = helpOutput.replace("%O1%", Constants.ARGUMENT_SOURCE);
+		// helpOutput = helpOutput
+		// .replace("%O1l%", Constants.ARGUMENT_SOURCE_LONG);
 		helpOutput = helpOutput.replace("%O2%", Constants.ARGUMENT_SIGN);
 		helpOutput = helpOutput.replace("%O2l%", Constants.ARGUMENT_SIGN_LONG);
 		helpOutput = helpOutput.replace("%O3%",
@@ -195,7 +227,13 @@ public class Shell {
 		helpOutput = helpOutput.replace("%O8%", Constants.ARGUMENT_TEMPLATES);
 		helpOutput = helpOutput.replace("%O8l%",
 				Constants.ARGUMENT_TEMPLATES_LONG);
+		helpOutput = helpOutput.replace("%O9%", Constants.ARGUMENT_FILES);
+		helpOutput = helpOutput.replace("%O9l%", Constants.ARGUMENT_FILES_LONG);
 
+		// Provide help on different outputs, depending on the source
+		if (Variables.BATCH_MODE) {
+			System.out.println(helpOutput);
+		}
 		UnixLogger.LOGGER.info(helpOutput);
 	}
 

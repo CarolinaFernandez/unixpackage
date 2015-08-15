@@ -273,10 +273,12 @@ function validate_parameters()
     if [[ -d $rpm_files_location ]]; then
       cp -Rp $rpm_files_location $path_to_package/SPECS/
       rpm_files_location=$path_to_package/SPECS/
+      path_to_package_spec=$rpm_files_location/$package_name.spec
     fi
     # Correction: use parent folder if the user chose the SPECS folder itself
     if [[ $(basename $rpm_files_location) =~ ^SPECS.* ]]; then
       rpm_files_location_root="$(dirname "$rpm_files_location")"
+      path_to_package_spec=$rpm_files_location_root/SPECS/$package_name.spec
     fi
   fi
   # When signing the package, though, name and e-mail are required
@@ -537,8 +539,6 @@ function perform_rpmbuild()
   fi
   $run_with_su -c "rpmbuild $rpmbuild_params $path_to_package_spec" || error "Could not rpmbuild (unsigned) on $path_to_package"
 
-  # XXX ORIGINAL - TODO: PLACE BACK THIS ONE
-  #generated_rpm_file_location=$(find $path_to_package/*RPMS -name "*$package_class.rpm" | head -1)
   generated_rpm_file_location=$(find $path_to_package/*RPMS -name "*$package_name*" | grep ".rpm$" | head -1)
   generated_rpm_file_name=$(basename $generated_rpm_file_location)
 

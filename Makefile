@@ -2,6 +2,10 @@
 SRC_DIR = src
 LIB_DIR = lib
 BUILD_DIR = build
+TMP_DIR = /tmp/unixpackage
+OPT_DIR = /opt/unixpackage
+SBIN_DIR = /usr/sbin
+MAN8_DIR = /usr/share/man/man8
 
 # Filename of the JAR package
 JAR_PKG = $(BUILD_DIR)/unixpackage.jar
@@ -18,6 +22,19 @@ JAR = jar
 JFLAGS = -encoding UTF-8 -Xlint:none
 CLASSPATH = $(SRC_DIR):$(BUILD_DIR):media:script:$(LIB_DIR)/commons-io-1.2.jar:$(LIB_DIR)/log4j-1.2.17.jar
 
+# Package generation
+UNIXPKG_GIT = $(PWD)
+AUTHOR_NAME = "Carolina Fernandez"
+AUTHOR_EMAIL = "cfermart@gmail.com"
+PACKAGE_NAME = "unixpackage"
+PACKAGE_LICENCE = "GPLv3"
+PACKAGE_VERSION = "0.1-1"
+PACKAGE_WEBSITE = "http://carolinafernandez.github.io/unixpackage"
+PACKAGE_GROUP = "System Environment/Libraries"
+PACKAGE_ARCH = "noarch"
+DESCRIPTION_SHORT = "Create a UNIX package"
+DESCRIPTION_LONG = "Easily create Debian and Fedora based UNIX packages through a UI"
+
 build: 		
 		mkdir -p $(BUILD_DIR)
 		find $(SRC_DIR) -iname *.java > sources.txt
@@ -26,8 +43,8 @@ build:
 		#$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) -sourcepath $(SRC_DIR) $(ENTRY_POINT) $(JFLAGS)
 		cp -Rup media $(BUILD_DIR)
 		cp -Rup script $(BUILD_DIR)
-		cp -up README.md $(BUILD_DIR)
-		cp -up LICENCE.txt $(BUILD_DIR)
+		cp -up README* $(BUILD_DIR)
+		cp -up LICENCE $(BUILD_DIR)
 		cp -up log4j.properties $(BUILD_DIR)
 		test -d $(BUILD_DIR) || echo "Error: $(BUILD_DIR) directory is not found"
 
@@ -49,6 +66,10 @@ jar:
 
 run-jar: 	
 		$(JAVA) -$(JAR) $(JAR_PKG)
+
+rpm:
+		test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
+		$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH) -D $(DESCRIPTION_LONG) -g $(PACKAGE_GROUP) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/unixpackage.jar:/usr/lib/unixpackage/unixpackage.jar $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/fedora/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
 
 clean:		
 		rm -rf $(BUILD_DIR)

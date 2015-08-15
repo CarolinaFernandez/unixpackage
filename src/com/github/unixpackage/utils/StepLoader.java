@@ -7,7 +7,6 @@ import com.github.unixpackage.components.CommonStep;
 import com.github.unixpackage.data.Constants;
 import com.github.unixpackage.data.UnixLogger;
 import com.github.unixpackage.data.Variables;
-//import com.github.unixpackage.steps.GeneratePackage;
 import com.github.unixpackage.steps.GeneratePackage;
 
 public class StepLoader {
@@ -181,27 +180,6 @@ public class StepLoader {
 				}
 			}
 			// SetPackageInfo
-		} else if (stepNumber == 3) {
-			// Hack: change validators for later steps
-			if (Variables.isNull("PACKAGE_TYPE")
-					|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
-				// DEB
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_SECTION",
-						Constants.RE_PACKAGE_SECTION_DEB);
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_CLASS",
-						Constants.RE_PACKAGE_CLASS_DEB);
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_LICENCE",
-						Constants.RE_PACKAGE_LICENCE_DEB);
-			} else {
-				// RPM
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_SECTION",
-						Constants.RE_PACKAGE_GROUP_RPM);
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_CLASS",
-						Constants.RE_PACKAGE_CLASS_RPM);
-				Constants.VARIABLES_REGEXPS.put("PACKAGE_LICENCE",
-						Constants.RE_PACKAGE_LICENCE_RPM);
-			}
-			// EditPackageFiles step
 		} else if (stepNumber == 5) {
 			if (!Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
 				if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
@@ -213,6 +191,8 @@ public class StepLoader {
 		} else if (stepNumber == 6) {
 			if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 				GeneratePackage.generateDebianFiles();
+			} else {
+				GeneratePackage.generateRedHatFiles();
 			}
 		}
 	}
