@@ -24,6 +24,7 @@ public final class Constants {
 	public static final String APP_NAME = "upkg";
 	public static final String APP_DESCRIPTION = "Create a UNIX package";
 	public static final String APP_VERSION = "0.1";
+	public static final String APP_LOG_FOLDER = "/var/log/unixpackage";
 
 	// Could be under /etc; but root permissions would be needed
 	public static final String APP_PREFERENCES_PATH = System

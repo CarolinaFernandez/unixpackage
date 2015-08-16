@@ -31,18 +31,38 @@ and in the README files available per UNIX operating system.
   unixpackage_git=/opt/unixpackage
   git clone http://CarolinaFernandez.github.io/unixpackage.git $unixpackage_git
   ```
-2.2 Compile the sources through the Makefile:
+2.2 Create the log folder and grant full permissions:
+  ```
+  mkdir -p /var/log/unixpackage
+  chmod 777 /var/log/unixpackage/
+  ```
+2.3 Compile the sources through the Makefile:
   ```
   cd $unixpackage_git
   make build
   ```
-2.3 Create the JAR file:
+2.4 Create the JAR file:
   ```
   cd $unixpackage_git
   make jar
   ```
-2.4 Run the JAR file:
+2.5 Run the JAR file:
   ```
   cd $unixpackage_git
   make run-jar
   ```
+
+3. Installing
+-------------
+UnixPackage can be installed as a binary in your system. If
+you wish to use this as a normal application rather than using
+the JAR, perform the following steps:
+
+3.1 Create the package for your system:
+  ```
+  # Pick one of the following
+  make deb
+  make rpm
+  ```
+3.2 Move to the folder specified by the above step and install
+the package with your preferred package manager.

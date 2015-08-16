@@ -384,6 +384,19 @@ public class Files {
 	}
 
 	/**
+	 * When not present, log folder is created and assigned full permissions.
+	 */
+	public static void initialiseLog() {
+		File logFolder = new File(Constants.APP_LOG_FOLDER);
+		if (!logFolder.exists()) {
+			logFolder.mkdirs();
+			logFolder.setReadable(true);
+			logFolder.setWritable(true);
+			logFolder.setExecutable(true);
+		}
+	}
+
+	/**
 	 * Retrieve current OS and distribution.
 	 * 
 	 * @return main OS distribution (i.e. Debian- or Fedora- based)

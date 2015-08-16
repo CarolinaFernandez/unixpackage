@@ -1,4 +1,5 @@
 build
+bin/unixpackage.jar
 
 *~
 *.class

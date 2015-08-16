@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 public class MainApp {
 
 	public static void main(String[] args) {
+		// Initialise log
+		Files.initialiseLog();
 		// Process arguments
 		boolean argumentsCorrectlyParsed = Arguments.parseInputArguments(args);
 
