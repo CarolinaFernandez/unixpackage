@@ -348,6 +348,7 @@ public final class Constants {
 		}
 
 		PACKAGE_CLASSES_DEB = new TreeMap<String, String>();
+		PACKAGE_CLASSES_DEB.put("Arch-Independent", "i");
 		PACKAGE_CLASSES_DEB.put("Single binary", "s");
 		PACKAGE_CLASSES_DEB.put("Kernel module", "k");
 		PACKAGE_CLASSES_DEB.put("Multiple binary", "m");
@@ -505,7 +506,7 @@ public final class Constants {
 				Constants.BUNDLE_MODE_ADVANCED_PATH);
 
 		// RegExps (e.g. for validation) in Fedora-based distros
-		VARIABLES_REGEXPS_RPM = VARIABLES_REGEXPS_DEB;
+		VARIABLES_REGEXPS_RPM = new HashMap<String, Pattern>(VARIABLES_REGEXPS_DEB);
 		VARIABLES_REGEXPS_RPM.put("PACKAGE_LICENCE",
 				Constants.RE_PACKAGE_LICENCE_RPM);
 		VARIABLES_REGEXPS_RPM.put("PACKAGE_CLASS",

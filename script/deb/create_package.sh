@@ -232,8 +232,8 @@ function validate_parameters()
       mkdir -p $path_to_package/debian_templates/
       cp -Rp $debian_files_location/* $path_to_package/debian_templates/
       debian_files_location=$path_to_package/debian_templates/debian
-      cat $debian_files_location/control
     fi
+    cat $debian_files_location/debian/control
     # Correction: use parent folder if the user chose the debian folder itself
     if [[ $(basename $debian_files_location) =~ ^debian.* ]]; then
       debian_files_location_root="$(dirname "$debian_files_location")"
@@ -318,7 +318,6 @@ function do_clean_dh_make()
 {
   find $path_to_package -name "*.tar.gz" -exec rm -f "{}" \;
   if [[ -d $path_to_package/debian ]]; then
-    ls -la $path_to_package/debian
     rm -rf $path_to_package/debian
   fi
   if [[ -d $outputh_path ]]; then
@@ -347,13 +346,29 @@ function place_user_files_in_package()
     source_file=$(basename $source_path)
     destination_path=${file_tuple[1]}
     destination_path_tmp=${destination_path:1:${#destination_path}}
-    mkdir -p $path_to_package/debian/contents/$destination_path_tmp
-    cp -p $source_path $path_to_package/debian/contents/$destination_path_tmp/$source_file
+    destination_path_tmp_dir=$(dirname ${destination_path:1:${#destination_path}})
+    mkdir -p $path_to_package/debian/contents/$destination_path_tmp_dir
+    # If source is a folder, copy recursively into the parent's folder
+    if [ -d $source_path ]; then
+      cp -Rp $source_path/ $path_to_package/debian/contents/$destination_path_tmp
+    # Otherwise, perform a normal copy with the given folder
+    else
+      cp -p $source_path $path_to_package/debian/contents/$destination_path_tmp
+    fi
+    # If source is an application, add to a different file ("include-binaries")
+    if [[ $(file $source_path --mime) =~ .*application.* ]]; then
+      if [ ! -d $path_to_package/debian/source ]; then
+        mkdir $path_to_package/debian/source
+      fi
+      if [ ! -f $path_to_package/debian/source/include-binaries ]; then
+        touch $path_to_package/debian/source/include-binaries
+      fi
+      echo "debian/contents/$destination_path_tmp" >> $path_to_package/debian/source/include-binaries
+    fi
     if [ ! -f $path_to_package/debian/install ]; then
       touch $path_to_package/debian/install
     fi
-    cat $path_to_package/debian/install
-    echo "debian/contents/$destination_path_tmp/$source_file $destination_path" >> $path_to_package/debian/install
+    echo "debian/contents/$destination_path_tmp $destination_path_tmp_dir/" >> $path_to_package/debian/install
   done
 }
 
@@ -455,10 +470,10 @@ if [[ $no_build == true || $build == false ]]; then
       sed -i "s}<insert the upstream URL, if relevant>}$package_website}" $path_to_package/debian/control
     fi
     if [[ ! -z $package_section ]]; then
-      sed -i "s}^\(Section: *\).*\$}\1$package_section}" $debian_files_location/control
+      sed -i "s}^\(Section: *\).*\$}\1$package_section}" $path_to_package/debian/control
     fi
     if [[ ! -z $package_priority ]]; then
-      sed -i "s}^\(Priority: *\).*\$}\1$package_priority}" $debian_files_location/control
+      sed -i "s}^\(Priority: *\).*\$}\1$package_priority}" $path_to_package/debian/control
     fi
   else
     error "E: file $path_to_package/debian/control is needed when using templates"
@@ -545,10 +560,12 @@ export DH_COMPAT=5
 
 if [[ $sign_package == true ]]; then
   echo_v "> Performing (signed) dpkg-buildpackage..."
-  /usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $path_to_package"
+  #/usr/bin/dpkg-buildpackage -F || error "Could not dpkg-buildpackage (signed) on $path_to_package"
+  /usr/bin/dpkg-buildpackage -F --source-option=--include-binaries || error "Could not dpkg-buildpackage (signed) on $path_to_package"
 else
   echo_v "> Performing (unsigned) dpkg-buildpackage..."
-  /usr/bin/dpkg-buildpackage -F -us -uc || error "Could not dpkg-buildpackage (unsigned) on $path_to_package"
+  #/usr/bin/dpkg-buildpackage -F -us -uc || error "Could not dpkg-buildpackage (unsigned) on $path_to_package"
+  /usr/bin/dpkg-buildpackage -F -us -uc --source-option=--include-binaries || error "Could not dpkg-buildpackage (unsigned) on $path_to_package"
 fi
 
 breakline 1
