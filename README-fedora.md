@@ -10,9 +10,10 @@ with OpenJDK Java 1.6 (v1.6.0_36).
 
 ```
 UNIXPACKAGE_GIT=/opt/unixpackage
+UNIXPACKAGE_DIR=/tmp/unixpackage
 FANCYPACKAGE_DIR=/tmp/fancypackage
 git clone http://CarolinaFernandez.github.io/unixpackage.git $UNIXPACKAGE_GIT
-cp -Rp $UNIXPACKAGE_GIT /tmp/unixpackage
+cp -Rp $UNIXPACKAGE_GIT $UNIXPACKAGE_DIR
 make build
 make jar
 
@@ -27,5 +28,5 @@ PACKAGE_ARCH = "noarch"
 DESCRIPTION_SHORT="Create a fancy package"
 DESCRIPTION_LONG="Create a fancy package that does fancy stuff"
 
-java -jar /tmp/unixpackage/build/unixpackage.jar -b -c $PACKAGE_LICENCE -d $DESCRIPTION_SHORT -C $PACKAGE_ARCH -D $DESCRIPTION_LONG -g $PACKAGE_GROUP -e $AUTHOR_EMAIL -f $UNIXPACKAGE_GIT:$FANCYPACKAGE_DIR -p $PACKAGE_NAME -V $PACKAGE_VERSION -w $PACKAGE_WEBSITE
+java -jar $UNIXPACKAGE_DIR/build/unixpackage.jar -b -c $PACKAGE_LICENCE -d $DESCRIPTION_SHORT -C $PACKAGE_ARCH -D $DESCRIPTION_LONG -g $PACKAGE_GROUP -e $AUTHOR_EMAIL -f $UNIXPACKAGE_GIT:$FANCYPACKAGE_DIR -p $PACKAGE_NAME -V $PACKAGE_VERSION -w $PACKAGE_WEBSITE
 ```

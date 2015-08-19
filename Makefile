@@ -78,7 +78,6 @@ deb:
 		test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
 		$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_DEB) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_DEB) -D $(DESCRIPTION_LONG) -s $(PACKAGE_SECTION) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/unixpackage.jar:/usr/lib/unixpackage/unixpackage.jar $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/debian/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
 
-
 rpm:
 		test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
 		$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_RPM) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_RPM) -D $(DESCRIPTION_LONG) -g $(PACKAGE_GROUP) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/unixpackage.jar:/usr/lib/unixpackage/unixpackage.jar $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/fedora/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
@@ -88,4 +87,3 @@ clean:
 		rm -f $(JAR_PKG)
 
 all:		clean build jar run-jar
-
