@@ -238,7 +238,7 @@ public class Shell {
 	}
 
 	public static void outputVersionInformation() {
-		UnixLogger.LOGGER.info(Constants.APP_VERSION);
+		UnixLogger.LOGGER.info("Version: " + Constants.APP_VERSION);
 	}
 
 	public static boolean cleanTempFiles() {

@@ -28,7 +28,7 @@ public class Arguments {
 		// Update afterwards with command-line arguments (higher priority)
 		Boolean correctlyParsed = true;
 		Boolean argumentWithValue = true;
-		Boolean argumentIsVerified = false;
+		Boolean argumentIsVerified = true;
 		ArrayList<String> arguments = parseArgumentsString(args);
 		String variableName = null;
 		String variableData = null;
@@ -49,8 +49,14 @@ public class Arguments {
 					variableName = Constants.ARGUMENTS_VARIABLES
 							.get(variableName);
 				} else {
-					variableName = null;
-					argumentWithValue = false;
+					// If it is a non-accepted argument key, throw Exception
+					if (arguments.get(i).startsWith("-")) {
+						throw new Exception();
+					// Otherwise, it may be any value after the argument key
+					} else {
+						variableName = null;
+						argumentWithValue = false;
+					}
 				}
 
 				// Place value of argument in its related variable
@@ -108,12 +114,16 @@ public class Arguments {
 						variableData = null;
 						throw new Exception();
 					}
-					// variableName = null;
+				} else {
+					// Invalid arguments make everything else fail
+//					throw new Exception();
 				}
 			} catch (Exception e) {
 				correctlyParsed &= false;
 				UnixLogger.LOGGER.error("Could not parse argument '" + arguments.get(i) + "'. Details: " + e);
-				e.printStackTrace();
+				if (!Variables.BATCH_MODE) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return correctlyParsed;
