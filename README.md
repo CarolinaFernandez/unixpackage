@@ -22,7 +22,7 @@ and in the README files available per UNIX operating system.
 
 ## 1. Requirements
 * A GNU/Linux Debian or Fedora-based distros
-* Java 1.6 and JDK installed
+* Java 1.6, 1.7 or 1.8 and JDK installed
 
 ## 2. Running
 #### 2.1 Clone the UnixPackage repository under folder /opt
@@ -30,10 +30,10 @@ and in the README files available per UNIX operating system.
   unixpackage_git=/opt/unixpackage
   git clone http://CarolinaFernandez.github.io/unixpackage.git $unixpackage_git
   ```
-#### 2.2 Create the log folder and grant full permissions
+#### 2.2 Create the log folder (as root) and grant full permissions
   ```
-  mkdir -p /var/log/unixpackage
-  chmod 777 /var/log/unixpackage/
+  cd $unixpackage_git
+  sudo make configure
   ```
 #### 2.3 Compile the sources through the Makefile
   ```
@@ -65,3 +65,11 @@ the JAR, perform the following steps:
 #### 3.2 Install the package
 Move to the folder specified by the above step and install
 the package with your preferred package manager.
+
+## 4. Testing
+If interested in running the tests to validate to a certain
+extent that UnixPackage will work in your environment, write
+the following in a terminal:
+  ```
+  make tests
+  ```
