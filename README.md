@@ -63,3 +63,5 @@ the JAR, perform the following steps:
 #### 3.2 Install the package
 Move to the folder specified by the above step and install
 the package with your preferred package manager.
+
+[![Build Status](https://travis-ci.org/CarolinaFernandez/unixpackage.svg?branch=development)](https://travis-ci.org/CarolinaFernandez/unixpackage)
