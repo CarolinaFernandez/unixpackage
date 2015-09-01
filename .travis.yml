@@ -4,7 +4,7 @@ jdk:
   - openjdk6
 # configure environment
 before_script:
-  - "make configure"
+  - "sudo make configure"
 # run Java unit tests
 script:
   - "make build"

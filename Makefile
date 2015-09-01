@@ -44,8 +44,8 @@ DESCRIPTION_SHORT = "Create a UNIX package"
 DESCRIPTION_LONG = "Easily create Debian and Fedora based UNIX packages through a UI"
 
 configure:
-		sudo mkdir -p $(LOG_DIR)
-		sudo chmod 777 $(LOG_DIR)
+		mkdir -p $(LOG_DIR)
+		chmod 777 $(LOG_DIR)
 build: 		
 		mkdir -p $(BUILD_DIR)
 		find $(SRC_DIR) -iname *.java >> sources.txt
