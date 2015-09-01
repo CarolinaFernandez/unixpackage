@@ -1,5 +1,6 @@
 # Related paths
 SRC_DIR = src
+TEST_DIR = test
 LIB_DIR = lib
 BUILD_DIR = build
 TMP_DIR = /tmp/unixpackage
@@ -13,14 +14,14 @@ JAR_PKG = $(BUILD_DIR)/unixpackage.jar
 # Set your entry point(s) of your java app:
 ENTRY_POINT = $(SRC_DIR)/com/github/unixpackage/MainApp.java
 ENTRY_POINT_JAVA = com.github.unixpackage.MainApp
-ENTRY_POINT_CLASS = $(BUILD_DIR)/com/github/unixpackage/MainApp.class
+ENTRY_POINT_JUNIT = org.junit.runner.JUnitCore
 
 # Java, flags and classpath
 JAVA = java
 JAVAC = javac
 JAR = jar
 JFLAGS = -encoding UTF-8 -Xlint:none
-CLASSPATH = $(SRC_DIR):$(BUILD_DIR):media:script:$(LIB_DIR)/commons-io-1.2.jar:$(LIB_DIR)/log4j-1.2.17.jar
+CLASSPATH = $(SRC_DIR):$(BUILD_DIR):media:script:$(LIB_DIR)/commons-io-1.2.jar:$(LIB_DIR)/log4j-1.2.17.jar:$(LIB_DIR)/hamcrest-core-1.3.jar:$(LIB_DIR)/junit-4.12.jar
 
 # Generate JAR file
 JAR_CMD = $(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C `find $(BUILD_DIR) -not -path "*/unixpackage.jar" -not -path "*/.git*"`
@@ -43,7 +44,8 @@ DESCRIPTION_LONG = "Easily create Debian and Fedora based UNIX packages through 
 
 build: 		
 		mkdir -p $(BUILD_DIR)
-		find $(SRC_DIR) -iname *.java > sources.txt
+		find $(SRC_DIR) -iname *.java >> sources.txt
+		find $(TEST_DIR) -iname *.java >> sources.txt
 		$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) @sources.txt -encoding UTF-8
 		rm sources.txt
 		#$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) -sourcepath $(SRC_DIR) $(ENTRY_POINT) $(JFLAGS)
@@ -73,6 +75,9 @@ jar:
 
 run-jar: 	
 		$(JAVA) -$(JAR) $(JAR_PKG)
+
+tests:
+		$(JAVA) -cp $(CLASSPATH) $(ENTRY_POINT_JUNIT) com.github.unixpackage.data.ArgumentsTest
 
 deb:
 		test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/

@@ -3,7 +3,7 @@ package com.github.unixpackage.data;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
+//import java.util.HashMap;
 import org.junit.Test;
 
 public class ArgumentsTest {
@@ -11,17 +11,17 @@ public class ArgumentsTest {
 	/**
 	 * Ensure accepted arguments are successfully processed.
 	 */
-	@Test
-	public void testArgumentsAccepted() {
-		// Retrieve list of accepted arguments (w/o proper values)
-		HashMap<String, String> argumentsMap = new HashMap<String, String>(
-				Constants.ARGUMENTS_ACCEPTED);
-		// Convert to String array
-		String[] arguments = argumentsMap.keySet().toArray(new String[0]);
-		boolean argumentsCorrectlyParsed = Arguments
-				.parseInputArguments(arguments);
-		assertTrue(argumentsCorrectlyParsed);
-	}
+//	@Test
+//	public void testArgumentsAccepted() {
+//		// Retrieve list of accepted arguments (w/o proper values)
+//		HashMap<String, String> argumentsMap = new HashMap<String, String>(
+//				Constants.ARGUMENTS_ACCEPTED);
+//		// Convert to String array
+//		String[] arguments = argumentsMap.keySet().toArray(new String[0]);
+//		boolean argumentsCorrectlyParsed = Arguments
+//				.parseInputArguments(arguments);
+//		assertTrue(argumentsCorrectlyParsed);
+//	}
 
 	/**
 	 * Ensure valid arguments are successfully processed in a Debian-based environment.
