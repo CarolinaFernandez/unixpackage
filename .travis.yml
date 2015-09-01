@@ -1,13 +1,15 @@
 language: java
 jdk:
-  - "1.6"
+  - oraclejdk7
+  - openjdk7
+  - openjdk6
 # install dependencies
-install:
-  - "sudo apt-get install oracle-java6-installer"
+#install:
+#  - "sudo apt-get install oracle-java6-installer"
 # run Java unit tests
 script:
   - "make build"
-  - "java -cp src:build:media:script:lib/commons-io-1.2.jar:lib/log4j-1.2.17.jar:lib/hamcrest-core-1.3.jar:lib/junit-4.12.jar org.junit.runner.JUnitCore com.github.unixpackage.data.ArgumentsTest"
+  - "make test"
 # notify result of build to email address
 notifications:
   email:
