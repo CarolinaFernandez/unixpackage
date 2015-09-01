@@ -1,11 +1,11 @@
 language: java
 jdk:
-  - oraclejdk7
-  - openjdk7
+  - oraclejdk6
   - openjdk6
-# install dependencies
-#install:
-#  - "sudo apt-get install oracle-java6-installer"
+# configure environment
+before_script:
+  - "sudo mkdir -p /var/log/unixpackage"
+  - "sudo chmod 777 /var/log/unixpackage"
 # run Java unit tests
 script:
   - "make build"
