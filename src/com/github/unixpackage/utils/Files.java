@@ -244,7 +244,8 @@ public class Files {
 	public static String getAbsolutePathPackageFile(String file) {
 		String absolutePathFile = "";
 		// Default is "DEB"
-		if (Variables.PACKAGE_TYPE.equals("RPM")) {
+		if (!Variables.isNull("PACKAGE_TYPE")
+				&& Variables.PACKAGE_TYPE.equals("RPM")) {
 			absolutePathFile = Constants.ROOT_TMP_PACKAGE_FILES_PATH + "/"
 					+ Constants.TMP_SCRIPT_REDHAT_FILES_PATH + "/"
 					+ Variables.PACKAGE_NAME + "_" + Variables.PACKAGE_VERSION

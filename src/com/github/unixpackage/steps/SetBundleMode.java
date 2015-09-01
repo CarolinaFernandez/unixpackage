@@ -96,7 +96,8 @@ public class SetBundleMode extends CommonStep {
 		bundleSimple.setToolTipText(Constants.BUNDLE_MODE_DESCRIPTIONS
 				.get(Constants.BUNDLE_MODE_SIMPLE));
 		bundleSimple.setName("BUNDLE_MODE_SIMPLE");
-		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+		if (!Variables.isNull("PACKAGE_TYPE")
+				&& Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 			// Disabled for RPM
 			bundleSimple.setEnabled(false);
 		}
@@ -289,7 +290,8 @@ public class SetBundleMode extends CommonStep {
 		// TODO Fill in CommonStep
 		if (!Variables.isNull(signGPG.getName())) {
 			signGPG.setSelected((Boolean) Variables.get(signGPG.getName()));
-			if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+			if (!Variables.isNull("PACKAGE_TYPE")
+					&& Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 				signGPG.setSelected(false);
 				signGPG.setEnabled(false);
 			}
@@ -373,8 +375,9 @@ public class SetBundleMode extends CommonStep {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				if (signGPG.isSelected()) {
-					if (Variables.PACKAGE_TYPE
-							.equals(Constants.BUNDLE_TYPE_RPM)) {
+					if (!Variables.isNull("PACKAGE_TYPE")
+							&& Variables.PACKAGE_TYPE
+									.equals(Constants.BUNDLE_TYPE_RPM)) {
 						signGPG.setSelected(false);
 						signGPG.setEnabled(false);
 					}

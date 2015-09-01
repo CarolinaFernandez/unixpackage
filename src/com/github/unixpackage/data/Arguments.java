@@ -32,7 +32,7 @@ public class Arguments {
 		ArrayList<String> arguments = parseArgumentsString(args);
 		String variableName = null;
 		String variableData = null;
-		
+
 		for (int i = 0; i < arguments.size(); i++) {
 			try {
 				argumentWithValue = true;
@@ -52,7 +52,7 @@ public class Arguments {
 					// If it is a non-accepted argument key, throw Exception
 					if (arguments.get(i).startsWith("-")) {
 						throw new Exception();
-					// Otherwise, it may be any value after the argument key
+						// Otherwise, it may be any value after the argument key
 					} else {
 						variableName = null;
 						argumentWithValue = false;
@@ -66,27 +66,30 @@ public class Arguments {
 						&& variableName != "") {
 					try {
 						if (Variables.get(variableName) != null) {
-							variableData = Variables.get(variableName).toString();
+							variableData = Variables.get(variableName)
+									.toString();
 						}
 						// If string is passed to argument (via terminal),
 						// replace the preferences file with it
-						if (arguments.get(i).startsWith("-") && ! arguments.get(i+1).startsWith("-")) {
-							variableData = arguments.get(i+1);
-							if (variableName.equals("PACKAGE_SOURCE_INSTALL_PAIRS")) {
-									Variables.PACKAGE_SOURCE_INSTALL_PAIRS = new ArrayList<ArrayList<String>>();
-									ArrayList<String> packageSourceInstallPairsFile = new ArrayList<String>(
-											Arrays.asList(variableData.split(" ")));
-									for (String packageSourceInstallPair : packageSourceInstallPairsFile) {
-										if (!packageSourceInstallPair.isEmpty()) {
-											ArrayList<String> packageSourceInstallPairFile = new ArrayList<String>(
-													Arrays.asList(packageSourceInstallPair
-															.split(":")));
-											Variables.PACKAGE_SOURCE_INSTALL_PAIRS
-													.add(packageSourceInstallPairFile);
-										}
+						if (arguments.get(i).startsWith("-")
+								&& !arguments.get(i + 1).startsWith("-")) {
+							variableData = arguments.get(i + 1);
+							if (variableName
+									.equals("PACKAGE_SOURCE_INSTALL_PAIRS")) {
+								Variables.PACKAGE_SOURCE_INSTALL_PAIRS = new ArrayList<ArrayList<String>>();
+								ArrayList<String> packageSourceInstallPairsFile = new ArrayList<String>(
+										Arrays.asList(variableData.split(" ")));
+								for (String packageSourceInstallPair : packageSourceInstallPairsFile) {
+									if (!packageSourceInstallPair.isEmpty()) {
+										ArrayList<String> packageSourceInstallPairFile = new ArrayList<String>(
+												Arrays.asList(packageSourceInstallPair
+														.split(":")));
+										Variables.PACKAGE_SOURCE_INSTALL_PAIRS
+												.add(packageSourceInstallPairFile);
 									}
 								}
 							}
+						}
 					} catch (Exception e) {
 						variableData = "";
 					}
@@ -106,7 +109,7 @@ public class Arguments {
 							variableData);
 					if (argumentIsVerified) {
 						// Avoid parsing the argument for files (-f)
-						if (! arguments.get(i).equals("-f")) {
+						if (!arguments.get(i).equals("-f")) {
 							Variables.set(variableName, variableData);
 						}
 					} else {
@@ -116,11 +119,12 @@ public class Arguments {
 					}
 				} else {
 					// Invalid arguments make everything else fail
-//					throw new Exception();
+					// throw new Exception();
 				}
 			} catch (Exception e) {
 				correctlyParsed &= false;
-				UnixLogger.LOGGER.error("Could not parse argument '" + arguments.get(i) + "'. Details: " + e);
+				UnixLogger.LOGGER.error("Could not parse argument '"
+						+ arguments.get(i) + "'. Details: " + e);
 				if (!Variables.BATCH_MODE) {
 					e.printStackTrace();
 				}
@@ -361,7 +365,8 @@ public class Arguments {
 		argumentList.put(Constants.ARGUMENT_NAME, Variables.MAINTAINER_NAME);
 		argumentList.put(Constants.ARGUMENT_EMAIL, Variables.MAINTAINER_EMAIL);
 
-		// FIXME: Template usage not working as expected (fix RPM generation script)
+		// FIXME: Template usage not working as expected (fix RPM generation
+		// script)
 		// In advanced mode, a path is passed to copy the user's templates from
 		if (!Variables.isNull("BUNDLE_MODE")
 				&& Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {

@@ -51,7 +51,8 @@ public class SetPackageInfo extends CommonStep {
 		// Version - Revision
 		String versionRevision = "Version[-Revision]";
 		String versionToolTip = "Version (and optionally revision) of the package";
-		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+		if (!Variables.isNull("PACKAGE_TYPE")
+				&& Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 			versionRevision = "Version-Revision";
 			versionToolTip = "Version and revision of the package";
 		}
@@ -73,7 +74,8 @@ public class SetPackageInfo extends CommonStep {
 
 		// Licence
 		Map<String, String> packageLicences = Constants.PACKAGE_LICENCES_DEB;
-		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+		if (!Variables.isNull("PACKAGE_TYPE")
+				&& Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 			packageLicences = Constants.PACKAGE_LICENCES_RPM;
 		}
 
@@ -99,7 +101,8 @@ public class SetPackageInfo extends CommonStep {
 		String packageClassName = "Class";
 		Map<String, String> packageClasses = Constants.PACKAGE_CLASSES_DEB;
 		String classToolTip = "Choose a class in which your package fits";
-		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+		if (!Variables.isNull("PACKAGE_TYPE")
+				&& Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 			packageClassName = "Architecture";
 			packageClasses = Constants.PACKAGE_CLASSES_RPM;
 			classToolTip = "Choose an architecture in which your package fits";
@@ -126,7 +129,8 @@ public class SetPackageInfo extends CommonStep {
 		String sectionName = "Section";
 		String sectionToolTip = "Choose the section more related to your package";
 		ArrayList<String> packageSections = Constants.PACKAGE_SECTIONS_DEB;
-		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
+		if (!Variables.isNull("PACKAGE_TYPE")
+				&& Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 			sectionName = "Group";
 			sectionToolTip = "Choose the group more related to your package";
 			packageSections = Constants.PACKAGE_SECTIONS_RPM;
@@ -155,7 +159,8 @@ public class SetPackageInfo extends CommonStep {
 		for (String priority : Constants.PACKAGE_PRIORITIES) {
 			prioritiesList.addElement(priority);
 		}
-		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+		if (Variables.isNull("PACKAGE_TYPE")
+				|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 			JComboBox prioritiesListBox = new JComboBox(prioritiesList);
 			priorityLabel.setLabelFor(prioritiesListBox);
 			prioritiesListBox.setToolTipText("Set a suitable priority");

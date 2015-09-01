@@ -22,10 +22,13 @@ public class ReviewPackageInfo extends CommonStep {
 		l = new JLabel("Type of UNIX package: ", JLabel.TRAILING);
 		this.add(l);
 		String packageTypeOS;
-		if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+		if (Variables.isNull("PACKAGE_TYPE")
+				|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 			packageTypeOS = "Debian";
+			Variables.set("PACKAGE_TYPE", "DEB");
 		} else {
 			packageTypeOS = "Red Hat";
+			Variables.set("PACKAGE_TYPE", "RPM");
 		}
 		l = new JLabel(Variables.PACKAGE_TYPE + " (" + packageTypeOS + ")");
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);

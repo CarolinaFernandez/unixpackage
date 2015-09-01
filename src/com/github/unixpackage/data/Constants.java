@@ -98,7 +98,8 @@ public final class Constants {
 	// Size and dimension for components
 	public static final int FRAME_WIDTH = 700;
 	public static final int FRAME_HEIGHT = 500;
-	public static Dimension SCREEN_DIMENSION = new Dimension(FRAME_WIDTH, FRAME_HEIGHT);
+	public static Dimension SCREEN_DIMENSION = new Dimension(FRAME_WIDTH,
+			FRAME_HEIGHT);
 	public static final int NAVIGATION_BUTTON_WIDTH = 150;
 	public static final int NAVIGATION_HEIGHT = 30;
 	public static final int STEPTITLE_HEIGHT = 15;
@@ -130,8 +131,8 @@ public final class Constants {
 	public static final String ARGUMENT_VERSION_LONG = "--version";
 	public static final String ARGUMENT_BATCH = "-b";
 	public static final String ARGUMENT_BATCH_LONG = "--batch";
-//	public static final String ARGUMENT_SOURCE = "-s";
-//	public static final String ARGUMENT_SOURCE_LONG = "--source";
+	// public static final String ARGUMENT_SOURCE = "-s";
+	// public static final String ARGUMENT_SOURCE_LONG = "--source";
 	public static final String ARGUMENT_DESCRIPTION_SHORT = "-d";
 	public static final String ARGUMENT_DESCRIPTION_SHORT_LONG = "--description-short";
 	public static final String ARGUMENT_DESCRIPTION = "-D";
@@ -502,7 +503,8 @@ public final class Constants {
 				Constants.BUNDLE_MODE_ADVANCED_PATH);
 
 		// RegExps (e.g. for validation) in Fedora-based distros
-		VARIABLES_REGEXPS_RPM = new HashMap<String, Pattern>(VARIABLES_REGEXPS_DEB);
+		VARIABLES_REGEXPS_RPM = new HashMap<String, Pattern>(
+				VARIABLES_REGEXPS_DEB);
 		VARIABLES_REGEXPS_RPM.put("PACKAGE_LICENCE",
 				Constants.RE_PACKAGE_LICENCE_RPM);
 		VARIABLES_REGEXPS_RPM.put("PACKAGE_CLASS",

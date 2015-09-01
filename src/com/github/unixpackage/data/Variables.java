@@ -28,7 +28,7 @@ public class Variables {
 	public static Boolean PACKAGE_SIGN;
 	public static Boolean _PACKAGE_GENERATED = false;
 	public static String _PACKAGE_GENERATED_OUTPUT = "";
-	public static ArrayList<ArrayList<String>> PACKAGE_SOURCE_INSTALL_PAIRS;
+	public static ArrayList<ArrayList<String>> PACKAGE_SOURCE_INSTALL_PAIRS = new ArrayList<ArrayList<String>>();
 	// Can be "DEB" or "RPM"
 	public static String PACKAGE_TYPE;
 	public static String _DEB_PACKAGE;

@@ -181,15 +181,20 @@ public class StepLoader {
 			}
 			// SetPackageInfo
 		} else if (stepNumber == 5) {
-			if (!Variables.BUNDLE_MODE.equals(Constants.BUNDLE_MODE_ADVANCED)) {
-				if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			if (!Variables.isNull("BUNDLE_MODE")
+					&& !Variables.BUNDLE_MODE
+							.equals(Constants.BUNDLE_MODE_ADVANCED)) {
+				if (Variables.isNull("PACKAGE_TYPE")
+						|| Variables.PACKAGE_TYPE
+								.equals(Constants.BUNDLE_TYPE_DEB)) {
 					GeneratePackage.generateDebianFiles();
 				} else {
 					GeneratePackage.generateRedHatFiles();
 				}
 			}
 		} else if (stepNumber == 6) {
-			if (Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
+			if (Variables.isNull("PACKAGE_TYPE")
+					|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 				GeneratePackage.generateDebianFiles();
 			} else {
 				GeneratePackage.generateRedHatFiles();

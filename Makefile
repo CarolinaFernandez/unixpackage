@@ -46,7 +46,8 @@ DESCRIPTION_LONG = "Easily create Debian and Fedora based UNIX packages through 
 configure:
 		mkdir -p $(LOG_DIR)
 		chmod 777 $(LOG_DIR)
-build: 		
+
+build:
 		mkdir -p $(BUILD_DIR)
 		find $(SRC_DIR) -iname *.java >> sources.txt
 		find $(TEST_DIR) -iname *.java >> sources.txt
@@ -60,10 +61,10 @@ build:
 		cp -up log4j.properties $(BUILD_DIR)
 		test -d $(BUILD_DIR) || echo "Error: $(BUILD_DIR) directory is not found"
 
-run-class: 	
+run-class:	
 		$(JAVA) -cp $(CLASSPATH) $(ENTRY_POINT_JAVA)
 
-jar:		
+jar:
 		cp -up $(LIB_DIR)/commons-io-1.2.jar $(BUILD_DIR)/
 		cp -up $(LIB_DIR)/log4j-1.2.17.jar $(BUILD_DIR)/
 		# Extract contents of dependencies under BUILD_DIR
@@ -77,7 +78,7 @@ jar:
 		#$(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C `find $(BUILD_DIR) -not -path "*/unixpackage.jar" -not -path "*/.git*"`
 		$(JAR_CMD) || $(JAR_CMD) & 1>&2 > /dev/null
 
-run-jar: 	
+run-jar:
 		$(JAVA) -$(JAR) $(JAR_PKG)
 
 tests:
@@ -91,9 +92,9 @@ rpm:
 		test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
 		$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_RPM) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_RPM) -D $(DESCRIPTION_LONG) -g $(PACKAGE_GROUP) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/unixpackage.jar:/usr/lib/unixpackage/unixpackage.jar $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/fedora/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
 
-clean:		
+clean:
 		rm -rf $(BUILD_DIR)
 		rm -f $(JAR_PKG)
+		sudo rm -rf $(LOG_DIR)
 
-all:		
-		clean build tests jar run-jar
+all:	clean configure build tests jar run-jar

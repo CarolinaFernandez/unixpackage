@@ -1,7 +1,7 @@
 language: java
 jdk:
-  - oraclejdk6
-  - openjdk6
+  - oraclejdk8
+  - openjdk8
 # configure environment
 before_script:
   - "sudo make configure"
