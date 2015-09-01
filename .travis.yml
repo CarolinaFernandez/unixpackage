@@ -4,8 +4,7 @@ jdk:
   - openjdk6
 # configure environment
 before_script:
-  - "sudo mkdir -p /var/log/unixpackage"
-  - "sudo chmod 777 /var/log/unixpackage"
+  - "make configure"
 # run Java unit tests
 script:
   - "make build"

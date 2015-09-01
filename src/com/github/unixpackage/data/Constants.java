@@ -3,7 +3,6 @@ package com.github.unixpackage.data;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -97,12 +96,9 @@ public final class Constants {
 	public static final Color WARNING_FOREGROUND = new Color(230, 138, 46);
 
 	// Size and dimension for components
-	public static final Dimension SCREEN_DIMENSION = Toolkit
-			.getDefaultToolkit().getScreenSize();
-
 	public static final int FRAME_WIDTH = 700;
 	public static final int FRAME_HEIGHT = 500;
-
+	public static Dimension SCREEN_DIMENSION = new Dimension(FRAME_WIDTH, FRAME_HEIGHT);
 	public static final int NAVIGATION_BUTTON_WIDTH = 150;
 	public static final int NAVIGATION_HEIGHT = 30;
 	public static final int STEPTITLE_HEIGHT = 15;

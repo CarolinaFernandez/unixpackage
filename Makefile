@@ -4,6 +4,7 @@ TEST_DIR = test
 LIB_DIR = lib
 BUILD_DIR = build
 TMP_DIR = /tmp/unixpackage
+LOG_DIR = /var/log/unixpackage
 OPT_DIR = /opt/unixpackage
 SBIN_DIR = /usr/sbin
 MAN8_DIR = /usr/share/man/man8
@@ -42,6 +43,9 @@ PACKAGE_ARCH_RPM = "noarch"
 DESCRIPTION_SHORT = "Create a UNIX package"
 DESCRIPTION_LONG = "Easily create Debian and Fedora based UNIX packages through a UI"
 
+configure:
+		sudo mkdir -p $(LOG_DIR)
+		sudo chmod 777 $(LOG_DIR)
 build: 		
 		mkdir -p $(BUILD_DIR)
 		find $(SRC_DIR) -iname *.java >> sources.txt
@@ -91,4 +95,5 @@ clean:
 		rm -rf $(BUILD_DIR)
 		rm -f $(JAR_PKG)
 
-all:		clean build jar run-jar
+all:		
+		clean build tests jar run-jar

@@ -10,6 +10,8 @@ import com.github.unixpackage.utils.Files;
 import com.github.unixpackage.utils.Shell;
 import com.github.unixpackage.utils.StepLoader;
 
+import java.awt.Toolkit;
+
 import javax.swing.JPanel;
 
 public class MainApp {
@@ -23,6 +25,8 @@ public class MainApp {
 		// When in batch mode, exit with error if some argument
 		// was not correctly parsed
 		if (!Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
+			// Hack. Otherwise, this would not allow remote executions without X11
+			Constants.SCREEN_DIMENSION = Toolkit.getDefaultToolkit().getScreenSize();
 			if (!argumentsCorrectlyParsed) {
 				System.exit(1);
 			}
