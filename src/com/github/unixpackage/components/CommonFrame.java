@@ -59,9 +59,12 @@ public class CommonFrame extends JFrame {
 	}
 
 	private void createIcon() {
-		// Assign icon
-		this.icon = new ImageIcon(getClass().getClassLoader().getResource(
-				Constants.APP_IMAGE));
+		// Assign icon when possible
+		try {
+			this.icon = new ImageIcon(getClass().getClassLoader().getResource(
+					Constants.APP_IMAGE));
+		} catch (Exception e) {
+		}
 		if (this.icon != null) {
 			this.setIconImage(this.icon.getImage());
 		}

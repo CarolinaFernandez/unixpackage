@@ -165,6 +165,7 @@ public class CommonStep extends CommonPanel {
 		this.setDefaultButton();
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected void saveDataIntoVariables() {
 		// 1st and only component should be a CommonStep panel
 		CommonStep step_panel = (CommonStep) this.contentPanel.getComponents()[0];

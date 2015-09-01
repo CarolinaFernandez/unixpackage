@@ -21,14 +21,9 @@ public class MainApp {
 		Files.initialiseLog();
 		// Process arguments
 		boolean argumentsCorrectlyParsed = Arguments.parseInputArguments(args);
-
 		// When in batch mode, exit with error if some argument
-		// was not correctly parsed
+		// was not correctly parsed. Otherwise, obtain screen size
 		if (!Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
-			// Hack. Otherwise, this would not allow remote executions without
-			// X11
-			Constants.SCREEN_DIMENSION = Toolkit.getDefaultToolkit()
-					.getScreenSize();
 			if (!argumentsCorrectlyParsed) {
 				System.exit(1);
 			}
@@ -55,8 +50,11 @@ public class MainApp {
 			prefs.saveToFile();
 			Shell.postProcess();
 		} else {
+			// Hack. Otherwise, no remote executions w/o X11
+			Constants.SCREEN_DIMENSION = Toolkit.getDefaultToolkit()
+					.getScreenSize();
 			// Schedule a job for the event-dispatching thread:
-			// creating and showing this application's GUI.
+			// creating and showing this application's GUI
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					// 1st step

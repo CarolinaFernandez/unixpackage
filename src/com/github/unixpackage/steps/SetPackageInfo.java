@@ -25,6 +25,7 @@ public class SetPackageInfo extends CommonStep {
 			"PACKAGE_SHORT_DESCRIPTION", "PACKAGE_DESCRIPTION",
 			"PACKAGE_WEBSITE" };
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SetPackageInfo() {
 		int numPairs = labels.length;
 		// Clear screen first

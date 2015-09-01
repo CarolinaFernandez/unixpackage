@@ -83,6 +83,7 @@ public class UnixVerifier extends InputVerifier {
 		return variableContentVerified;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	/**
 	 * Verify a single component
