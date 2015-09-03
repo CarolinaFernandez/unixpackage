@@ -16,7 +16,7 @@ public class ArgumentsTest {
 		// Define test for Debian-based OSs
 		Variables.BUNDLE_MODE = "DEB";
 		// Define String array with accepted arguments and valid values
-		String[] arguments = "-b -c gpl3 -d Desc no. 1 -C i -D Desc no. 2 -s admin -e a.b@c.d -f a:b c:d -n A B -p some-name -V 0.1 -w http://u.rl"
+		String[] arguments = "-b -c gpl3 -d Desc no. 1 -C i -D Desc no. 2 -s admin -e a.b@c.d -f a:b c:d -n A B -p some-name -V 0.1 -w http://u.rl -M"
 				.split(" ");
 		boolean argumentsCorrectlyParsed = Arguments
 				.parseInputArguments(arguments);
@@ -45,7 +45,7 @@ public class ArgumentsTest {
 	 */
 	@Test
 	public void testArgumentsNotAccepted() {
-		String[] arguments = "a 3 -M".split(" ");
+		String[] arguments = "a 3 -K".split(" ");
 		boolean argumentsCorrectlyParsed = Arguments
 				.parseInputArguments(arguments);
 		assertFalse(argumentsCorrectlyParsed);

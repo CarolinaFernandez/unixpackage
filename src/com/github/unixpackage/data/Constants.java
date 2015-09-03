@@ -245,7 +245,7 @@ public final class Constants {
 			.compile("^([sikml]|(Single binary)|Arch-Independent|Kernel module|Multiple binary|Library)$");
 	// RegExp for package class (RPM)
 	public static final Pattern RE_PACKAGE_CLASS_RPM = Pattern.compile(
-	// "^((Arch-Independent)|noarch|Athlon|athlon|Geode|geode|i386|i486|i586|i686|x86_64)$"
+			// "^((Arch-Independent)|noarch|Athlon|athlon|Geode|geode|i386|i486|i586|i686|x86_64)$"
 			"^((Arch-Independent)|noarch|Athlon|athlon|Geode|geode|i386|i486|i586|i686)$");
 	// RegExp for package web site
 	public static final Pattern RE_PACKAGE_WEBSITE = Pattern
@@ -398,14 +398,14 @@ public final class Constants {
 
 		FIELDS_FORMAT_EXPLANATION = new HashMap<String, String>();
 		FIELDS_FORMAT_EXPLANATION
-				.put("PACKAGE_NAME",
-						"must consist only of lower case letters (a-z), digits (0-9), plus (+) and minus (-) signs, and periods (.). They must be at least two characters long and must start with an alphanumeric character");
+		.put("PACKAGE_NAME",
+				"must consist only of lower case letters (a-z), digits (0-9), plus (+) and minus (-) signs, and periods (.). They must be at least two characters long and must start with an alphanumeric character");
 		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_SHORT_DESCRIPTION",
 				"must be 60 characters at most");
 		FIELDS_FORMAT_EXPLANATION.put("PACKAGE_WEBSITE", "must be well formed");
 		FIELDS_FORMAT_EXPLANATION
-				.put("PACKAGE_VERSION",
-						"is restricted to the format x.y[-revision], where all fields are digits");
+		.put("PACKAGE_VERSION",
+				"is restricted to the format x.y[-revision], where all fields are digits");
 		FIELDS_FORMAT_EXPLANATION.put("MAINTAINER_EMAIL",
 				"must be a valid e-mail address");
 
@@ -445,9 +445,10 @@ public final class Constants {
 				Constants.ARGUMENT_FILES_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_VERBOSE,
 				Constants.ARGUMENT_VERBOSE_LONG);
+		// Required for DEB packages
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_BUILD,
+				Constants.ARGUMENT_BUILD_LONG);
 		// Only to be used in RPM packages (no effect in DEB)
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_GROUP,
-				Constants.ARGUMENT_PACKAGE_GROUP_LONG);
 
 		// Mapping of input arguments and their associated variables
 		ARGUMENTS_VARIABLES = new HashMap<String, String>();
@@ -463,14 +464,14 @@ public final class Constants {
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_NAME, "MAINTAINER_NAME");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_EMAIL, "MAINTAINER_EMAIL");
 		ARGUMENTS_VARIABLES
-				.put(Constants.ARGUMENT_COPYRIGHT, "PACKAGE_LICENCE");
+		.put(Constants.ARGUMENT_COPYRIGHT, "PACKAGE_LICENCE");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_CLASS, "PACKAGE_CLASS");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_SECTION,
 				"PACKAGE_SECTION");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_PRIORITY,
 				"PACKAGE_PRIORITY");
 		ARGUMENTS_VARIABLES
-				.put(Constants.ARGUMENT_PACKAGE_NAME, "PACKAGE_NAME");
+		.put(Constants.ARGUMENT_PACKAGE_NAME, "PACKAGE_NAME");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_PACKAGE_VERSION,
 				"PACKAGE_VERSION");
 		ARGUMENTS_VARIABLES.put(Constants.ARGUMENT_SIGN, "PACKAGE_SIGN");

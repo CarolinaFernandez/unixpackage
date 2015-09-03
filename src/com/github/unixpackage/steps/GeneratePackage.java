@@ -173,10 +173,8 @@ public class GeneratePackage extends CommonStep {
 		}
 
 		// Open browser in directory where the package is created
-		commandList.add("; if [ ! -z $(ls -lt | grep " + Constants.APP_NAME
-				+ " | head -n 1 | cut -d -f 9) ]; then "
-				+ Constants.OPEN_COMMAND + " $(ls -lt | grep "
-				+ Constants.APP_NAME + " | head -n 1 | cut -d -f 9); fi");
+		commandList.add("&& " + Constants.OPEN_COMMAND + " $(ls -lt | grep "
+				+ Constants.APP_NAME + " | head -n 1 | cut -d -f 9)");
 		// Set flag to true after package generation
 		Variables._PACKAGE_GENERATED = true;
 

@@ -23,7 +23,11 @@ public class Arguments {
 	public static boolean parseInputArguments(String[] args) {
 		// First of all, load any possible variables from the properties file
 		UnixPreferences preferences = new UnixPreferences();
-		preferences.loadFromFile();
+		try {
+			preferences.loadFromFile();
+		} catch (Exception e1) {
+			UnixLogger.LOGGER.warn("Error: could not load properties from file");
+		}
 
 		// Update afterwards with command-line arguments (higher priority)
 		Boolean correctlyParsed = true;

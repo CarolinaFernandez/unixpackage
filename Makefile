@@ -77,7 +77,7 @@ jar:
 		mv -un org $(BUILD_DIR)/ || (mv -u --backup=t org $(BUILD_DIR)/ || echo "Error: impossible to copy required libraries")
 		#$(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C $(BUILD_DIR) .
 		#$(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C `find $(BUILD_DIR) -not -path "*/unixpackage.jar" -not -path "*/.git*"`
-		$(JAR_CMD) || $(JAR_CMD) & 1>&2 > /dev/null
+		$(JAR_CMD) || echo
 
 run-jar:
 		$(JAVA) -$(JAR) $(JAR_PKG)
@@ -87,7 +87,7 @@ tests:
 
 deb:
 		test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
-		test -d $(TMP_DIR)/build && find $(TMP_DIR)/build -not -name '$(JAR_PKG_NAME)' -type f -exec rm -f {} +
+		test -d $(TMP_DIR)/build && find $(TMP_DIR)/build -not -name '$(JAR_PKG_NAME)' -exec rm -rf {} + || echo
 		$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_DEB) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_DEB) -D $(DESCRIPTION_LONG) -s $(PACKAGE_SECTION) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/$(JAR_PKG_NAME):/usr/lib/unixpackage/$(JAR_PKG_NAME) $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/debian/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
 
 rpm:
@@ -100,4 +100,4 @@ clean:
 		rm -f $(JAR_PKG)
 		sudo rm -rf $(LOG_DIR)
 
-all:	clean configure build tests jar run-jar
+all:	clean configure build tests jar
