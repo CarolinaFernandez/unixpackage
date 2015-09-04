@@ -1,6 +1,5 @@
 language: java
 jdk:
-  - openjdk6
   - openjdk7
   - oraclejdk7
   - oraclejdk8
@@ -10,7 +9,7 @@ before_script:
 # run Java unit tests
 script:
   - "make build"
-  - "make tests"
+  - "make check"
 # notify result of build to email address
 notifications:
   email:

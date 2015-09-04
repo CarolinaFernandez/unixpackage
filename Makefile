@@ -1,3 +1,5 @@
+APP_NAME = UnixPackage
+
 # Related paths
 SRC_DIR = src
 TEST_DIR = test
@@ -26,7 +28,8 @@ JFLAGS = -encoding UTF-8 -Xlint:none
 CLASSPATH = $(SRC_DIR):$(BUILD_DIR):media:script:$(LIB_DIR)/commons-io-1.2.jar:$(LIB_DIR)/log4j-1.2.17.jar:$(LIB_DIR)/hamcrest-core-1.3.jar:$(LIB_DIR)/junit-4.12.jar
 
 # Generate JAR file
-JAR_CMD = $(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C `find $(BUILD_DIR) -not -path "*/$(JAR_PKG_NAME)" -not -path "*/.git*"`
+#JAR_CMD = $(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C `find $(BUILD_DIR) -not -path "*/$(JAR_PKG_NAME)" -not -path "*/.git*"`
+JAR_CMD = $(JAR) cfm $(JAR_PKG) MANIFEST.MF -C `find $(BUILD_DIR) -not -path "*/script/*" -not -path "*/$(JAR_PKG_NAME)" -not -path "*/.git*"`
 
 # Package generation
 UNIXPKG_GIT = $(PWD)
@@ -45,59 +48,67 @@ DESCRIPTION_SHORT = "Create a UNIX package"
 DESCRIPTION_LONG = "Easily create Debian and Fedora based UNIX packages through a UI"
 
 configure:
-		mkdir -p $(LOG_DIR)
-		chmod 777 $(LOG_DIR)
+		@echo "  [ $@ ]    Performing initial configuration of the environment..."
+		@test -d $(LOG_DIR) || mkdir -p $(LOG_DIR)
+		@chmod 777 $(LOG_DIR)
 
-build:
-		mkdir -p $(BUILD_DIR)
-		find $(SRC_DIR) -iname *.java >> sources.txt
-		find $(TEST_DIR) -iname *.java >> sources.txt
-		$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) @sources.txt -encoding UTF-8
-		rm sources.txt
-		#$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) -sourcepath $(SRC_DIR) $(ENTRY_POINT) $(JFLAGS)
-		cp -Rup media $(BUILD_DIR)
-		cp -Rup script $(BUILD_DIR)
-		cp -up README* $(BUILD_DIR)
-		cp -up LICENCE $(BUILD_DIR)
-		cp -up log4j.properties $(BUILD_DIR)
-		test -d $(BUILD_DIR) || echo "Error: $(BUILD_DIR) directory is not found"
+build:		configure
+		@echo "  [   $@   ]    Placing all required sources and libraries in place..."
+		@mkdir -p $(BUILD_DIR)
+		@find $(SRC_DIR) -iname *.java >> sources.txt
+		@find $(TEST_DIR) -iname *.java >> sources.txt
+		@$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) @sources.txt -encoding UTF-8
+		@rm sources.txt
+		@#$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) -sourcepath $(SRC_DIR) $(ENTRY_POINT) $(JFLAGS)
+		@cp -Rup media $(BUILD_DIR)
+		@cp -Rup script $(BUILD_DIR)
+		@cp -up README* $(BUILD_DIR)
+		@cp -up LICENCE $(BUILD_DIR)
+		@cp -up log4j.properties $(BUILD_DIR)
+		@test -d $(BUILD_DIR) || echo "Error: $(BUILD_DIR) directory is not found"
 
-run-class:	
-		$(JAVA) -cp $(CLASSPATH) $(ENTRY_POINT_JAVA)
+run-class:	build
+		@$(JAVA) -cp $(CLASSPATH) $(ENTRY_POINT_JAVA)
 
-jar:
-		cp -up $(LIB_DIR)/commons-io-1.2.jar $(BUILD_DIR)/
-		cp -up $(LIB_DIR)/log4j-1.2.17.jar $(BUILD_DIR)/
-		# Extract contents of dependencies under BUILD_DIR
-		$(JAR) xf $(BUILD_DIR)/commons-io-1.2.jar org -C $(BUILD_DIR)/ .
-		$(JAR) xf $(BUILD_DIR)/log4j-1.2.17.jar org -C $(BUILD_DIR)/ .
-		#ifneq ($(man mv | grep -- "-n"), ""); mv -un org $(BUILD_DIR)/; endif
-		#ifneq ($(man mv | grep -- "--backup"), ""); mv -u --backup=t org $(BUILD_DIR)/; endif
-		# Se non e vaca e boi
-		mv -un org $(BUILD_DIR)/ || (mv -u --backup=t org $(BUILD_DIR)/ || echo "Error: impossible to copy required libraries")
-		#$(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C $(BUILD_DIR) .
-		#$(JAR) cvfm $(JAR_PKG) MANIFEST.MF -C `find $(BUILD_DIR) -not -path "*/unixpackage.jar" -not -path "*/.git*"`
-		$(JAR_CMD) || echo
+jar:		build
+		@echo "  [    $@    ]    Placing all required sources and libraries into a JAR..."
+		@cp -up $(LIB_DIR)/commons-io-1.2.jar $(BUILD_DIR)/
+		@cp -up $(LIB_DIR)/log4j-1.2.17.jar $(BUILD_DIR)/
+		@# Extract contents of dependencies under BUILD_DIR
+		@$(JAR) xf $(BUILD_DIR)/commons-io-1.2.jar org -C $(BUILD_DIR)/ .
+		@$(JAR) xf $(BUILD_DIR)/log4j-1.2.17.jar org -C $(BUILD_DIR)/ .
+		@# Ensure proper usage of commands
+		@if [[ "$(mv --help)" =~ "-n, " || "$(mv --help)" =~ "--no-clobber"  ]]; then \
+			mv -un org $(BUILD_DIR)/; \
+		else \
+			mv -u --backup=t org $(BUILD_DIR)/; \
+		fi
+		@$(JAR_CMD) || echo
 
-run-jar:
-		$(JAVA) -$(JAR) $(JAR_PKG)
+run-jar:	jar
+		@$(JAVA) -$(JAR) $(JAR_PKG)
 
-tests:
-		$(JAVA) -cp $(CLASSPATH) $(ENTRY_POINT_JUNIT) com.github.unixpackage.data.ArgumentsTest
+check:		build
+		@echo "  [   $@   ]    Running tests to detect improper behaviour..."
+		@$(JAVA) -cp $(CLASSPATH) $(ENTRY_POINT_JUNIT) com.github.unixpackage.data.ArgumentsTest
 
-deb:
-		test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
-		test -d $(TMP_DIR)/build && find $(TMP_DIR)/build -not -name '$(JAR_PKG_NAME)' -exec rm -rf {} + || echo
-		$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_DEB) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_DEB) -D $(DESCRIPTION_LONG) -s $(PACKAGE_SECTION) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/$(JAR_PKG_NAME):/usr/lib/unixpackage/$(JAR_PKG_NAME) $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/debian/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
+deb:		jar
+		@echo "  [    $@    ]    Bundling $(APP_NAME) into a DEB package..."
+		@test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
+		@test -d $(TMP_DIR)/build && find $(TMP_DIR)/build -not -name '$(JAR_PKG_NAME)' -exec rm -rf {} + || echo
+		@$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_DEB) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_DEB) -D $(DESCRIPTION_LONG) -s $(PACKAGE_SECTION) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/$(JAR_PKG_NAME):/usr/lib/unixpackage/$(JAR_PKG_NAME) $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/debian/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
 
 rpm:
-		test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
-		test -d $(TMP_DIR)/build && find $(TMP_DIR)/build -not -name '$(JAR_PKG_NAME)' -type f -exec rm -f {} +
-		$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_RPM) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_RPM) -D $(DESCRIPTION_LONG) -g $(PACKAGE_GROUP) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/$(JAR_PKG_NAME):/usr/lib/unixpackage/$(JAR_PKG_NAME) $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/fedora/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
+		jar
+		@echo "  [    $@    ]    Bundling $(APP_NAME) into a RPM package..."
+		@test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
+		@test -d $(TMP_DIR)/build && find $(TMP_DIR)/build -not -name '$(JAR_PKG_NAME)' -type f -exec rm -f {} +
+		@$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_RPM) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_RPM) -D $(DESCRIPTION_LONG) -g $(PACKAGE_GROUP) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/$(JAR_PKG_NAME):/usr/lib/unixpackage/$(JAR_PKG_NAME) $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/fedora/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
 
 clean:
-		rm -rf $(BUILD_DIR)
-		rm -f $(JAR_PKG)
-		sudo rm -rf $(LOG_DIR)
+		@echo "  [   $@   ]    Cleaning temp files..."
+		@rm -rf $(BUILD_DIR)
+		@rm -f $(JAR_PKG)
+		@sudo rm -rf $(LOG_DIR)
 
-all:	clean configure build tests jar
+all:	clean configure build check jar

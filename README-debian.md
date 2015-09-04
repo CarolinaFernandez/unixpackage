@@ -5,8 +5,8 @@ The script below shows an example of how to use UnixPackage
 in background mode to generate an DEB package. Alternatively
 you may have a look at the `deb` rule in the Makefile.
 
-The RPM package generation has been tested under CentOS 5.11
-with OpenJDK Java 1.6 (v1.6.0_36).
+The DEB package generation has been tested under Debian 7.4
+with OpenJDK Java 1.6 (v1.6.0_36) and Java 1.8 (v1.8.0_60).
 
 ```
 UNIXPACKAGE_GIT=/opt/unixpackage
@@ -14,7 +14,6 @@ UNIXPACKAGE_DIR=/tmp/unixpackage
 FANCYPACKAGE_DIR=/tmp/fancypackage
 git clone http://CarolinaFernandez.github.io/unixpackage.git $UNIXPACKAGE_GIT
 cp -Rp $UNIXPACKAGE_GIT $UNIXPACKAGE_DIR
-make build
 make jar
 
 AUTHOR_NAME="Jane Doe"

@@ -21,8 +21,8 @@ Further instructions on use can be checked in the GitHub wiki
 and in the README files available per UNIX operating system.
 
 ## 1. Requirements
-* A GNU/Linux Debian or Fedora-based distros
-* Java 1.6, 1.7 or 1.8 and JDK installed
+* A GNU/Linux Debian or Fedora-based distro
+* Java JDK 1.7 or 1.8
 
 ## 2. Running
 #### 2.1 Clone the UnixPackage repository under folder /opt
@@ -67,9 +67,8 @@ Move to the folder specified by the above step and install
 the package with your preferred package manager.
 
 ## 4. Testing
-If interested in running the tests to validate to a certain
-extent that UnixPackage will work in your environment, write
-the following in a terminal:
+If interested in running the tests to check if the UnixPackage
+will work in your environment, write in a terminal:
   ```
-  make tests
+  make check 
   ```
