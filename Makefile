@@ -15,6 +15,8 @@ MAN8_DIR = /usr/share/man/man8
 JAR_PKG_NAME = unixpackage.jar
 JAR_PKG = $(BUILD_DIR)/$(JAR_PKG_NAME)
 
+MV_H = "$(mv --help)"
+
 # Set your entry point(s) of your java app:
 ENTRY_POINT = $(SRC_DIR)/com/github/unixpackage/MainApp.java
 ENTRY_POINT_JAVA = com.github.unixpackage.MainApp
@@ -78,11 +80,8 @@ jar:		build
 		@$(JAR) xf $(BUILD_DIR)/commons-io-1.2.jar org -C $(BUILD_DIR)/ .
 		@$(JAR) xf $(BUILD_DIR)/log4j-1.2.17.jar org -C $(BUILD_DIR)/ .
 		@# Ensure proper usage of commands
-		@if [[ "$(mv --help)" =~ "-n, " || "$(mv --help)" =~ "--no-clobber"  ]]; then \
-			mv -un org $(BUILD_DIR)/; \
-		else \
-			mv -u --backup=t org $(BUILD_DIR)/; \
-		fi
+		@(test "${MV_H#*"-n, "}" != "$(MV_H)" || test "${MV_H*"--no-clobber"}" != "$(MV_H)" ) \
+			&& mv -un org $(BUILD_DIR)/ || mv -u --backup=t org $(BUILD_DIR)/ || echo
 		@$(JAR_CMD) || echo
 
 run-jar:	jar
