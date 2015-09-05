@@ -50,7 +50,7 @@ DESCRIPTION_LONG = "Easily create Debian and Fedora based UNIX packages through 
 configure:
 		@echo "  [ $@ ]    Performing initial configuration of the environment..."
 		@test -d $(LOG_DIR) || mkdir -p $(LOG_DIR)
-		@chmod 777 $(LOG_DIR)
+		@sudo chmod 777 $(LOG_DIR) || echo
 
 build:		configure
 		@echo "  [   $@   ]    Placing all required sources and libraries in place..."
