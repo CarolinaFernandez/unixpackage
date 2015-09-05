@@ -36,8 +36,8 @@ public final class Constants {
 
 	// Media files
 	public static final String ROOT_MEDIA = "media";
-	public static final String APP_ICON = ROOT_MEDIA + "/cat-in-a-box.ico";
-	public static final String APP_IMAGE = ROOT_MEDIA + "/cat-in-a-box.png";
+	public static final String APP_ICON = ROOT_MEDIA + "/icon.ico";
+	public static final String APP_IMAGE = ROOT_MEDIA + "/header.png";
 
 	public final static String OPEN_COMMAND = "xdg-open";
 	public final static String MESSAGE_DIGEST = "MD5";
@@ -90,8 +90,8 @@ public final class Constants {
 			Font.BOLD | Font.ITALIC, 14);
 
 	// Colors
-	public static final Color TITLE_BACKGROUND = new Color(29, 29, 29);
-	public static final Color TITLE_FOREGROUND = new Color(180, 255, 180);
+	public static final Color TITLE_BACKGROUND = new Color(190, 190, 190, 0);
+	public static final Color TITLE_FOREGROUND = new Color(0, 73, 83);
 	public static final Color STEPTITLE_FOREGROUND = new Color(0, 0, 0);
 	public static final Color WARNING_FOREGROUND = new Color(230, 138, 46);
 
@@ -103,7 +103,7 @@ public final class Constants {
 	public static final int NAVIGATION_BUTTON_WIDTH = 150;
 	public static final int NAVIGATION_HEIGHT = 30;
 	public static final int STEPTITLE_HEIGHT = 15;
-	public static final int TITLE_HEIGHT = 65;
+	public static final int TITLE_HEIGHT = 75;
 
 	// Dimension = (width, height)
 	public static final Dimension CONTENT_DIMENSION = new Dimension(
