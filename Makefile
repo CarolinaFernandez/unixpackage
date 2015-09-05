@@ -57,7 +57,7 @@ build:		configure
 		@mkdir -p $(BUILD_DIR)
 		@find $(SRC_DIR) -iname *.java >> sources.txt
 		@find $(TEST_DIR) -iname *.java >> sources.txt
-		@$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) @sources.txt -encoding UTF-8
+		@$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) @sources.txt $(JFLAGS)
 		@rm sources.txt
 		@#$(JAVAC) -cp $(CLASSPATH) -d $(BUILD_DIR) -sourcepath $(SRC_DIR) $(ENTRY_POINT) $(JFLAGS)
 		@cp -Rup media $(BUILD_DIR)
