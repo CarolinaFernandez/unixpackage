@@ -150,7 +150,8 @@ function parse_arguments()
   -f|--files)
     files="$1"
     shift
-    while [[ $1 != -* ]]; do
+    # Allow placing files as middle or final argument
+    while [[ $1 != -* && ! -z $1 ]]; do
       files="$files $1"
       shift
     done
@@ -418,7 +419,6 @@ echo_v "> Validating parameters..."
 validate_parameters
 
 # Script can be run without passing the templates (rather uninteresting, though)
-cat $debian_files_location/control
 if [[ -f $debian_files_location/control ]]; then
   if [[ -z $package_name ]]; then
     package_name=$(grep --only-matching --perl-regex "(?<=^Package: ).*" $debian_files_location/control)

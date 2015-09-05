@@ -171,7 +171,8 @@ function parse_arguments()
   -f|--files)
     files="$1"
     shift
-    while [[ $1 != -* ]]; do
+    # Allow placing files as middle or final argument
+    while [[ $1 != -* && ! -z $1 ]]; do
       files="$files $1"
       shift
     done
