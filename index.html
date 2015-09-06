@@ -19,9 +19,8 @@
   <body>
     <header>
       <div class="inner">
-        <h1>UnixPackage</h1>
-        <h2>Stand-alone tool to easily create Debian and Fedora based UNIX packages through a UI</h2>
-        <a href="https://github.com/CarolinaFernandez/unixpackage" class="button"><small>View project on</small> GitHub</a>
+        <h2>UnixPackage</h2>
+        <a href="https://github.com/CarolinaFernandez/unixpackage" class="button"><small>View on</small> GitHub</a>
       </div>
     </header>
 
@@ -29,9 +28,18 @@
       <div class="inner clearfix">
         <section id="main-content">
           <h3>
-<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h3>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why this? (An overview)</h3>
 
-<p>This tool provides an easier way to bundle software into packages for UNIX Operating Systems (currently Debian and Fedora based distros are supported). Further instructions on use can be checked in the GitHub wiki and in the README files available per UNIX operating system.</p>
+<p>Some time ago, when first becoming familiar with the Debian packaging system, it felt to me that the steps to produce this kind of files were not as straightforward as I would like them to be. Initially, I wrote a small script to copy the sources we usually bundled at our work team. This eased things for this particular package, but it was not nearly general or user-friendly enough to be used for others. Later on, I had the chance to learn and test how to bundle RPM packages. With all of that in mind, it seemed natural to develop a tool to easily bundle any of them in the future.</p>
+
+<p>Thus, this tool aims to provide an easier way to bundle software into packages for common UNIX Operating Systems (currently Debian and Fedora based distros are supported). That is, the tool requires only packager and package information, along with (of course) the location of the source files. Further instructions on its use can be checked in the GitHub wiki and in the README files available per UNIX operating system.</p>
+
+<h3>
+<a id="aesthetics" class="anchor" href="#aesthetics" aria-hidden="true"><span class="octicon octicon-link"></span></a>Aesthetics</h3>
+
+<p>Whilst this could be perfectly a bash script (specially for automated or remote server tasks), a graphical mode proves to be more user-friendly at the beginning. Also, it was a good occasion to get some skills on AWT/Swing and remove these my to-do list.</p>
+
+<p>When running the tool in graphical mode, you will notice a penguin drawing in the upper part. That is nothing but a winking at the Adventure Time cartoon. There, Gunter is the main penguin character that enjoys smashing bottles - and probably <code>jars</code> as well.</p>
 
 <h3>
 <a id="licensing" class="anchor" href="#licensing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Licensing</h3>
@@ -41,7 +49,7 @@
 <h3>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and contributors</h3>
 
-<p>This GitHub project is maintained by <a href="https://github.com/CarolinaFernandez" class="user-mention">@CarolinaFernandez</a>, yet <em>@you</em> are welcome to collaborate by either sending a pull request or notifying issues or improvements you would like to see.</p>
+<p>This GitHub project is maintained by <a href="https://github.com/CarolinaFernandez" class="user-mention">@CarolinaFernandez</a>, yet <em>@you</em> are welcome to collaborate by either sending a pull request or notifying issues/improvements you would like to see.</p>
         </section>
 
         <aside id="sidebar">
