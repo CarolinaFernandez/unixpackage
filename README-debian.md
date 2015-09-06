@@ -5,7 +5,7 @@ The script below shows an example of how to use UnixPackage
 in background mode to generate an DEB package. Alternatively
 you may have a look at the `deb` rule in the Makefile.
 
-The DEB package generation has been tested under Debian 7.4
+The DEB package generation has been tested under Debian 7.6
 with OpenJDK Java 1.6 (v1.6.0_36) and Java 1.8 (v1.8.0_60).
 
 ```

@@ -127,7 +127,7 @@ public class GeneratePackage extends CommonStep {
 			// Default is "DEB"
 			String scriptLocation = Constants.TMP_SCRIPT_DEBIAN_PATH;
 			if (!Variables.isNull("PACKAGE_TYPE")
-					&& Variables.PACKAGE_TYPE.equals("RPM")) {
+					&& Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_RPM)) {
 				scriptLocation = Constants.TMP_SCRIPT_REDHAT_PATH;
 			}
 			commandList.add(1, scriptLocation);
@@ -173,8 +173,12 @@ public class GeneratePackage extends CommonStep {
 		}
 
 		// Open browser in directory where the package is created
-		commandList.add("&& " + Constants.OPEN_COMMAND + " $(ls -lt | grep "
-				+ Constants.APP_NAME + " | head -n 1 | cut -d -f 9)");
+		// Default: non-batch (graphic mode)
+		if (Variables.isNull("BATCH_MODE") || !Variables.BATCH_MODE) {
+			commandList.add("; if [ ! -z $(ls -lt | grep "
+					+ Constants.APP_NAME + " | head -n 1 | cut -d -f 9) ]; then " + Constants.OPEN_COMMAND + " $(ls -lt | grep "
+					+ Constants.APP_NAME + " | head -n 1 | cut -d -f 9); fi");
+		}
 		// Set flag to true after package generation
 		Variables._PACKAGE_GENERATED = true;
 
@@ -252,7 +256,7 @@ public class GeneratePackage extends CommonStep {
 						+ Variables.PACKAGE_TYPE
 						+ " package has been generated under "
 						+ outputPathPackage);
-				Shell.execute("xdg-open " + outputPathPackage);
+				Shell.execute(Constants.OPEN_COMMAND + " " + outputPathPackage);
 			} else {
 				UnixLogger.LOGGER.error("Process finished. Could not generate "
 						+ Variables.PACKAGE_TYPE + " package");

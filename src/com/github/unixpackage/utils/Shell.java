@@ -66,10 +66,15 @@ public class Shell {
 				if (commandListString.indexOf("-m") > -1) {
 					operationType = "files";
 				}
+				// Check validity of package
+				if (Variables.isNull("PACKAGE_TYPE")) {
+					Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_DEB);
+				}
 				UnixLogger.LOGGER.info("Generating " + Variables.PACKAGE_TYPE
 						+ " " + operationType + " with commands: "
 						+ commandListString);
 			}
+			
 			// Use ProcessBuilder rather than Runtime.exec
 			ProcessBuilder pb = new ProcessBuilder(commandList);
 			pb.directory(new File(Constants.ROOT_TMP_PACKAGE_FILES_PATH));

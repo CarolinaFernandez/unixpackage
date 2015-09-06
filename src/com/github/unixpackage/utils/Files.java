@@ -107,6 +107,20 @@ public class Files {
 		}
 		return false;
 	}
+	
+	public static boolean touchFile(final String destFile) {
+		boolean touchedFile = true;
+		File file = new File(destFile);
+		if (!file.exists()) {
+            try {
+				new FileOutputStream(file).close();
+			} catch (IOException e) {
+				touchedFile = false;
+			}
+            file.setLastModified(System.currentTimeMillis());
+		}
+		return touchedFile;
+	}
 
 	private static boolean copyFilesRecursively(final File toCopy,
 			final File destDir) {
@@ -391,10 +405,12 @@ public class Files {
 		File logFolder = new File(Constants.APP_LOG_FOLDER);
 		if (!logFolder.exists()) {
 			logFolder.mkdirs();
-			logFolder.setReadable(true);
-			logFolder.setWritable(true);
-			logFolder.setExecutable(true);
 		}
+		logFolder.setReadable(true);
+		logFolder.setWritable(true);
+		logFolder.setExecutable(true);
+		// Create log file
+		Files.touchFile(Constants.APP_LOG_FOLDER + "/output.log");
 	}
 
 	/**

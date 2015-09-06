@@ -91,23 +91,28 @@ check:		build
 		@echo "  [   $@   ]    Running tests to detect improper behaviour..."
 		@$(JAVA) -cp $(CLASSPATH) $(ENTRY_POINT_JUNIT) com.github.unixpackage.data.ArgumentsTest
 
-deb:		jar
-		@echo "  [    $@    ]    Bundling $(APP_NAME) into a DEB package..."
+copy-tmp:	
+		@#Copy sources into tmp folder, delete unnecessary files
 		@test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
-		@test -d $(TMP_DIR)/build && find $(TMP_DIR)/build -not -name '$(JAR_PKG_NAME)' -exec rm -rf {} + || echo
+		@test -d $(TMP_DIR)/build && find $(TMP_DIR)/build/* -not -name '$(JAR_PKG_NAME)' -exec rm -rf {} + || echo
+		@test -d $(TMP_DIR) && find $(TMP_DIR)/ -iname ".*" -exec rm -rf {} + || echo
+
+deb:		jar copy-tmp
+		@echo "  [    $@    ]    Bundling $(APP_NAME) into a DEB package..."
 		@$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_DEB) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_DEB) -D $(DESCRIPTION_LONG) -s $(PACKAGE_SECTION) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/$(JAR_PKG_NAME):/usr/lib/unixpackage/$(JAR_PKG_NAME) $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/debian/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/debian/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
+		@rm -rf $(TMP_DIR)
 
 rpm:
-		jar
+		jar copy-tmp
 		@echo "  [    $@    ]    Bundling $(APP_NAME) into a RPM package..."
-		@test -d $(TMP_DIR) || cp -Rup $(UNIXPKG_GIT) $(TMP_DIR)/
-		@test -d $(TMP_DIR)/build && find $(TMP_DIR)/build -not -name '$(JAR_PKG_NAME)' -type f -exec rm -f {} +
 		@$(JAVA) -$(JAR) $(JAR_PKG) -b -c $(PACKAGE_LICENCE_RPM) -d $(DESCRIPTION_SHORT) -C $(PACKAGE_ARCH_RPM) -D $(DESCRIPTION_LONG) -g $(PACKAGE_GROUP) -e $(AUTHOR_EMAIL) -f $(TMP_DIR):$(OPT_DIR) $(TMP_DIR)/build/$(JAR_PKG_NAME):/usr/lib/unixpackage/$(JAR_PKG_NAME) $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/unixpackage $(TMP_DIR)/bin/fedora/unixpackage.sbin:$(SBIN_DIR)/upkg $(TMP_DIR)/bin/fedora/unixpackage.8.gz:$(MAN8_DIR)/unixpackage.8.gz -n $(AUTHOR_NAME) -p $(PACKAGE_NAME) -V $(PACKAGE_VERSION) -w $(PACKAGE_WEBSITE)
+		@rm -rf $(TMP_DIR)
 
 clean:
 		@echo "  [   $@   ]    Cleaning temp files..."
 		@rm -rf $(BUILD_DIR)
 		@rm -f $(JAR_PKG)
+		@rm -rf $(TMP_DIR)
 		@sudo rm -rf $(LOG_DIR)
 
 all:	clean configure build check jar

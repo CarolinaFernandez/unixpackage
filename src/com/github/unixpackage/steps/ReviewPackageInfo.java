@@ -25,10 +25,10 @@ public class ReviewPackageInfo extends CommonStep {
 		if (Variables.isNull("PACKAGE_TYPE")
 				|| Variables.PACKAGE_TYPE.equals(Constants.BUNDLE_TYPE_DEB)) {
 			packageTypeOS = "Debian";
-			Variables.set("PACKAGE_TYPE", "DEB");
+			Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_DEB);
 		} else {
 			packageTypeOS = "Red Hat";
-			Variables.set("PACKAGE_TYPE", "RPM");
+			Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_RPM);
 		}
 		l = new JLabel(Variables.PACKAGE_TYPE + " (" + packageTypeOS + ")");
 		l.setPreferredSize(Constants.TEXTFIELD_DIMENSION);

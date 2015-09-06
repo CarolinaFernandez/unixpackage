@@ -3,13 +3,21 @@ jdk:
   - openjdk7
   - oraclejdk7
   - oraclejdk8
+sudo: true
 # configure environment
 before_script:
-  - "sudo make configure"
+  - "make configure"
 # run Java unit tests
 script:
   - "make build"
   - "make check"
+# after tests, create package
+after_script:
+  - "make deb"
+# deploy package on system
+deploy:
+  skip_cleanup: true
+  - "dpkg -i $(find /tmp/ -name \"unixpackage*.deb\" | tail -n 1)"
 # notify result of build to email address
 notifications:
   email:
