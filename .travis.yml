@@ -14,7 +14,7 @@ script:
 # after tests, create package and install
 after_script:
   - "make deb"
-  - "dpkg -i $(find /tmp/ -name \"unixpackage*.deb\" | tail -n 1)"
+  - "sudo dpkg -i $(find /tmp/ -name \"unixpackage*.deb\" | tail -n 1)"
 # notify result of build to email address
 notifications:
   email:
