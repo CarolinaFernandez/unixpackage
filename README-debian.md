@@ -17,13 +17,13 @@ cp -Rp $UNIXPACKAGE_GIT $UNIXPACKAGE_DIR
 make jar
 
 AUTHOR_NAME="Jane Doe"
-AUTHOR_EMAIL = "jane.doe@random-website.io"
-PACKAGE_NAME = "fancy-package"
-PACKAGE_LICENCE = "gpl3"
-PACKAGE_VERSION = "0.1-1"
-PACKAGE_WEBSITE = "http://www.random-website.io"
-PACKAGE_SECTION = "admin"
-PACKAGE_ARCH = "i"
+AUTHOR_EMAIL="jane.doe@random-website.io"
+PACKAGE_NAME="fancy-package"
+PACKAGE_LICENCE="gpl3"
+PACKAGE_VERSION="0.1-1"
+PACKAGE_WEBSITE="http://www.random-website.io"
+PACKAGE_SECTION="admin"
+PACKAGE_ARCH="i"
 DESCRIPTION_SHORT="Create a fancy package"
 DESCRIPTION_LONG="Create a fancy package that does fancy stuff"
 

@@ -11,10 +11,9 @@ before_script:
 script:
   - "make build"
   - "make check"
-# after tests, create package and install
+# after tests, create package
 after_script:
   - "make deb"
-  - "sudo dpkg -i $(find /tmp/ -name \"unixpackage*.deb\" | tail -n 1)"
 # notify result of build to email address
 notifications:
   email:

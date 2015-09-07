@@ -1,9 +1,11 @@
 package com.github.unixpackage.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,17 +109,17 @@ public class Files {
 		}
 		return false;
 	}
-	
+
 	public static boolean touchFile(final String destFile) {
 		boolean touchedFile = true;
 		File file = new File(destFile);
 		if (!file.exists()) {
-            try {
+			try {
 				new FileOutputStream(file).close();
 			} catch (IOException e) {
 				touchedFile = false;
 			}
-            file.setLastModified(System.currentTimeMillis());
+			file.setLastModified(System.currentTimeMillis());
 		}
 		return touchedFile;
 	}
@@ -364,12 +366,12 @@ public class Files {
 			fileHash = hexString.toString();
 		} catch (NoSuchAlgorithmException e) {
 			UnixLogger.LOGGER
-					.trace("Error: could not generate hash due to digest algorithm problem");
+			.trace("Error: could not generate hash due to digest algorithm problem");
 			e.printStackTrace();
 		} catch (IOException e) {
 			UnixLogger.LOGGER
-					.trace("Error: could not generate hash due to I/O error on file ("
-							+ file + ")");
+			.trace("Error: could not generate hash due to I/O error on file ("
+					+ file + ")");
 		}
 		return fileHash;
 	}
@@ -421,25 +423,40 @@ public class Files {
 	public static String getOSDistro() {
 		String distroOS = null;
 		StringBuilder distroOSFull = new StringBuilder();
-		// distroOS = Shell.execute("cat /etc/*-release");
-		// distroOS = Shell.execute("lb_release -a");
-		File locationPath = new File("/etc");
-		FilenameFilter releaseFilter = new FilenameFilter() {
-			@Override
-			public boolean accept(File directory, String file) {
-				if (file.endsWith("release")) {
-					return true;
-				} else {
-					return false;
+		
+		// Lists all the files ending with -release in the etc folder
+		File dir = new File("/etc/");
+		File fileList[] = new File[0];
+		if (dir.exists()) {
+			fileList = dir.listFiles(new FilenameFilter() {
+				public boolean accept(File dir, String filename) {
+					return filename.endsWith("-release");
 				}
-			}
-		};
-		String[] etcFiles = locationPath.list(releaseFilter);
-		for (String releaseFile : etcFiles) {
-			// Retrieve every content from the release files
-			// Do NOT output this via System.out
-			distroOSFull.append(Shell.execute("cat /etc/" + releaseFile, null));
+			});
 		}
+		
+		// Looks for the version file (not all linux distros)
+		File fileVersion = new File("/proc/version");
+		if (fileVersion.exists()) {
+			fileList = Arrays.copyOf(fileList, fileList.length + 1);
+			fileList[fileList.length - 1] = fileVersion;
+		}
+		
+		// Prints all the version-related files
+		for (File f : fileList) {
+			try {
+				BufferedReader myReader = new BufferedReader(new FileReader(f));
+				String strLine = null;
+				while ((strLine = myReader.readLine()) != null) {
+					distroOSFull.append(strLine);
+				}
+				myReader.close();
+			} catch (Exception e) {
+				System.err.println("Error: " + e.getMessage());
+			}
+		}
+		
+		// Identify main distros
 		if (distroOSFull.toString().indexOf("Debian") > -1
 				|| distroOSFull.toString().indexOf("Ubuntu") > -1) {
 			distroOS = "Debian";

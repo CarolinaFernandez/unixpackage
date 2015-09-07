@@ -24,6 +24,20 @@ public class MainApp {
 		// When in batch mode, exit with error if some argument
 		// was not correctly parsed. Otherwise, obtain screen size
 		if (!Variables.isNull("BATCH_MODE") && Variables.BATCH_MODE) {
+			// If package type (= distro) unknown, just have a look
+			// at the underlying system and determine from there
+			// NB: Arguments could also be inspected for Fedora-specific
+			// arguments, but this is simpler
+			if (Variables.isNull("PACKAGE_TYPE")) {
+				if (Files.getOSDistro().equals("Fedora")) {
+					Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_RPM);
+					Variables.set("BUNDLE_MODE", Constants.BUNDLE_TYPE_RPM);
+				// Default: DEB
+				} else {
+					Variables.set("PACKAGE_TYPE", Constants.BUNDLE_TYPE_DEB);
+					Variables.set("BUNDLE_MODE", Constants.BUNDLE_TYPE_DEB);
+				}
+			}
 			if (!argumentsCorrectlyParsed) {
 				System.exit(1);
 			}

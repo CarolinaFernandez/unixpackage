@@ -15,6 +15,7 @@ public class ArgumentsTest {
 	public void testArgumentsValidDebian() {
 		// Define test for Debian-based OSs
 		Variables.BUNDLE_MODE = "DEB";
+		Variables.PACKAGE_TYPE = "DEB";
 		// Define String array with accepted arguments and valid values
 		String[] arguments = "-b -c gpl3 -d Desc no. 1 -C i -D Desc no. 2 -s admin -e a.b@c.d -f a:b c:d -n A B -p some-name -V 0.1 -w http://u.rl -M"
 				.split(" ");
@@ -24,16 +25,17 @@ public class ArgumentsTest {
 	}
 
 	/**
-	 * Ensure valid arguments are successfully processed in a Red Hat-based
+	 * Ensure valid arguments are successfully processed in a Fedora-based
 	 * environment.
 	 */
 	@Test
-	public void testArgumentsValidRedHat() {
-		// Define test for Debian-based OSs
+	public void testArgumentsValidFedora() {
+		// Define test for Fedora-based OSs
 		Variables.BUNDLE_MODE = "RPM";
+		Variables.PACKAGE_TYPE = "RPM";
 		// Define String array with accepted arguments and valid values
 		// "Group" not being tested as its validation fails...
-		String[] arguments = "-b -c gpl3 -d Desc no. 1 -C i -D Desc no. 2 -e a.b@c.d -f a:b c:d -n A B -p some-name -V 0.1-1 -w http://u.rl"
+		String[] arguments = "-b -c GPLv3 -g System Environment/Libraries -d Desc no. 1 -C noarch -D Desc no. 2 -e a.b@c.d -f a:b c:d -n A B -p some-name -V 0.1-1 -w http://u.rl"
 				.split(" ");
 		boolean argumentsCorrectlyParsed = Arguments
 				.parseInputArguments(arguments);

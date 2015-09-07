@@ -431,8 +431,8 @@ public final class Constants {
 				Constants.ARGUMENT_COPYRIGHT_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_CLASS,
 				Constants.ARGUMENT_CLASS_LONG);
-		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_SECTION,
-				Constants.ARGUMENT_PACKAGE_SECTION_LONG);
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_GROUP,
+				Constants.ARGUMENT_PACKAGE_GROUP_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_PRIORITY,
 				Constants.ARGUMENT_PACKAGE_PRIORITY_LONG);
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_NAME,
@@ -449,6 +449,8 @@ public final class Constants {
 		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_BUILD,
 				Constants.ARGUMENT_BUILD_LONG);
 		// Only to be used in RPM packages (no effect in DEB)
+		ARGUMENTS_ACCEPTED.put(Constants.ARGUMENT_PACKAGE_SECTION,
+				Constants.ARGUMENT_PACKAGE_SECTION_LONG);
 
 		// Mapping of input arguments and their associated variables
 		ARGUMENTS_VARIABLES = new HashMap<String, String>();
