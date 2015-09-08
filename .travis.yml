@@ -13,7 +13,7 @@ script:
   - "make check"
 # after tests, create package
 after_script:
-  - "make deb"
+  - "sudo make deb"
 # notify result of build to email address
 notifications:
   email:
