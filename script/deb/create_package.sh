@@ -54,7 +54,7 @@ dpkg_dependencies=('dh-make' 'lintian' 'gzip' 'xdg-utils')
 native_package=""
 gpg_key_exists=""
 create_gpg_key=false
-
+dhmake_help=$(dh_make -h)
 
 # Paths
 #path=${PWD##/*/}
@@ -395,10 +395,19 @@ function perform_dh_make()
 
   # Common parameters
   # Use "yes" to run in batch mode
-  dh_make_params="--yes $native_package -$package_class -c $copyright -e $email -p ${package_name}_${package_version}"
+  dh_make_pre=""
+  # Verify that the "--yes" parameter is available for curent dh_make
+  test "${dhmake_help#*"--yes"}" != "$dhmake_help" && dh_make_params="--yes" || dh_make_pre="yes | "
+  dh_make_params="$dh_make_params $native_package -$package_class -c $copyright -e $email -p ${package_name}_${package_version}"
   dh_make_params="$dh_make_params -f $path_to_package.tar.gz"
-  echo_v "/usr/bin/dh_make $dh_make_params"
-  dh_make $dh_make_params || error "Could not dh_make with ${package_name}_${package_version}.tar.gz"
+  # Verify again that the "--yes" parameter can be used
+  if [ -z $dh_make_pre ]; then
+    echo_v "$dh_make_pre /usr/bin/dh_make $dh_make_params"
+    dh_make $dh_make_params || error "Could not dh_make with ${package_name}_${package_version}.tar.gz"
+  else
+    echo_v "yes | $dh_make_pre /usr/bin/dh_make $dh_make_params"
+    yes | dh_make $dh_make_params || error "Could not dh_make with ${package_name}_${package_version}.tar.gz"
+  fi
   #dh_installman || error "Could not dh_installman for ${package_name}_${package_version} package"
 
   rm $path_to_package.tar.gz || error "Could not delete ${package_name}_${package_version}.tar.gz"
