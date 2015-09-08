@@ -174,11 +174,11 @@ public class GeneratePackage extends CommonStep {
 
 		// Open browser in directory where the package is created
 		// Default: non-batch (graphic mode)
-		if (Variables.isNull("BATCH_MODE") || !Variables.BATCH_MODE) {
+		/*if (Variables.isNull("BATCH_MODE") || !Variables.BATCH_MODE) {
 			commandList.add("; if [ ! -z $(ls -lt | grep "
 					+ Constants.APP_NAME + " | head -n 1 | cut -d -f 9) ]; then " + Constants.OPEN_COMMAND + " $(ls -lt | grep "
 					+ Constants.APP_NAME + " | head -n 1 | cut -d -f 9); fi");
-		}
+		}*/
 		// Set flag to true after package generation
 		Variables._PACKAGE_GENERATED = true;
 
@@ -186,7 +186,9 @@ public class GeneratePackage extends CommonStep {
 		resultExecute = Shell.execute(commandList);
 		Variables._PACKAGE_GENERATED_OUTPUT = resultExecute.toString();
 		// Show output package in the browser
-		GeneratePackage.openOutputPath();
+		if (Variables.isNull("BATCH_MODE") || !Variables.BATCH_MODE) {
+			GeneratePackage.openOutputPath();
+		}
 
 		return resultExecute;
 	}
