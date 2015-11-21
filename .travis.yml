@@ -4,8 +4,6 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 sudo: true
-before install:
-  - pip install --user codecov
 # configure environment
 before_script:
   - sudo make configure
@@ -16,5 +14,3 @@ script:
 # after tests, create package
 after_script:
   - sudo make deb
-after_success:
-  - codecov
